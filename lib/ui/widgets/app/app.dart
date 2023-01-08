@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:read_only/ui/theme/theme.dart';
 
 import '../../navigation/main_navigation_route_names.dart';
 
@@ -14,8 +15,11 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ReadOnlyTheme.light,
+      darkTheme: ReadOnlyTheme.dark,
       initialRoute: MainNavigationRouteNames.typeListScreen,
       onGenerateRoute: navigation.onGenerateRoute,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
