@@ -5,13 +5,15 @@ import 'package:read_only/data_providers/grpc/pb/reader/service.pbgrpc.dart';
 class GrpcClient {
   late final ClientChannel channel;
   late final TypeGRPCClient typeStub;
+  late final SubGRPCClient subtypeStub;
 
   GrpcClient() {
     channel = ClientChannel(
-      '192.168.31.203',
-      port: 30000,
+      Configuration.host,
+      port: Configuration.port,
       options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
     );
     typeStub = TypeGRPCClient(channel);
+    subtypeStub = SubGRPCClient(channel);
   }
 }

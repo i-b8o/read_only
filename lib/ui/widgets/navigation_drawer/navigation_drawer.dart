@@ -27,11 +27,11 @@ class NavigationDrawer extends StatelessWidget {
                             itemCount: 3,
                             itemBuilder: ((context, index) {
                               if (index == 0) {
-                                return NotesMenuItem();
+                                return const NotesMenuItem();
                               } else if (index == 1) {
-                                return FontMenuItem(index: 1);
+                                return const FontMenuItem(index: 1);
                               }
-                              return SoundMenuItem(index: 2);
+                              return const SoundMenuItem(index: 2);
                             }),
                           ))
                         ])))
@@ -139,7 +139,7 @@ class FontMenuItem extends StatelessWidget {
                     content: FontSlider(
                       title: 'Размер',
                       text: 'text%',
-                      color: Color(0xFF5aa9f7),
+                      color: const Color(0xFF5aa9f7),
                       value: 11,
                       onChanged: (double value) {},
                       onChangeEnd: (value) {},
@@ -155,7 +155,7 @@ class FontMenuItem extends StatelessWidget {
                     content: FontSlider(
                       title: 'Насыщенность',
                       text: "",
-                      color: Color(0xFF5aa9f7),
+                      color: const Color(0xFF5aa9f7),
                       value: 11,
                       onChanged: (double value) {},
                       onChangeEnd: (value) {},
@@ -225,7 +225,7 @@ class FontSlider extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Текст',
                     overflow: TextOverflow.ellipsis,
                     style:
@@ -241,7 +241,7 @@ class FontSlider extends StatelessWidget {
                   child: Slider(
                     divisions: 7,
                     activeColor: color,
-                    inactiveColor: Color(0xFFedecf1),
+                    inactiveColor: const Color(0xFFedecf1),
                     onChanged: onChanged,
                     onChangeEnd: onChangeEnd,
                     value: value,
@@ -335,7 +335,7 @@ class SoundMenuItem extends StatelessWidget {
                     content: SoundSlider(
                       title: 'Громкость',
                       text: '%',
-                      color: Color(0xFF552cf6),
+                      color: const Color(0xFF552cf6),
                       value: 1,
                       onIconTap: () {},
                       onChanged: (double value) async {},
@@ -354,7 +354,7 @@ class SoundMenuItem extends StatelessWidget {
                       text: '%',
                       // icon: Icons.volume_up_outlined,
 
-                      color: Color(0xFF475df9),
+                      color: const Color(0xFF475df9),
                       value: 1,
                       onIconTap: () {},
                       onChanged: (double value) async {},
@@ -371,7 +371,7 @@ class SoundMenuItem extends StatelessWidget {
                     content: SoundSlider(
                       title: 'Высота',
                       text: '%',
-                      color: Color(0xFF5aa9f7),
+                      color: const Color(0xFF5aa9f7),
                       value: 1,
                       onIconTap: () {},
                       onChanged: (double value) {},
@@ -379,7 +379,7 @@ class SoundMenuItem extends StatelessWidget {
                     ),
                   ),
                 ),
-                VoiceItem()
+                const VoiceItem()
               ],
             ),
           ),
@@ -452,7 +452,7 @@ class SoundSlider extends StatelessWidget {
                   width: MediaQuery.of(context).size.width * 0.5,
                   child: Slider(
                     activeColor: color,
-                    inactiveColor: Color(0xFFedecf1),
+                    inactiveColor: const Color(0xFFedecf1),
                     onChanged: onChanged,
                     onChangeEnd: onChangeEnd,
                     value: value,
@@ -518,7 +518,7 @@ class VoiceItem extends StatelessWidget {
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    VoiceBtn(
+                    const VoiceBtn(
                       color: Color(0xFF5ec8ad),
                     ),
                     DropdownButton(
@@ -552,7 +552,7 @@ class VoiceItem extends StatelessWidget {
                     .color,
               ),
             ),
-            Text("state.voice"),
+            const Text("state.voice"),
           ],
         ),
       ),

@@ -1,5 +1,7 @@
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:read_only/data_providers/grpc/pb/reader/service.pbgrpc.dart';
+import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
 abstract class TypesListViewModelProvider {
   Future<List<TypeResponse>> getAll();
@@ -22,5 +24,12 @@ class TypeListViewModel extends ChangeNotifier {
 
   Future<void> getAll() async {
     _types = await typesProvider.getAll();
+  }
+
+  void onTap(BuildContext context, Int64 id) {
+    Navigator.of(context).pushNamed(
+      MainNavigationRouteNames.subtypeListScreen,
+      arguments: id,
+    );
   }
 }

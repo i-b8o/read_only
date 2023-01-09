@@ -8,7 +8,9 @@ class TypeService implements TypesListViewModelProvider {
 
   const TypeService({required this.typeDataProvider});
 
+  @override
   Future<List<TypeResponse>> getAll() async {
-    return await typeDataProvider.getAll();
+    GetAllTypesResponse resp = await typeDataProvider.getAll();
+    return resp.types;
   }
 }

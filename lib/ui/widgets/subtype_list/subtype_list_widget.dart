@@ -1,18 +1,17 @@
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
-import 'package:read_only/ui/widgets/type_list/type_list_model.dart';
 
 import '../navigation_drawer/navigation_drawer.dart';
+import 'subtype_list_model.dart';
 
-class TypeListWidget extends StatelessWidget {
-  const TypeListWidget({super.key});
+class SubtypeListWidget extends StatelessWidget {
+  const SubtypeListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<TypeListViewModel>();
-    final types = model.types;
+    final model = context.watch<SubtypeListViewModel>();
+    final subtypes = model.subtypes;
     return Scaffold(
         appBar: PreferredSize(
           preferredSize:
@@ -26,10 +25,10 @@ class TypeListWidget extends StatelessWidget {
         ),
         drawer: const NavigationDrawer(),
         body: ListView(
-          children: types
+          children: subtypes
               .map((e) => TypeCard(
                     name: e.name,
-                    id: e.iD,
+                    id: "${e.iD}",
                   ))
               .toList(),
         ));
@@ -101,14 +100,12 @@ class TypeCard extends StatelessWidget {
     required this.name,
     required this.id,
   }) : super(key: key);
-  final String name;
-  final Int64 id;
+  final String name, id;
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<TypeListViewModel>();
     return GestureDetector(
-        onTap: () => model.onTap(context, id),
+        onTap: () async {},
         child: Card(
           margin: EdgeInsets.zero,
           shape: Border(

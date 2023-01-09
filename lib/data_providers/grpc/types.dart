@@ -11,10 +11,10 @@ class TypeDataProvider {
 
   const TypeDataProvider({required this.client});
 
-  Future<List<TypeResponse>> getAll() async {
+  Future<GetAllTypesResponse> getAll() async {
     try {
       GetAllTypesResponse resp = await client.typeStub.getAll(Empty());
-      return resp.types;
+      return resp;
     } catch (e) {
       log(e.toString());
       throw TypeDataProviderError();
