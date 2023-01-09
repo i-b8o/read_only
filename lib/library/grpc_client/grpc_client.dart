@@ -1,11 +1,12 @@
 import 'package:grpc/grpc.dart';
 import 'package:read_only/configuration/configuration.dart';
-import 'package:read_only/data_providers/grpc/pb/reader/service.pbgrpc.dart';
+import 'package:read_only/library/grpc_client/pb/reader/service.pbgrpc.dart';
 
 class GrpcClient {
   late final ClientChannel channel;
   late final TypeGRPCClient typeStub;
   late final SubGRPCClient subtypeStub;
+  late final DocGRPCClient docStub;
 
   GrpcClient() {
     channel = ClientChannel(
@@ -15,5 +16,6 @@ class GrpcClient {
     );
     typeStub = TypeGRPCClient(channel);
     subtypeStub = SubGRPCClient(channel);
+    docStub = DocGRPCClient(channel);
   }
 }

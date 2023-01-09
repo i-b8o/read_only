@@ -125,18 +125,30 @@ const GetOneDocRequest$json = const {
 
 /// Descriptor for `GetOneDocRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getOneDocRequestDescriptor = $convert.base64Decode('ChBHZXRPbmVEb2NSZXF1ZXN0Eg4KAklEGAEgASgEUgJJRA==');
+@$core.Deprecated('Use chapterDescriptor instead')
+const Chapter$json = const {
+  '1': 'Chapter',
+  '2': const [
+    const {'1': 'ID', '3': 1, '4': 1, '5': 4, '10': 'ID'},
+    const {'1': 'Name', '3': 2, '4': 1, '5': 9, '10': 'Name'},
+    const {'1': 'OrderNum', '3': 3, '4': 1, '5': 13, '10': 'OrderNum'},
+    const {'1': 'Num', '3': 4, '4': 1, '5': 9, '10': 'Num'},
+  ],
+};
+
+/// Descriptor for `Chapter`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List chapterDescriptor = $convert.base64Decode('CgdDaGFwdGVyEg4KAklEGAEgASgEUgJJRBISCgROYW1lGAIgASgJUgROYW1lEhoKCE9yZGVyTnVtGAMgASgNUghPcmRlck51bRIQCgNOdW0YBCABKAlSA051bQ==');
 @$core.Deprecated('Use getOneDocResponseDescriptor instead')
 const GetOneDocResponse$json = const {
   '1': 'GetOneDocResponse',
   '2': const [
     const {'1': 'Name', '3': 1, '4': 1, '5': 9, '10': 'Name'},
-    const {'1': 'Abbreviation', '3': 2, '4': 1, '5': 9, '10': 'Abbreviation'},
-    const {'1': 'Title', '3': 3, '4': 1, '5': 9, '10': 'Title'},
+    const {'1': 'chapters', '3': 2, '4': 3, '5': 11, '6': '.reader.v1.Chapter', '10': 'chapters'},
   ],
 };
 
 /// Descriptor for `GetOneDocResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List getOneDocResponseDescriptor = $convert.base64Decode('ChFHZXRPbmVEb2NSZXNwb25zZRISCgROYW1lGAEgASgJUgROYW1lEiIKDEFiYnJldmlhdGlvbhgCIAEoCVIMQWJicmV2aWF0aW9uEhQKBVRpdGxlGAMgASgJUgVUaXRsZQ==');
+final $typed_data.Uint8List getOneDocResponseDescriptor = $convert.base64Decode('ChFHZXRPbmVEb2NSZXNwb25zZRISCgROYW1lGAEgASgJUgROYW1lEi4KCGNoYXB0ZXJzGAIgAygLMhIucmVhZGVyLnYxLkNoYXB0ZXJSCGNoYXB0ZXJz');
 @$core.Deprecated('Use getOneChapterRequestDescriptor instead')
 const GetOneChapterRequest$json = const {
   '1': 'GetOneChapterRequest',

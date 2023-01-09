@@ -1,7 +1,8 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
-import 'package:read_only/data_providers/grpc/pb/reader/service.pbgrpc.dart';
-import 'package:read_only/data_providers/grpc/pb/reader/service.pb.dart';
+import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
+
+import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
 abstract class SubtypesListViewModelProvider {
   Future<List<SubtypeResponse>> getAll(Int64 id);
@@ -29,10 +30,10 @@ class SubtypeListViewModel extends ChangeNotifier {
     _subtypes = await subtypesProvider.getAll(id);
   }
 
-  // void onTap(BuildContext context, Int64 index) {
-  //   Navigator.of(context).pushNamed(
-  //     MainNavigationRouteNames.subtypeListScreen,
-  //     arguments: id,
-  //   );
-  // }
+  void onTap(BuildContext context, Int64 index) {
+    Navigator.of(context).pushNamed(
+      MainNavigationRouteNames.docListScreen,
+      arguments: id,
+    );
+  }
 }

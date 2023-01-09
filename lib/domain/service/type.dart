@@ -1,5 +1,5 @@
-import 'package:read_only/data_providers/grpc/pb/reader/service.pb.dart';
-import 'package:read_only/data_providers/grpc/types.dart';
+import 'package:read_only/data_providers/grpc/type.dart';
+import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
 
 import '../../ui/widgets/type_list/type_list_model.dart';
 

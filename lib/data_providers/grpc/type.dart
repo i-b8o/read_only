@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:read_only/data_providers/grpc/pb/reader/service.pb.dart';
+import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
 
 import '../../library/grpc_client/grpc_client.dart';
 

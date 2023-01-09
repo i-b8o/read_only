@@ -1,15 +1,17 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:read_only/data_providers/grpc/subtypes.dart';
+import 'package:read_only/data_providers/grpc/subtype.dart';
 import 'package:read_only/domain/service/subtype.dart';
 import 'package:read_only/domain/service/type.dart';
 import 'package:read_only/library/grpc_client/grpc_client.dart';
+import 'package:read_only/ui/widgets/doc_list/doc_list_model.dart';
+import 'package:read_only/ui/widgets/doc_list/doc_list_widget.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_model.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_widget.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_widget.dart';
 
-import '../data_providers/grpc/types.dart';
+import '../data_providers/grpc/type.dart';
 import '../main.dart';
 import '../ui/navigation/main_navigation.dart';
 import '../ui/widgets/app/app.dart';
@@ -45,6 +47,9 @@ class _DIContainer {
       SubtypeService(subtypeDataProvider: _makeSubtypeDataProvider());
   SubtypeListViewModel _makeSubtypeListViewModel(Int64 id) =>
       SubtypeListViewModel(subtypesProvider: _makeSubtypeService(), id: id);
+
+  DocListViewModel _makeDocListViewModel(Int64 id) =>
+      DocListViewModel(docsProvider: _makeSubtypeService(), id: id);
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -67,6 +72,15 @@ class ScreenFactoryDefault implements ScreenFactory {
       create: (_) => _diContainer._makeSubtypeListViewModel(id),
       lazy: false,
       child: const SubtypeListWidget(),
+    );
+  }
+
+  @override
+  Widget makeDocListScreen(Int64 id) {
+    return ChangeNotifierProvider(
+      create: (_) => _diContainer._makeDocListViewModel(id),
+      lazy: false,
+      child: const DocListWidget(),
     );
   }
 

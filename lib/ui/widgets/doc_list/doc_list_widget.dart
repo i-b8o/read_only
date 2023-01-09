@@ -2,17 +2,18 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
+import 'package:read_only/ui/widgets/type_list/type_list_model.dart';
 
 import '../navigation_drawer/navigation_drawer.dart';
-import 'subtype_list_model.dart';
+import 'doc_list_model.dart';
 
-class SubtypeListWidget extends StatelessWidget {
-  const SubtypeListWidget({super.key});
+class DocListWidget extends StatelessWidget {
+  const DocListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<SubtypeListViewModel>();
-    final subtypes = model.subtypes;
+    final model = context.watch<DocListViewModel>();
+    final docs = model.docs;
     return Scaffold(
         appBar: PreferredSize(
           preferredSize:
@@ -26,7 +27,7 @@ class SubtypeListWidget extends StatelessWidget {
         ),
         drawer: const NavigationDrawer(),
         body: ListView(
-          children: subtypes
+          children: docs
               .map((e) => TypeCard(
                     name: e.name,
                     id: e.iD,
@@ -106,7 +107,7 @@ class TypeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<SubtypeListViewModel>();
+    final model = context.read<DocListViewModel>();
     return GestureDetector(
         onTap: () => model.onTap(context, id),
         child: Card(

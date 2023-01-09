@@ -1,6 +1,7 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
-import 'package:read_only/data_providers/grpc/pb/reader/service.pbgrpc.dart';
+import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
+
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
 abstract class TypesListViewModelProvider {

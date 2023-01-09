@@ -952,6 +952,142 @@ class GetOneDocRequest extends $pb.GeneratedMessage {
   void clearID() => clearField(1);
 }
 
+class Chapter extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'Chapter',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'reader.v1'),
+      createEmptyInstance: create)
+    ..a<$fixnum.Int64>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'ID',
+        $pb.PbFieldType.OU6,
+        protoName: 'ID',
+        defaultOrMaker: $fixnum.Int64.ZERO)
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'Name',
+        protoName: 'Name')
+    ..a<$core.int>(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'OrderNum',
+        $pb.PbFieldType.OU3,
+        protoName: 'OrderNum')
+    ..aOS(
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'Num',
+        protoName: 'Num')
+    ..hasRequiredFields = false;
+
+  Chapter._() : super();
+  factory Chapter({
+    $fixnum.Int64? iD,
+    $core.String? name,
+    $core.int? orderNum,
+    $core.String? num,
+  }) {
+    final _result = create();
+    if (iD != null) {
+      _result.iD = iD;
+    }
+    if (name != null) {
+      _result.name = name;
+    }
+    if (orderNum != null) {
+      _result.orderNum = orderNum;
+    }
+    if (num != null) {
+      _result.num = num;
+    }
+    return _result;
+  }
+  factory Chapter.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Chapter.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  Chapter clone() => Chapter()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  Chapter copyWith(void Function(Chapter) updates) =>
+      super.copyWith((message) => updates(message as Chapter))
+          as Chapter; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Chapter create() => Chapter._();
+  Chapter createEmptyInstance() => create();
+  static $pb.PbList<Chapter> createRepeated() => $pb.PbList<Chapter>();
+  @$core.pragma('dart2js:noInline')
+  static Chapter getDefault() =>
+      _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Chapter>(create);
+  static Chapter? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $fixnum.Int64 get iD => $_getI64(0);
+  @$pb.TagNumber(1)
+  set iD($fixnum.Int64 v) {
+    $_setInt64(0, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasID() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearID() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get name => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set name($core.String v) {
+    $_setString(1, v);
+  }
+
+  @$pb.TagNumber(2)
+  $core.bool hasName() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearName() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.int get orderNum => $_getIZ(2);
+  @$pb.TagNumber(3)
+  set orderNum($core.int v) {
+    $_setUnsignedInt32(2, v);
+  }
+
+  @$pb.TagNumber(3)
+  $core.bool hasOrderNum() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearOrderNum() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get num => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set num($core.String v) {
+    $_setString(3, v);
+  }
+
+  @$pb.TagNumber(4)
+  $core.bool hasNum() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearNum() => clearField(4);
+}
+
 class GetOneDocResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
@@ -968,35 +1104,26 @@ class GetOneDocResponse extends $pb.GeneratedMessage {
             ? ''
             : 'Name',
         protoName: 'Name')
-    ..aOS(
+    ..pc<Chapter>(
         2,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
-            : 'Abbreviation',
-        protoName: 'Abbreviation')
-    ..aOS(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'Title',
-        protoName: 'Title')
+            : 'chapters',
+        $pb.PbFieldType.PM,
+        subBuilder: Chapter.create)
     ..hasRequiredFields = false;
 
   GetOneDocResponse._() : super();
   factory GetOneDocResponse({
     $core.String? name,
-    $core.String? abbreviation,
-    $core.String? title,
+    $core.Iterable<Chapter>? chapters,
   }) {
     final _result = create();
     if (name != null) {
       _result.name = name;
     }
-    if (abbreviation != null) {
-      _result.abbreviation = abbreviation;
-    }
-    if (title != null) {
-      _result.title = title;
+    if (chapters != null) {
+      _result.chapters.addAll(chapters);
     }
     return _result;
   }
@@ -1040,28 +1167,7 @@ class GetOneDocResponse extends $pb.GeneratedMessage {
   void clearName() => clearField(1);
 
   @$pb.TagNumber(2)
-  $core.String get abbreviation => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set abbreviation($core.String v) {
-    $_setString(1, v);
-  }
-
-  @$pb.TagNumber(2)
-  $core.bool hasAbbreviation() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearAbbreviation() => clearField(2);
-
-  @$pb.TagNumber(3)
-  $core.String get title => $_getSZ(2);
-  @$pb.TagNumber(3)
-  set title($core.String v) {
-    $_setString(2, v);
-  }
-
-  @$pb.TagNumber(3)
-  $core.bool hasTitle() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearTitle() => clearField(3);
+  $core.List<Chapter> get chapters => $_getList(1);
 }
 
 class GetOneChapterRequest extends $pb.GeneratedMessage {

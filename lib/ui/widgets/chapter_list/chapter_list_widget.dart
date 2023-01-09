@@ -4,15 +4,15 @@ import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
 
 import '../navigation_drawer/navigation_drawer.dart';
-import 'subtype_list_model.dart';
+import 'chapter_list_model.dart';
 
-class SubtypeListWidget extends StatelessWidget {
-  const SubtypeListWidget({super.key});
+class ChapterListWidget extends StatelessWidget {
+  const ChapterListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<SubtypeListViewModel>();
-    final subtypes = model.subtypes;
+    final model = context.watch<ChapterListViewModel>();
+    final doc = model.doc;
     return Scaffold(
         appBar: PreferredSize(
           preferredSize:
@@ -25,14 +25,16 @@ class SubtypeListWidget extends StatelessWidget {
           ),
         ),
         drawer: const NavigationDrawer(),
-        body: ListView(
-          children: subtypes
-              .map((e) => TypeCard(
-                    name: e.name,
-                    id: e.iD,
-                  ))
-              .toList(),
-        ));
+        body: doc == null
+            ? Container()
+            : ListView(
+                children: doc.chapters
+                    .map((e) => TypeCard(
+                          name: e.name,
+                          id: e.iD,
+                        ))
+                    .toList(),
+              ));
   }
 }
 
@@ -106,7 +108,7 @@ class TypeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<SubtypeListViewModel>();
+    final model = context.read<ChapterListViewModel>();
     return GestureDetector(
         onTap: () => model.onTap(context, id),
         child: Card(
