@@ -1,10 +1,18 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:read_only/data_providers/grpc/chapter.dart';
+import 'package:read_only/data_providers/grpc/doc.dart';
 import 'package:read_only/data_providers/grpc/subtype.dart';
+import 'package:read_only/domain/service/chapter.dart';
+import 'package:read_only/domain/service/doc.dart';
 import 'package:read_only/domain/service/subtype.dart';
 import 'package:read_only/domain/service/type.dart';
 import 'package:read_only/library/grpc_client/grpc_client.dart';
+import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
+import 'package:read_only/ui/widgets/chapter/chapter_widget.dart';
+import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
+import 'package:read_only/ui/widgets/chapter_list/chapter_list_widget.dart';
 import 'package:read_only/ui/widgets/doc_list/doc_list_model.dart';
 import 'package:read_only/ui/widgets/doc_list/doc_list_widget.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_model.dart';
@@ -33,16 +41,16 @@ class _DIContainer {
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
 
   // Dispatch all of them?
-  GrpcClient _makeGrpcClient() => GrpcClient();
+  GrpcClient _grpcClient = GrpcClient();
   TypeDataProvider _makeTypeDataProvider() =>
-      TypeDataProvider(client: _makeGrpcClient());
+      TypeDataProvider(client: _grpcClient);
   TypeService _makeTypeService() =>
       TypeService(typeDataProvider: _makeTypeDataProvider());
   TypeListViewModel _makeTypeListViewModel() =>
       TypeListViewModel(typesProvider: _makeTypeService());
 
   SubtypeDataProvider _makeSubtypeDataProvider() =>
-      SubtypeDataProvider(client: _makeGrpcClient());
+      SubtypeDataProvider(client: _grpcClient);
   SubtypeService _makeSubtypeService() =>
       SubtypeService(subtypeDataProvider: _makeSubtypeDataProvider());
   SubtypeListViewModel _makeSubtypeListViewModel(Int64 id) =>
@@ -50,6 +58,20 @@ class _DIContainer {
 
   DocListViewModel _makeDocListViewModel(Int64 id) =>
       DocListViewModel(docsProvider: _makeSubtypeService(), id: id);
+
+  DocDataProvider _makeDocDataProvider() =>
+      DocDataProvider(client: _grpcClient);
+  DocService _makeDocService() =>
+      DocService(docDataProvider: _makeDocDataProvider());
+  ChapterListViewModel _makeChapterListViewModel(Int64 id) =>
+      ChapterListViewModel(docsProvider: _makeDocService(), id: id);
+
+  ChapterDataProvider _makeChapterDataProvider() =>
+      ChapterDataProvider(client: _grpcClient);
+  ChapterService _makeChapterService() =>
+      ChapterService(chapterDataProvider: _makeChapterDataProvider());
+  ChapterViewModel _makeChapterViewModel(Int64 id) =>
+      ChapterViewModel(chapterProvider: _makeChapterService(), id: id);
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -81,6 +103,26 @@ class ScreenFactoryDefault implements ScreenFactory {
       create: (_) => _diContainer._makeDocListViewModel(id),
       lazy: false,
       child: const DocListWidget(),
+    );
+  }
+
+  @override
+  Widget makeChapterListScreen(Int64 id) {
+    return ChangeNotifierProvider(
+      create: (_) => _diContainer._makeChapterListViewModel(id),
+      lazy: false,
+      child: const ChapterListWidget(),
+    );
+  }
+
+  @override
+  Widget makeChapterScreen(Int64 id) {
+    print("makeChapterScreen");
+    return ChangeNotifierProvider(
+      create: (_) => _diContainer._makeChapterViewModel(id),
+      lazy: false,
+      // TODO const after removing controllers from the widget
+      child: ChapterWidget(),
     );
   }
 

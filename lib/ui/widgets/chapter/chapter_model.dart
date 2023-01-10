@@ -4,29 +4,30 @@ import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
 
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
-abstract class DocListViewModelProvider {
-  Future<List<Doc>> getDocs(Int64 id);
+abstract class ChapterViewModelProvider {
+  Future<GetOneChapterResponse> getOne(Int64 id);
 }
 
-class DocListViewModel extends ChangeNotifier {
-  final DocListViewModelProvider docsProvider;
+class ChapterViewModel extends ChangeNotifier {
+  final ChapterViewModelProvider chapterProvider;
   final Int64 id;
-  var _docs = <Doc>[];
-  List<Doc> get docs => List.unmodifiable(_docs);
+  GetOneChapterResponse? _chapter;
+  GetOneChapterResponse? get chapter => _chapter;
 
-  DocListViewModel({
-    required this.docsProvider,
+  ChapterViewModel({
+    required this.chapterProvider,
     required this.id,
   }) {
     asyncInit(id);
   }
   Future<void> asyncInit(Int64 id) async {
-    await getDocs(id);
+    await getOne(id);
+    print("Got name: ${_chapter?.name}");
     notifyListeners();
   }
 
-  Future<void> getDocs(Int64 id) async {
-    _docs = await docsProvider.getDocs(id);
+  Future<void> getOne(Int64 id) async {
+    _chapter = await chapterProvider.getOne(id);
   }
 
   void onTap(BuildContext context, Int64 id) {

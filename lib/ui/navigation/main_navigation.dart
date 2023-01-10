@@ -8,6 +8,8 @@ abstract class ScreenFactory {
   Widget makeTypeListScreen();
   Widget makeSubtypeListScreen(Int64 id);
   Widget makeDocListScreen(Int64 id);
+  Widget makeChapterListScreen(Int64 id);
+  Widget makeChapterScreen(Int64 id);
 }
 
 class MainNavigation implements AppNavigation {
@@ -35,6 +37,20 @@ class MainNavigation implements AppNavigation {
 
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeDocListScreen(id),
+        );
+      case MainNavigationRouteNames.chapterListScreen:
+        final arguments = settings.arguments;
+        final id = arguments is Int64 ? arguments : Int64(0);
+
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeChapterListScreen(id),
+        );
+      case MainNavigationRouteNames.chapterScreen:
+        final arguments = settings.arguments;
+        final id = arguments is Int64 ? arguments : Int64(0);
+
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeChapterScreen(id),
         );
 
       default:

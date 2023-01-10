@@ -5,18 +5,12 @@ import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
 import 'package:fixnum/fixnum.dart';
 
 class DocService implements ChapterListViewModelProvider {
-  final DocDataProvider subtypeDataProvider;
+  final DocDataProvider docDataProvider;
 
-  const DocService({required this.subtypeDataProvider});
+  const DocService({required this.docDataProvider});
 
   @override
   Future<GetOneDocResponse> getOne(Int64 id) async {
-    return await subtypeDataProvider.getOne(id);
-  }
-
-  @override
-  Future<List<Doc>> getDocs(Int64 id) async {
-    GetDocsResponse resp = await subtypeDataProvider.getDocs(id);
-    return resp.docs;
+    return await docDataProvider.getOne(id);
   }
 }

@@ -21,14 +21,4 @@ class DocDataProvider {
       throw DocDataProviderError();
     }
   }
-
-  Future<GetDocsResponse> getDocs(Int64 id) async {
-    try {
-      GetDocsRequest req = GetDocsRequest(iD: id);
-      return await client.subtypeStub.getDocs(req);
-    } catch (e) {
-      log(e.toString());
-      throw DocDataProviderError();
-    }
-  }
 }

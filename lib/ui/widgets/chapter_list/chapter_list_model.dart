@@ -31,7 +31,7 @@ class ChapterListViewModel extends ChangeNotifier {
 
   void onTap(BuildContext context, Int64 id) {
     Navigator.of(context).pushNamed(
-      MainNavigationRouteNames.docListScreen,
+      MainNavigationRouteNames.chapterScreen,
       arguments: id,
     );
   }

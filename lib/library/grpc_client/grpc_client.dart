@@ -7,6 +7,7 @@ class GrpcClient {
   late final TypeGRPCClient typeStub;
   late final SubGRPCClient subtypeStub;
   late final DocGRPCClient docStub;
+  late final ChapterGRPCClient chapterStub;
 
   GrpcClient() {
     channel = ClientChannel(
@@ -17,5 +18,6 @@ class GrpcClient {
     typeStub = TypeGRPCClient(channel);
     subtypeStub = SubGRPCClient(channel);
     docStub = DocGRPCClient(channel);
+    chapterStub = ChapterGRPCClient(channel);
   }
 }
