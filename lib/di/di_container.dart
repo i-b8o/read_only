@@ -37,20 +37,22 @@ class _AppFactoryDefault implements AppFactory {
 
 class _DIContainer {
   ScreenFactory _makeScreenFactory() => ScreenFactoryDefault(this);
-
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
-
+  DocService _docService;
+  _DIContainer()
+      : _docService = DocService(docDataProvider: const DocDataProvider()) {
+    GrpcClient();
+  }
   // Dispatch all of them?
-  GrpcClient _grpcClient = GrpcClient();
-  TypeDataProvider _makeTypeDataProvider() =>
-      TypeDataProvider(client: _grpcClient);
+  // final GrpcClient _grpcClient = GrpcClient();
+  // ignore: prefer_const_constructors
+  TypeDataProvider _makeTypeDataProvider() => TypeDataProvider();
   TypeService _makeTypeService() =>
       TypeService(typeDataProvider: _makeTypeDataProvider());
   TypeListViewModel _makeTypeListViewModel() =>
       TypeListViewModel(typesProvider: _makeTypeService());
 
-  SubtypeDataProvider _makeSubtypeDataProvider() =>
-      SubtypeDataProvider(client: _grpcClient);
+  SubtypeDataProvider _makeSubtypeDataProvider() => const SubtypeDataProvider();
   SubtypeService _makeSubtypeService() =>
       SubtypeService(subtypeDataProvider: _makeSubtypeDataProvider());
   SubtypeListViewModel _makeSubtypeListViewModel(Int64 id) =>
@@ -59,19 +61,23 @@ class _DIContainer {
   DocListViewModel _makeDocListViewModel(Int64 id) =>
       DocListViewModel(docsProvider: _makeSubtypeService(), id: id);
 
-  DocDataProvider _makeDocDataProvider() =>
-      DocDataProvider(client: _grpcClient);
-  DocService _makeDocService() =>
-      DocService(docDataProvider: _makeDocDataProvider());
+  // DocDataProvider _docDataProvider() => const DocDataProvider();
+  // DocService _makeDocService() =>
+  //     DocService(docDataProvider: _docDataProvider());
   ChapterListViewModel _makeChapterListViewModel(Int64 id) =>
-      ChapterListViewModel(docsProvider: _makeDocService(), id: id);
+      ChapterListViewModel(docsProvider: _docService, id: id);
 
-  ChapterDataProvider _makeChapterDataProvider() =>
-      ChapterDataProvider(client: _grpcClient);
+  ChapterDataProvider _makeChapterDataProvider() => ChapterDataProvider();
   ChapterService _makeChapterService() =>
       ChapterService(chapterDataProvider: _makeChapterDataProvider());
-  ChapterViewModel _makeChapterViewModel(Int64 id) =>
-      ChapterViewModel(chapterProvider: _makeChapterService(), id: id);
+  ChapterViewModel _makeChapterViewModel(Int64 id) => ChapterViewModel(
+        chapterCount: _docService.chapterCount,
+        chaptersOrderNums: _docService.chaptersOrderNums,
+        pageController: PageController(),
+        textEditingController: TextEditingController(),
+        chapterProvider: _makeChapterService(),
+        id: id,
+      );
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -117,12 +123,10 @@ class ScreenFactoryDefault implements ScreenFactory {
 
   @override
   Widget makeChapterScreen(Int64 id) {
-    print("makeChapterScreen");
     return ChangeNotifierProvider(
       create: (_) => _diContainer._makeChapterViewModel(id),
       lazy: false,
-      // TODO const after removing controllers from the widget
-      child: ChapterWidget(),
+      child: const ChapterWidget(),
     );
   }
 

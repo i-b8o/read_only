@@ -7,13 +7,11 @@ import '../../library/grpc_client/grpc_client.dart';
 class TypeDataProviderError {}
 
 class TypeDataProvider {
-  final GrpcClient client;
-
-  const TypeDataProvider({required this.client});
+  const TypeDataProvider();
 
   Future<GetAllTypesResponse> getAll() async {
     try {
-      GetAllTypesResponse resp = await client.typeStub.getAll(Empty());
+      GetAllTypesResponse resp = await GrpcClient.typeStub.getAll(Empty());
       return resp;
     } catch (e) {
       log(e.toString());

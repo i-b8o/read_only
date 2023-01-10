@@ -3,21 +3,21 @@ import 'package:read_only/configuration/configuration.dart';
 import 'package:read_only/library/grpc_client/pb/reader/service.pbgrpc.dart';
 
 class GrpcClient {
-  late final ClientChannel channel;
-  late final TypeGRPCClient typeStub;
-  late final SubGRPCClient subtypeStub;
-  late final DocGRPCClient docStub;
-  late final ChapterGRPCClient chapterStub;
+  late final ClientChannel _channel;
+  static late final TypeGRPCClient typeStub;
+  static late final SubGRPCClient subtypeStub;
+  static late final DocGRPCClient docStub;
+  static late final ChapterGRPCClient chapterStub;
 
   GrpcClient() {
-    channel = ClientChannel(
+    _channel = ClientChannel(
       Configuration.host,
       port: Configuration.port,
       options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
     );
-    typeStub = TypeGRPCClient(channel);
-    subtypeStub = SubGRPCClient(channel);
-    docStub = DocGRPCClient(channel);
-    chapterStub = ChapterGRPCClient(channel);
+    typeStub = TypeGRPCClient(_channel);
+    subtypeStub = SubGRPCClient(_channel);
+    docStub = DocGRPCClient(_channel);
+    chapterStub = ChapterGRPCClient(_channel);
   }
 }

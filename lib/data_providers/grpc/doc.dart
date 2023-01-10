@@ -8,14 +8,12 @@ import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
 class DocDataProviderError {}
 
 class DocDataProvider {
-  final GrpcClient client;
-
-  const DocDataProvider({required this.client});
+  const DocDataProvider();
 
   Future<GetOneDocResponse> getOne(Int64 id) async {
     try {
       GetOneDocRequest req = GetOneDocRequest(iD: id);
-      return await client.docStub.getOne(req);
+      return await GrpcClient.docStub.getOne(req);
     } catch (e) {
       log(e.toString());
       throw DocDataProviderError();
