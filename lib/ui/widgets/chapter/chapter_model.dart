@@ -26,20 +26,17 @@ class ChapterViewModel extends ChangeNotifier {
   }) {
     asyncInit(id);
   }
+
   Future<void> asyncInit(Int64 id) async {
     await getOne(id);
-    notifyListeners();
   }
 
   Future<void> getOne(Int64 id) async {
-    print("AAAAAAAAAA $id");
     _chapter = await chapterProvider.getOne(id);
+    notifyListeners();
   }
 
-  // void onTap(BuildContext context, Int64 id) {
-  //   Navigator.of(context).pushNamed(
-  //     MainNavigationRouteNames.chapterListScreen,
-  //     arguments: id,
-  //   );
-  // }
+  void onPageChanged(int index) {
+    getOne(chaptersOrderNums[index + 1] ?? id);
+  }
 }

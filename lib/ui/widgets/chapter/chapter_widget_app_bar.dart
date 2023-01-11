@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
 import 'chapter_widget_app_bar_pagination.dart';
 
@@ -11,7 +9,6 @@ class ChapterWidgetAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<ChapterViewModel>();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -23,10 +20,7 @@ class ChapterWidgetAppBar extends StatelessWidget {
             color: Theme.of(context).appBarTheme.iconTheme!.color,
           ),
         ),
-        ChapterWidgetAppBarPagination(
-            controller: model.textEditingController,
-            pageController: model.pageController,
-            totalChapters: model.chapterCount),
+        const ChapterWidgetAppBarPagination(),
         IconButton(
           onPressed: () async {
             Navigator.pushNamed(

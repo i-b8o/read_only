@@ -44,7 +44,7 @@ class TypeListAppBar extends StatelessWidget {
   }) : super(key: key);
 
   Widget _buildChild() {
-    return InitAppBAr();
+    return const InitAppBAr();
   }
 
   @override

@@ -25,14 +25,20 @@ class TypeListWidget extends StatelessWidget {
           ),
         ),
         drawer: const NavigationDrawer(),
-        body: ListView(
-          children: types
-              .map((e) => TypeCard(
-                    name: e.name,
-                    id: e.iD,
-                  ))
-              .toList(),
-        ));
+        body: model.types.isEmpty
+            ? const Center(
+                child: CircularProgressIndicator(
+                // TODO get color value from theme
+                color: Colors.black,
+              ))
+            : ListView(
+                children: types
+                    .map((e) => TypeCard(
+                          name: e.name,
+                          id: e.iD,
+                        ))
+                    .toList(),
+              ));
   }
 }
 
@@ -42,7 +48,7 @@ class TypeListAppBar extends StatelessWidget {
   }) : super(key: key);
 
   Widget _buildChild() {
-    return InitAppBAr();
+    return const InitAppBAr();
   }
 
   @override

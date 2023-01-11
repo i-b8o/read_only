@@ -1,32 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'chapter_model.dart';
 
 class ChapterWidgetAppBarPagination extends StatelessWidget {
   const ChapterWidgetAppBarPagination({
     Key? key,
-    required this.controller,
-    required this.pageController,
-    required this.totalChapters,
   }) : super(key: key);
-
-  final TextEditingController controller;
-  final PageController pageController;
-  final int totalChapters;
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<ChapterViewModel>();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IconButton(
           onPressed: () async {
-            int? pageNum = int.tryParse(controller.text);
+            int? pageNum = int.tryParse(model.textEditingController.text);
             if (pageNum == 1) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text('Это первая страница!'),
               ));
               return;
             }
-            pageController.previousPage(
+            model.pageController.previousPage(
                 duration: const Duration(seconds: 1), curve: Curves.ease);
           },
           icon: Icon(
@@ -35,29 +32,30 @@ class ChapterWidgetAppBarPagination extends StatelessWidget {
             color: Theme.of(context).iconTheme.color,
           ),
         ),
-        Container(
+        SizedBox(
             height: 30,
             width: 30,
             child: TextFormField(
                 onEditingComplete: () async {
                   FocusScope.of(context).unfocus();
-                  int pageNum = int.tryParse(controller.text) ?? 1;
-                  if (pageNum > totalChapters) {
+                  int pageNum =
+                      int.tryParse(model.textEditingController.text) ?? 1;
+                  if (pageNum > model.chapterCount) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(
-                          '${pageNum}-ой страницы не существует, страниц в документе всего $totalChapters!'),
+                          '$pageNum-ой страницы не существует, страниц в документе всего ${model.chapterCount}!'),
                     ));
                     return;
                   } else if (pageNum < 1) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('${pageNum}-ой страницы не существует!'),
+                      content: Text('$pageNum-ой страницы не существует!'),
                     ));
                     return;
                   }
-                  pageController.animateToPage(pageNum - 1,
+                  model.pageController.animateToPage(pageNum - 1,
                       duration: const Duration(seconds: 1), curve: Curves.ease);
                 },
-                controller: controller,
+                controller: model.textEditingController,
                 keyboardType: TextInputType.number,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Theme.of(context).iconTheme.color),
@@ -74,7 +72,7 @@ class ChapterWidgetAppBarPagination extends StatelessWidget {
               style: Theme.of(context).appBarTheme.toolbarTextStyle,
               children: <InlineSpan>[
                 TextSpan(
-                  text: '$totalChapters',
+                  text: '${model.chapterCount}',
                   style: TextStyle(
                       color: Theme.of(context).appBarTheme.titleTextStyle ==
                               null
@@ -86,18 +84,18 @@ class ChapterWidgetAppBarPagination extends StatelessWidget {
         ),
         IconButton(
           onPressed: () async {
-            int? pageNum = int.tryParse(controller.text);
+            int? pageNum = int.tryParse(model.textEditingController.text);
             if (pageNum == null) {
               return;
             }
-            if (pageNum == totalChapters) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            if (pageNum == model.chapterCount) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text('Это последняя страница!'),
               ));
               return;
             }
 
-            pageController.nextPage(
+            model.pageController.nextPage(
                 duration: const Duration(seconds: 1), curve: Curves.ease);
           },
           icon: Icon(
