@@ -10,22 +10,11 @@ import 'chapter_widget_app_bar.dart';
 class ChapterWidget extends StatelessWidget {
   const ChapterWidget({Key? key}) : super(key: key);
 
-  buildShowDialog(BuildContext context) {
-    return showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
     final model = context.watch<ChapterViewModel>();
     final chapter = model.chapter;
-    print("Rebuild ${chapter == null}");
+
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
@@ -52,9 +41,7 @@ class ChapterWidget extends StatelessWidget {
             : PageView.builder(
                 itemCount: model.chapterCount,
                 onPageChanged: (index) {
-                  buildShowDialog(context);
                   model.onPageChanged(index);
-                  Navigator.pop(context);
                 },
                 itemBuilder: (BuildContext context, int index) {
                   return ScrollablePositionedList.builder(

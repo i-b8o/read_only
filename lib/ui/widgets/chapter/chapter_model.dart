@@ -37,6 +37,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   void onPageChanged(int index) {
+    print("aaaaa $index ${chaptersOrderNums[index + 1]}");
     getOne(chaptersOrderNums[index + 1] ?? id);
   }
 }

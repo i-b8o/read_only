@@ -16,7 +16,7 @@ class ChapterDataProvider {
   const ChapterDataProvider();
 
   Future<GetOneChapterResponse> getOne(Int64 id) async {
-    sleep(Duration(seconds: 3));
+    sleep(Duration(seconds: 1));
 
     try {
       // String? m = GrpcClient.check();
