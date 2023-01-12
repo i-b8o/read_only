@@ -15,6 +15,8 @@ class ChapterViewModel extends ChangeNotifier {
   final TextEditingController textEditingController;
   GetOneChapterResponse? _chapter;
   GetOneChapterResponse? get chapter => _chapter;
+  int _currentPage = 0;
+  int get currentPage => _currentPage;
 
   ChapterViewModel({
     required this.chapterProvider,
@@ -24,11 +26,9 @@ class ChapterViewModel extends ChangeNotifier {
     required this.pageController,
     required this.textEditingController,
   }) {
-    pageController.addListener(
-      () {
-        print(pageController.page!.toInt());
-      },
-    );
+    pageController.addListener(() {
+      _currentPage = pageController.page!.toInt();
+    });
     asyncInit(id);
   }
 
@@ -41,7 +41,11 @@ class ChapterViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onPageChanged(int index) {
+  void onPageChanged() {
+    final int index = pageController.page!.toInt();
+
     getOne(chaptersOrderNums[index + 1] ?? id);
+
+    textEditingController.text = '${index + 1}';
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:fixnum/fixnum.dart';
@@ -16,7 +15,7 @@ class ChapterDataProvider {
   const ChapterDataProvider();
 
   Future<GetOneChapterResponse> getOne(Int64 id) async {
-    sleep(Duration(seconds: 1));
+    sleep(Duration(seconds: 2));
 
     try {
       // String? m = GrpcClient.check();

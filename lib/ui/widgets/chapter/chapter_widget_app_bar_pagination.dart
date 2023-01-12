@@ -11,12 +11,15 @@ class ChapterWidgetAppBarPagination extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.read<ChapterViewModel>();
+    final String textEditingText = model.textEditingController.text;
+    final int pageIndex = model.currentPage;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IconButton(
           onPressed: () async {
-            int? pageNum = int.tryParse(model.textEditingController.text);
+            // move to model
+            int? pageNum = int.tryParse(textEditingText);
             if (pageNum == 1) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text('Это первая страница!'),

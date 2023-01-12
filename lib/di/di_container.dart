@@ -38,7 +38,7 @@ class _AppFactoryDefault implements AppFactory {
 class _DIContainer {
   ScreenFactory _makeScreenFactory() => ScreenFactoryDefault(this);
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
-  DocService _docService;
+  final DocService _docService;
   _DIContainer()
       : _docService = DocService(docDataProvider: const DocDataProvider()) {
     GrpcClient();
@@ -67,19 +67,21 @@ class _DIContainer {
   ChapterListViewModel _makeChapterListViewModel(Int64 id) =>
       ChapterListViewModel(docsProvider: _docService, id: id);
 
-  ChapterDataProvider _makeChapterDataProvider() => ChapterDataProvider();
+  ChapterDataProvider _makeChapterDataProvider() => const ChapterDataProvider();
   ChapterService _makeChapterService() =>
       ChapterService(chapterDataProvider: _makeChapterDataProvider());
-  ChapterViewModel _makeChapterViewModel(Int64 id) => ChapterViewModel(
-        chapterCount: _docService.chapterCount,
-        chaptersOrderNums: _docService.chaptersOrderNums,
-        pageController: PageController(
-            initialPage: _docService.chaptersOrderNums.keys
-                .firstWhere((key) => _docService.chaptersOrderNums[key] == id)),
-        textEditingController: TextEditingController(),
-        chapterProvider: _makeChapterService(),
-        id: id,
-      );
+  ChapterViewModel _makeChapterViewModel(Int64 id) {
+    final int initPage = _docService.chaptersOrderNums.keys
+        .firstWhere((key) => _docService.chaptersOrderNums[key] == id);
+    return ChapterViewModel(
+      chapterCount: _docService.chapterCount,
+      chaptersOrderNums: _docService.chaptersOrderNums,
+      pageController: PageController(initialPage: initPage),
+      textEditingController: TextEditingController(text: '$initPage'),
+      chapterProvider: _makeChapterService(),
+      id: id,
+    );
+  }
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
