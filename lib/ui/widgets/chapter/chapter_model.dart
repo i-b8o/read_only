@@ -24,6 +24,11 @@ class ChapterViewModel extends ChangeNotifier {
     required this.pageController,
     required this.textEditingController,
   }) {
+    pageController.addListener(
+      () {
+        print(pageController.page!.toInt());
+      },
+    );
     asyncInit(id);
   }
 
@@ -37,7 +42,6 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   void onPageChanged(int index) {
-    print("aaaaa $index ${chaptersOrderNums[index + 1]}");
     getOne(chaptersOrderNums[index + 1] ?? id);
   }
 }

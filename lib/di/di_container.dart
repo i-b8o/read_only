@@ -73,7 +73,9 @@ class _DIContainer {
   ChapterViewModel _makeChapterViewModel(Int64 id) => ChapterViewModel(
         chapterCount: _docService.chapterCount,
         chaptersOrderNums: _docService.chaptersOrderNums,
-        pageController: PageController(),
+        pageController: PageController(
+            initialPage: _docService.chaptersOrderNums.keys
+                .firstWhere((key) => _docService.chaptersOrderNums[key] == id)),
         textEditingController: TextEditingController(),
         chapterProvider: _makeChapterService(),
         id: id,

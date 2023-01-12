@@ -40,9 +40,10 @@ class ChapterWidget extends StatelessWidget {
               )
             : PageView.builder(
                 itemCount: model.chapterCount,
-                onPageChanged: (index) {
-                  model.onPageChanged(index);
-                },
+                controller: model.pageController,
+                // onPageChanged: (index) {
+                //   model.onPageChanged(index);
+                // },
                 itemBuilder: (BuildContext context, int index) {
                   return ScrollablePositionedList.builder(
                     itemBuilder: (BuildContext context, int index) {
