@@ -8,7 +8,8 @@ abstract class ChapterViewModelProvider {
 
 class ChapterViewModel extends ChangeNotifier {
   final ChapterViewModelProvider chapterProvider;
-  final Int64 id;
+  Int64 id;
+  late int jumpTo;
   final int chapterCount;
   final Map<int, Int64> chaptersOrderNums;
   final PageController pageController;
@@ -47,5 +48,31 @@ class ChapterViewModel extends ChangeNotifier {
     getOne(chaptersOrderNums[index + 1] ?? id);
 
     textEditingController.text = '${index + 1}';
+  }
+
+  Future<bool> onTapUrl(String url) async {
+    print(url);
+    String chapterID = "";
+    String? paragraphID;
+    if (url.contains("#")) {
+      chapterID = url.split("#")[0];
+      paragraphID = url.split("#")[1];
+    } else {
+      chapterID = url;
+    }
+
+    print("$chapterID, $paragraphID");
+    id = Int64(int.tryParse(chapterID) ?? 0);
+    await getOne(id);
+    if (paragraphID != null && _chapter != null) {
+      print(_chapter!.paragraphs.length);
+      _chapter!.paragraphs.map((e) => print(e.iD));
+      final Int64 paragraphIDInt = Int64(int.tryParse(paragraphID) ?? 0);
+      ReaderParagraph jumpToParagraph = _chapter!.paragraphs
+          .where((element) => element.iD == paragraphIDInt)
+          .first;
+      jumpTo = _chapter!.paragraphs.indexOf(jumpToParagraph);
+    }
+    return true;
   }
 }
