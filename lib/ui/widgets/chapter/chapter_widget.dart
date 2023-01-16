@@ -39,13 +39,17 @@ class ChapterWidget extends StatelessWidget {
                 color: Colors.blue,
               )
             : PageView.builder(
-                itemCount: model.chapterCount,
+                itemCount: chapter.paragraphs.length,
                 controller: model.pageController,
                 onPageChanged: (_) {
                   model.onPageChanged();
                 },
                 itemBuilder: (BuildContext context, int index) {
+                  WidgetsBinding.instance
+                      .addPostFrameCallback((_) => model.scrollToItem());
                   return ScrollablePositionedList.builder(
+                    itemScrollController: model.itemScrollController,
+                    itemCount: model.chapter!.paragraphs.length,
                     itemBuilder: (BuildContext context, int index) {
                       return Card(
                         child: HtmlWidget(
@@ -54,7 +58,6 @@ class ChapterWidget extends StatelessWidget {
                         ),
                       );
                     },
-                    itemCount: chapter.paragraphs.length,
                   );
                 },
               ));

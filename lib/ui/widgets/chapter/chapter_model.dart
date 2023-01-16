@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 abstract class ChapterViewModelProvider {
   Future<ReadOnlyChapter> getOne(int id);
@@ -11,10 +12,12 @@ class ChapterViewModel extends ChangeNotifier {
 
   final int chapterCount;
   final int id;
-  final int paragraphOrderNum;
+  final int paragraphID;
   final Map<int, int> chaptersOrderNums;
+  final ItemScrollController itemScrollController;
   final PageController pageController;
   final TextEditingController textEditingController;
+  late int _paragraphOrderNum = 0;
   ReadOnlyChapter? _chapter;
   ReadOnlyChapter? get chapter => _chapter;
   int _currentPage = 0;
@@ -23,26 +26,41 @@ class ChapterViewModel extends ChangeNotifier {
   ChapterViewModel({
     required this.chapterProvider,
     required this.id,
-    required this.paragraphOrderNum,
+    required this.paragraphID,
     required this.chapterCount,
     required this.chaptersOrderNums,
+    required this.itemScrollController,
     required this.pageController,
     required this.textEditingController,
   }) {
     pageController.addListener(() {
       _currentPage = pageController.page!.toInt();
     });
-    // if (url.contains("#")) {
-    //   id = int.tryParse(url.split("#")[0]) ?? 0;
-    //   paragraphNum = int.tryParse(url.split("#")[1]) ?? 0;
-    // } else {
-    //   id = int.tryParse(url) ?? 0;
-    // }
     asyncInit(id);
   }
 
   Future<void> asyncInit(int id) async {
+    print("asyncInit");
     await getOne(id);
+    print("got");
+    if (paragraphID == 0) {
+      print("zero");
+      return;
+    }
+    _paragraphOrderNum = chapter!.paragraphs
+        .where((element) => element.id.toInt() == paragraphID)
+        .first
+        .num;
+  }
+
+  void scrollToItem() {
+    if (_paragraphOrderNum < 1) {
+      return;
+    }
+    if (!itemScrollController.isAttached) {
+      return;
+    }
+    itemScrollController.jumpTo(index: _paragraphOrderNum);
   }
 
   Future<void> getOne(int id) async {

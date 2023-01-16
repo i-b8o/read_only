@@ -1,4 +1,3 @@
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/data_providers/grpc/chapter.dart';
@@ -18,6 +17,7 @@ import 'package:read_only/ui/widgets/doc_list/doc_list_widget.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_model.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_widget.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_widget.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../data_providers/grpc/type.dart';
 import '../main.dart';
@@ -72,13 +72,13 @@ class _DIContainer {
       ChapterService(chapterDataProvider: _makeChapterDataProvider());
   ChapterViewModel _makeChapterViewModel(String url) {
     final int id;
-    final int paragraphOrderNum;
+    final int paragraphID;
     if (url.contains("#")) {
       id = int.tryParse(url.split("#")[0]) ?? 0;
-      paragraphOrderNum = int.tryParse(url.split("#")[1]) ?? 0;
+      paragraphID = int.tryParse(url.split("#")[1]) ?? 0;
     } else {
       id = int.tryParse(url) ?? 0;
-      paragraphOrderNum = 0;
+      paragraphID = 0;
     }
     final int initPage = _docService.chaptersOrderNums.keys
         .firstWhere((key) => _docService.chaptersOrderNums[key] == id);
@@ -86,10 +86,11 @@ class _DIContainer {
         chapterCount: _docService.chapterCount,
         chaptersOrderNums: _docService.chaptersOrderNums,
         pageController: PageController(initialPage: initPage),
+        itemScrollController: ItemScrollController(),
         textEditingController: TextEditingController(text: '$initPage'),
         chapterProvider: _makeChapterService(),
         id: id,
-        paragraphOrderNum: paragraphOrderNum);
+        paragraphID: paragraphID);
   }
 }
 
