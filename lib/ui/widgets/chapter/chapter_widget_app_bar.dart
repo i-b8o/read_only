@@ -13,7 +13,9 @@ class ChapterWidgetAppBar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
           icon: Icon(
             Icons.arrow_back,
             size: Theme.of(context).appBarTheme.iconTheme!.size,

@@ -51,7 +51,6 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<bool> onTapUrl(String url) async {
-    print(url);
     String chapterID = "";
     String? paragraphID;
     if (url.contains("#")) {
@@ -61,12 +60,9 @@ class ChapterViewModel extends ChangeNotifier {
       chapterID = url;
     }
 
-    print("$chapterID, $paragraphID");
     id = Int64(int.tryParse(chapterID) ?? 0);
     await getOne(id);
     if (paragraphID != null && _chapter != null) {
-      print(_chapter!.paragraphs.length);
-      _chapter!.paragraphs.map((e) => print(e.iD));
       final Int64 paragraphIDInt = Int64(int.tryParse(paragraphID) ?? 0);
       ReaderParagraph jumpToParagraph = _chapter!.paragraphs
           .where((element) => element.iD == paragraphIDInt)

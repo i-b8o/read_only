@@ -47,7 +47,6 @@ class ChapterWidget extends StatelessWidget {
                 itemBuilder: (BuildContext context, int index) {
                   return ScrollablePositionedList.builder(
                     itemBuilder: (BuildContext context, int index) {
-                      print("ID: ${chapter.paragraphs[index].iD}");
                       return Card(
                         child: HtmlWidget(
                           chapter.paragraphs[index].content,
