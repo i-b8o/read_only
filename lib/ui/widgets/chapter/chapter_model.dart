@@ -1,17 +1,21 @@
-import 'package:fixnum/fixnum.dart';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
 
+import '../../navigation/main_navigation_route_names.dart';
+
 abstract class ChapterViewModelProvider {
-  Future<GetOneChapterResponse> getOne(Int64 id);
+  Future<GetOneChapterResponse> getOne(int id);
 }
 
 class ChapterViewModel extends ChangeNotifier {
   final ChapterViewModelProvider chapterProvider;
-  Int64 id;
-  late int jumpTo;
+  final String url;
   final int chapterCount;
-  final Map<int, Int64> chaptersOrderNums;
+  late int id;
+  late int paragraphNum;
+  final Map<int, int> chaptersOrderNums;
   final PageController pageController;
   final TextEditingController textEditingController;
   GetOneChapterResponse? _chapter;
@@ -21,7 +25,7 @@ class ChapterViewModel extends ChangeNotifier {
 
   ChapterViewModel({
     required this.chapterProvider,
-    required this.id,
+    required this.url,
     required this.chapterCount,
     required this.chaptersOrderNums,
     required this.pageController,
@@ -30,14 +34,20 @@ class ChapterViewModel extends ChangeNotifier {
     pageController.addListener(() {
       _currentPage = pageController.page!.toInt();
     });
+    if (url.contains("#")) {
+      id = int.tryParse(url.split("#")[0]) ?? 0;
+      paragraphNum = int.tryParse(url.split("#")[1]) ?? 0;
+    } else {
+      id = int.tryParse(url) ?? 0;
+    }
     asyncInit(id);
   }
 
-  Future<void> asyncInit(Int64 id) async {
+  Future<void> asyncInit(int id) async {
     await getOne(id);
   }
 
-  Future<void> getOne(Int64 id) async {
+  Future<void> getOne(int id) async {
     _chapter = await chapterProvider.getOne(id);
     notifyListeners();
   }
@@ -50,7 +60,8 @@ class ChapterViewModel extends ChangeNotifier {
     textEditingController.text = '${index + 1}';
   }
 
-  Future<bool> onTapUrl(String url) async {
+  Future<bool> onTapUrl(BuildContext context, String url) async {
+    print(url);
     String chapterID = "";
     String? paragraphID;
     if (url.contains("#")) {
@@ -60,15 +71,19 @@ class ChapterViewModel extends ChangeNotifier {
       chapterID = url;
     }
 
-    id = Int64(int.tryParse(chapterID) ?? 0);
-    await getOne(id);
-    if (paragraphID != null && _chapter != null) {
-      final Int64 paragraphIDInt = Int64(int.tryParse(paragraphID) ?? 0);
-      ReaderParagraph jumpToParagraph = _chapter!.paragraphs
-          .where((element) => element.iD == paragraphIDInt)
-          .first;
-      jumpTo = _chapter!.paragraphs.indexOf(jumpToParagraph);
-    }
+    // id = Int64(int.tryParse(chapterID) ?? 0);
+    // await getOne(id);
+    // if (paragraphID != null && _chapter != null) {
+    //   final Int64 paragraphIDInt = Int64(int.tryParse(paragraphID) ?? 0);
+    //   ReaderParagraph jumpToParagraph = _chapter!.paragraphs
+    //       .where((element) => element.iD == paragraphIDInt)
+    //       .first;
+    //   jumpTo = _chapter!.paragraphs.indexOf(jumpToParagraph);
+    // }
+    // Navigator.of(context).pushNamed(
+    //   MainNavigationRouteNames.chapterScreen,
+    //   arguments: id,
+    // );
     return true;
   }
 }

@@ -40,7 +40,7 @@ class MainNavigation implements AppNavigation {
         );
       case MainNavigationRouteNames.chapterListScreen:
         final arguments = settings.arguments;
-        final id = arguments is Int64 ? arguments : Int64(0);
+        final id = arguments is String ? arguments : "0";
 
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeChapterListScreen(id),

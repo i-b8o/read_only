@@ -1,17 +1,15 @@
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
-import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
-
+import 'package:read_only/domain/entity/type.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
-abstract class TypesListViewModelProvider {
-  Future<List<TypeResponse>> getAll();
+abstract class TypesListViewModelService {
+  Future<List<ReadOnlyType>> getAll();
 }
 
 class TypeListViewModel extends ChangeNotifier {
-  final TypesListViewModelProvider typesProvider;
-  var _types = <TypeResponse>[];
-  List<TypeResponse> get types => List.unmodifiable(_types);
+  final TypesListViewModelService typesProvider;
+  var _types = <ReadOnlyType>[];
+  List<ReadOnlyType> get types => List.unmodifiable(_types);
 
   TypeListViewModel({
     required this.typesProvider,
@@ -27,7 +25,7 @@ class TypeListViewModel extends ChangeNotifier {
     _types = await typesProvider.getAll();
   }
 
-  void onTap(BuildContext context, Int64 id) {
+  void onTap(BuildContext context, int id) {
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.subtypeListScreen,
       arguments: id,

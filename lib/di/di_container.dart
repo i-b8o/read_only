@@ -47,8 +47,8 @@ class _DIContainer {
   // final GrpcClient _grpcClient = GrpcClient();
   // ignore: prefer_const_constructors
   TypeDataProvider _makeTypeDataProvider() => TypeDataProvider();
-  TypeService _makeTypeService() =>
-      TypeService(typeDataProvider: _makeTypeDataProvider());
+  ReadOnlyTypeService _makeTypeService() =>
+      ReadOnlyTypeService(typeDataProvider: _makeTypeDataProvider());
   TypeListViewModel _makeTypeListViewModel() =>
       TypeListViewModel(typesProvider: _makeTypeService());
 
@@ -70,7 +70,7 @@ class _DIContainer {
   ChapterDataProvider _makeChapterDataProvider() => const ChapterDataProvider();
   ChapterService _makeChapterService() =>
       ChapterService(chapterDataProvider: _makeChapterDataProvider());
-  ChapterViewModel _makeChapterViewModel(Int64 id) {
+  ChapterViewModel _makeChapterViewModel(String url) {
     final int initPage = _docService.chaptersOrderNums.keys
         .firstWhere((key) => _docService.chaptersOrderNums[key] == id);
     return ChapterViewModel(
@@ -79,7 +79,7 @@ class _DIContainer {
       pageController: PageController(initialPage: initPage),
       textEditingController: TextEditingController(text: '$initPage'),
       chapterProvider: _makeChapterService(),
-      id: id,
+      url: url,
     );
   }
 }

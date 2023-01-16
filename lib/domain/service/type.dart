@@ -1,16 +1,16 @@
 import 'package:read_only/data_providers/grpc/type.dart';
-import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
+import 'package:read_only/domain/entity/type.dart';
 
 import '../../ui/widgets/type_list/type_list_model.dart';
 
-class TypeService implements TypesListViewModelProvider {
+class ReadOnlyTypeService implements TypesListViewModelService {
   final TypeDataProvider typeDataProvider;
 
-  const TypeService({required this.typeDataProvider});
+  const ReadOnlyTypeService({required this.typeDataProvider});
 
   @override
-  Future<List<TypeResponse>> getAll() async {
-    GetAllTypesResponse resp = await typeDataProvider.getAll();
-    return resp.types;
+  Future<List<ReadOnlyType>> getAll() async {
+    List<ReadOnlyType> resp = await typeDataProvider.getAll();
+    return resp;
   }
 }

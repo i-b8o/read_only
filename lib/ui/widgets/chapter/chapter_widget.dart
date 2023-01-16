@@ -50,7 +50,7 @@ class ChapterWidget extends StatelessWidget {
                       return Card(
                         child: HtmlWidget(
                           chapter.paragraphs[index].content,
-                          onTapUrl: (href) => model.onTapUrl(href),
+                          onTapUrl: (href) => model.onTapUrl(context, href),
                         ),
                       );
                     },
