@@ -1,31 +1,28 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
-
-import '../../navigation/main_navigation_route_names.dart';
+import 'package:read_only/domain/entity/chapter.dart';
 
 abstract class ChapterViewModelProvider {
-  Future<GetOneChapterResponse> getOne(int id);
+  Future<ReadOnlyChapter> getOne(int id);
 }
 
 class ChapterViewModel extends ChangeNotifier {
   final ChapterViewModelProvider chapterProvider;
-  final String url;
+
   final int chapterCount;
-  late int id;
-  late int paragraphNum;
+  final int id;
+  final int paragraphOrderNum;
   final Map<int, int> chaptersOrderNums;
   final PageController pageController;
   final TextEditingController textEditingController;
-  GetOneChapterResponse? _chapter;
-  GetOneChapterResponse? get chapter => _chapter;
+  ReadOnlyChapter? _chapter;
+  ReadOnlyChapter? get chapter => _chapter;
   int _currentPage = 0;
   int get currentPage => _currentPage;
 
   ChapterViewModel({
     required this.chapterProvider,
-    required this.url,
+    required this.id,
+    required this.paragraphOrderNum,
     required this.chapterCount,
     required this.chaptersOrderNums,
     required this.pageController,
@@ -34,12 +31,12 @@ class ChapterViewModel extends ChangeNotifier {
     pageController.addListener(() {
       _currentPage = pageController.page!.toInt();
     });
-    if (url.contains("#")) {
-      id = int.tryParse(url.split("#")[0]) ?? 0;
-      paragraphNum = int.tryParse(url.split("#")[1]) ?? 0;
-    } else {
-      id = int.tryParse(url) ?? 0;
-    }
+    // if (url.contains("#")) {
+    //   id = int.tryParse(url.split("#")[0]) ?? 0;
+    //   paragraphNum = int.tryParse(url.split("#")[1]) ?? 0;
+    // } else {
+    //   id = int.tryParse(url) ?? 0;
+    // }
     asyncInit(id);
   }
 

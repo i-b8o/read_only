@@ -1,35 +1,33 @@
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
-import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
-
+import 'package:read_only/domain/entity/doc_info.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
-abstract class DocListViewModelProvider {
-  Future<List<Doc>> getDocs(Int64 id);
+abstract class DocListViewModelService {
+  Future<List<ReadOnlyDocInfo>> getDocs(int id);
 }
 
 class DocListViewModel extends ChangeNotifier {
-  final DocListViewModelProvider docsProvider;
-  final Int64 id;
-  var _docs = <Doc>[];
-  List<Doc> get docs => List.unmodifiable(_docs);
+  final DocListViewModelService docsService;
+  final int id;
+  var _docs = <ReadOnlyDocInfo>[];
+  List<ReadOnlyDocInfo> get docs => List.unmodifiable(_docs);
 
   DocListViewModel({
-    required this.docsProvider,
+    required this.docsService,
     required this.id,
   }) {
     asyncInit(id);
   }
-  Future<void> asyncInit(Int64 id) async {
+  Future<void> asyncInit(int id) async {
     await getDocs(id);
     notifyListeners();
   }
 
-  Future<void> getDocs(Int64 id) async {
-    _docs = await docsProvider.getDocs(id);
+  Future<void> getDocs(int id) async {
+    _docs = await docsService.getDocs(id);
   }
 
-  void onTap(BuildContext context, Int64 id) {
+  void onTap(BuildContext context, int id) {
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.chapterListScreen,
       arguments: id,

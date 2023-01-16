@@ -1,18 +1,18 @@
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
+import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
 
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
 abstract class ChapterListViewModelProvider {
-  Future<GetOneDocResponse> getOne(Int64 id);
+  Future<ReadOnlyDoc> getOne(int id);
 }
 
 class ChapterListViewModel extends ChangeNotifier {
   final ChapterListViewModelProvider docsProvider;
-  final Int64 id;
-  GetOneDocResponse? _doc;
-  GetOneDocResponse? get doc => _doc;
+  final int id;
+  ReadOnlyDoc? _doc;
+  ReadOnlyDoc? get doc => _doc;
 
   ChapterListViewModel({
     required this.docsProvider,
@@ -20,19 +20,20 @@ class ChapterListViewModel extends ChangeNotifier {
   }) {
     asyncInit(id);
   }
-  Future<void> asyncInit(Int64 id) async {
+  Future<void> asyncInit(int id) async {
     await getOne(id);
     notifyListeners();
   }
 
-  Future<void> getOne(Int64 id) async {
+  Future<void> getOne(int id) async {
     _doc = await docsProvider.getOne(id);
   }
 
-  void onTap(BuildContext context, Int64 id) {
+  void onTap(BuildContext context, int id) {
+    final String idStr = id.toString();
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.chapterScreen,
-      arguments: id,
+      arguments: idStr,
     );
   }
 }

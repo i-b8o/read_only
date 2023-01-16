@@ -31,7 +31,7 @@ class ChapterListWidget extends StatelessWidget {
                 children: doc.chapters
                     .map((e) => TypeCard(
                           name: e.name,
-                          id: e.iD,
+                          id: e.id,
                         ))
                     .toList(),
               ));
@@ -104,7 +104,7 @@ class TypeCard extends StatelessWidget {
     required this.id,
   }) : super(key: key);
   final String name;
-  final Int64 id;
+  final int id;
 
   @override
   Widget build(BuildContext context) {

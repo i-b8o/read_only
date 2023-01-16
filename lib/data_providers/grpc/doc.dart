@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:fixnum/fixnum.dart';
 import 'package:read_only/domain/entity/chapter.dart';
+import 'package:read_only/domain/entity/chapter_info.dart';
 import 'package:read_only/domain/entity/doc.dart';
 
 import 'package:read_only/library/grpc_client/grpc_client.dart';
@@ -27,8 +28,8 @@ class DocDataProvider {
       GetOneDocRequest req = GetOneDocRequest(iD: int64ID);
       GetOneDocResponse resp = await GrpcClient.docStub.getOne(req);
       // Mapping
-      List<ReadOnlyChapter> chapters = resp.chapters
-          .map((e) => ReadOnlyChapter(
+      List<ReadOnlyChapterInfo> chapters = resp.chapters
+          .map((e) => ReadOnlyChapterInfo(
               id: e.iD.toInt(), name: e.name, orderNum: e.orderNum, num: e.num))
           .toList();
       return ReadOnlyDoc(name: resp.name, chapters: chapters);

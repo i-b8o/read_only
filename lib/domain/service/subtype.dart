@@ -5,7 +5,7 @@ import '../../data_providers/grpc/subtype.dart';
 import '../../ui/widgets/subtype_list/subtype_list_model.dart';
 
 class SubtypeService
-    implements SubtypesListViewModelProvider, DocListViewModelProvider {
+    implements SubtypesListViewModelService, DocListViewModelService {
   final SubtypeDataProvider subtypeDataProvider;
 
   const SubtypeService({required this.subtypeDataProvider});

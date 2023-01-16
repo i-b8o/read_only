@@ -55,32 +55,41 @@ class _DIContainer {
   SubtypeDataProvider _makeSubtypeDataProvider() => const SubtypeDataProvider();
   SubtypeService _makeSubtypeService() =>
       SubtypeService(subtypeDataProvider: _makeSubtypeDataProvider());
-  SubtypeListViewModel _makeSubtypeListViewModel(Int64 id) =>
-      SubtypeListViewModel(subtypesProvider: _makeSubtypeService(), id: id);
+  SubtypeListViewModel _makeSubtypeListViewModel(int id) =>
+      SubtypeListViewModel(subtypesService: _makeSubtypeService(), id: id);
 
-  DocListViewModel _makeDocListViewModel(Int64 id) =>
-      DocListViewModel(docsProvider: _makeSubtypeService(), id: id);
+  DocListViewModel _makeDocListViewModel(int id) =>
+      DocListViewModel(docsService: _makeSubtypeService(), id: id);
 
   // DocDataProvider _docDataProvider() => const DocDataProvider();
   // DocService _makeDocService() =>
   //     DocService(docDataProvider: _docDataProvider());
-  ChapterListViewModel _makeChapterListViewModel(Int64 id) =>
+  ChapterListViewModel _makeChapterListViewModel(int id) =>
       ChapterListViewModel(docsProvider: _docService, id: id);
 
   ChapterDataProvider _makeChapterDataProvider() => const ChapterDataProvider();
   ChapterService _makeChapterService() =>
       ChapterService(chapterDataProvider: _makeChapterDataProvider());
   ChapterViewModel _makeChapterViewModel(String url) {
+    final int id;
+    final int paragraphOrderNum;
+    if (url.contains("#")) {
+      id = int.tryParse(url.split("#")[0]) ?? 0;
+      paragraphOrderNum = int.tryParse(url.split("#")[1]) ?? 0;
+    } else {
+      id = int.tryParse(url) ?? 0;
+      paragraphOrderNum = 0;
+    }
     final int initPage = _docService.chaptersOrderNums.keys
         .firstWhere((key) => _docService.chaptersOrderNums[key] == id);
     return ChapterViewModel(
-      chapterCount: _docService.chapterCount,
-      chaptersOrderNums: _docService.chaptersOrderNums,
-      pageController: PageController(initialPage: initPage),
-      textEditingController: TextEditingController(text: '$initPage'),
-      chapterProvider: _makeChapterService(),
-      url: url,
-    );
+        chapterCount: _docService.chapterCount,
+        chaptersOrderNums: _docService.chaptersOrderNums,
+        pageController: PageController(initialPage: initPage),
+        textEditingController: TextEditingController(text: '$initPage'),
+        chapterProvider: _makeChapterService(),
+        id: id,
+        paragraphOrderNum: paragraphOrderNum);
   }
 }
 
@@ -99,7 +108,7 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
-  Widget makeSubtypeListScreen(Int64 id) {
+  Widget makeSubtypeListScreen(int id) {
     return ChangeNotifierProvider(
       create: (_) => _diContainer._makeSubtypeListViewModel(id),
       lazy: false,
@@ -108,7 +117,7 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
-  Widget makeDocListScreen(Int64 id) {
+  Widget makeDocListScreen(int id) {
     return ChangeNotifierProvider(
       create: (_) => _diContainer._makeDocListViewModel(id),
       lazy: false,
@@ -117,7 +126,7 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
-  Widget makeChapterListScreen(Int64 id) {
+  Widget makeChapterListScreen(int id) {
     return ChangeNotifierProvider(
       create: (_) => _diContainer._makeChapterListViewModel(id),
       lazy: false,
@@ -126,9 +135,9 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
-  Widget makeChapterScreen(Int64 id) {
+  Widget makeChapterScreen(String url) {
     return ChangeNotifierProvider(
-      create: (_) => _diContainer._makeChapterViewModel(id),
+      create: (_) => _diContainer._makeChapterViewModel(url),
       lazy: false,
       child: const ChapterWidget(),
     );

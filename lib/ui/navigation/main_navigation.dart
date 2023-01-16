@@ -6,10 +6,10 @@ import 'main_navigation_route_names.dart';
 
 abstract class ScreenFactory {
   Widget makeTypeListScreen();
-  Widget makeSubtypeListScreen(Int64 id);
-  Widget makeDocListScreen(Int64 id);
-  Widget makeChapterListScreen(Int64 id);
-  Widget makeChapterScreen(Int64 id);
+  Widget makeSubtypeListScreen(int id);
+  Widget makeDocListScreen(int id);
+  Widget makeChapterListScreen(int id);
+  Widget makeChapterScreen(String url);
 }
 
 class MainNavigation implements AppNavigation {
@@ -26,31 +26,31 @@ class MainNavigation implements AppNavigation {
         );
       case MainNavigationRouteNames.subtypeListScreen:
         final arguments = settings.arguments;
-        final id = arguments is Int64 ? arguments : Int64(0);
+        final id = arguments is int ? arguments : 0;
 
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeSubtypeListScreen(id),
         );
       case MainNavigationRouteNames.docListScreen:
         final arguments = settings.arguments;
-        final id = arguments is Int64 ? arguments : Int64(0);
+        final id = arguments is int ? arguments : 0;
 
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeDocListScreen(id),
         );
       case MainNavigationRouteNames.chapterListScreen:
         final arguments = settings.arguments;
-        final id = arguments is String ? arguments : "0";
+        final id = arguments is int ? arguments : 0;
 
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeChapterListScreen(id),
         );
       case MainNavigationRouteNames.chapterScreen:
         final arguments = settings.arguments;
-        final id = arguments is Int64 ? arguments : Int64(0);
+        final url = arguments is String ? arguments : "0";
 
         return MaterialPageRoute(
-          builder: (_) => screenFactory.makeChapterScreen(id),
+          builder: (_) => screenFactory.makeChapterScreen(url),
         );
 
       default:
