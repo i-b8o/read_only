@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fixnum/fixnum.dart';
+import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
 
@@ -30,6 +31,7 @@ class ChapterDataProvider {
       List<ReadOnlyParagraph> paragraphs = resp.paragraphs
           .map((e) => ReadOnlyParagraph(
               id: e.iD.toInt(),
+              key: GlobalKey(),
               num: e.num,
               hasLinks: e.hasLinks,
               isTable: e.isTable,

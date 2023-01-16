@@ -14,6 +14,15 @@ class ChapterWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<ChapterViewModel>();
     final chapter = model.chapter;
+    final targetContext = chapter!.paragraphs[8].key.currentContext;
+
+    if (targetContext != null) {
+      Scrollable.ensureVisible(
+        targetContext,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    }
 
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -45,19 +54,18 @@ class ChapterWidget extends StatelessWidget {
                   model.onPageChanged();
                 },
                 itemBuilder: (BuildContext context, int index) {
-                  WidgetsBinding.instance
-                      .addPostFrameCallback((_) => model.scrollToItem());
-                  return ScrollablePositionedList.builder(
-                    itemScrollController: model.itemScrollController,
-                    itemCount: model.chapter!.paragraphs.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        child: HtmlWidget(
-                          chapter.paragraphs[index].content,
-                          onTapUrl: (href) => model.onTapUrl(context, href),
-                        ),
-                      );
-                    },
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: chapter.paragraphs
+                          .map((e) => Card(
+                                child: HtmlWidget(
+                                  e.content,
+                                  onTapUrl: (href) =>
+                                      model.onTapUrl(context, href),
+                                ),
+                              ))
+                          .toList(),
+                    ),
                   );
                 },
               ));
