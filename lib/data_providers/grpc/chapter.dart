@@ -18,7 +18,7 @@ class ChapterDataProvider {
   const ChapterDataProvider();
 
   Future<ReadOnlyChapter> getOne(int id) async {
-    sleep(Duration(seconds: 2));
+    // sleep(Duration(seconds: 2));
     try {
       // String? m = GrpcClient.check();
       // if (m != null) {
@@ -31,7 +31,6 @@ class ChapterDataProvider {
       List<ReadOnlyParagraph> paragraphs = resp.paragraphs
           .map((e) => ReadOnlyParagraph(
               id: e.iD.toInt(),
-              key: GlobalKey(),
               num: e.num,
               hasLinks: e.hasLinks,
               isTable: e.isTable,

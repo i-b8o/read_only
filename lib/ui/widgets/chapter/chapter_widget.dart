@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:provider/provider.dart';
+import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -14,14 +15,11 @@ class ChapterWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<ChapterViewModel>();
     final chapter = model.chapter;
-    final targetContext = chapter!.paragraphs[8].key.currentContext;
-
-    if (targetContext != null) {
-      Scrollable.ensureVisible(
-        targetContext,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
+    if (chapter == null) {
+      return const Center(
+          child: CircularProgressIndicator(
+        color: Colors.black,
+      ));
     }
 
     return Scaffold(
@@ -43,31 +41,39 @@ class ChapterWidget extends StatelessWidget {
             ),
           ),
         ),
-        body: chapter == null
-            ? Container(
-                color: Colors.blue,
-              )
-            : PageView.builder(
-                itemCount: chapter.paragraphs.length,
-                controller: model.pageController,
-                onPageChanged: (_) {
-                  model.onPageChanged();
-                },
-                itemBuilder: (BuildContext context, int index) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: chapter.paragraphs
-                          .map((e) => Card(
-                                child: HtmlWidget(
-                                  e.content,
-                                  onTapUrl: (href) =>
-                                      model.onTapUrl(context, href),
-                                ),
-                              ))
-                          .toList(),
-                    ),
-                  );
-                },
-              ));
+        body: PageView.builder(
+          itemCount: chapter.paragraphs.length,
+          controller: model.pageController,
+          onPageChanged: (_) {
+            model.onPageChanged();
+          },
+          itemBuilder: (BuildContext context, int index) {
+            return const ParagraphList();
+          },
+        ));
+  }
+}
+
+class ParagraphList extends StatelessWidget {
+  const ParagraphList({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.read<ChapterViewModel>();
+    final chapter = model.chapter;
+    return ScrollablePositionedList.builder(
+      itemScrollController: model.itemScrollController,
+      itemCount: chapter!.paragraphs.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Card(
+          child: HtmlWidget(
+            chapter.paragraphs[index].content,
+            onTapUrl: (href) => model.onTapUrl(context, href),
+          ),
+        );
+      },
+    );
   }
 }

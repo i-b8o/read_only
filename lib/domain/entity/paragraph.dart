@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class ReadOnlyParagraph {
   final int id;
   final int num;
@@ -9,11 +7,9 @@ class ReadOnlyParagraph {
   final String className;
   final String content;
   final int chapterID;
-  final GlobalKey key;
 
   ReadOnlyParagraph(
       {required this.id,
-      required this.key,
       required this.num,
       required this.hasLinks,
       required this.isTable,

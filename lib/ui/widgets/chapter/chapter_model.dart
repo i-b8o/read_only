@@ -47,21 +47,39 @@ class ChapterViewModel extends ChangeNotifier {
       print("zero");
       return;
     }
+    if (chapter == null) {
+      print("chapter null");
+      return;
+    }
     _paragraphOrderNum = chapter!.paragraphs
         .where((element) => element.id.toInt() == paragraphID)
         .first
         .num;
+    print("paragraph order num: $_paragraphOrderNum");
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => jumpTo(_paragraphOrderNum - 1));
+
+    // jumpTo(_paragraphOrderNum);
   }
 
-  void scrollToItem() {
-    if (_paragraphOrderNum < 1) {
-      return;
-    }
+  void jumpTo(int index) {
     if (!itemScrollController.isAttached) {
       return;
     }
-    itemScrollController.jumpTo(index: _paragraphOrderNum);
+    itemScrollController.jumpTo(
+      index: index,
+    );
   }
+
+  // void scrollToItem() {
+  //   if (_paragraphOrderNum < 1) {
+  //     return;
+  //   }
+  //   if (!itemScrollController.isAttached) {
+  //     return;
+  //   }
+  //   itemScrollController.jumpTo(index: _paragraphOrderNum);
+  // }
 
   Future<void> getOne(int id) async {
     _chapter = await chapterProvider.getOne(id);
