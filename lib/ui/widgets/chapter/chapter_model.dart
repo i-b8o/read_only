@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/chapter.dart';
+import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
 abstract class ChapterViewModelProvider {
   Future<ReadOnlyChapter> getOne(int id);
@@ -58,29 +59,10 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<bool> onTapUrl(BuildContext context, String url) async {
-    print(url);
-    String chapterID = "";
-    String? paragraphID;
-    if (url.contains("#")) {
-      chapterID = url.split("#")[0];
-      paragraphID = url.split("#")[1];
-    } else {
-      chapterID = url;
-    }
-
-    // id = Int64(int.tryParse(chapterID) ?? 0);
-    // await getOne(id);
-    // if (paragraphID != null && _chapter != null) {
-    //   final Int64 paragraphIDInt = Int64(int.tryParse(paragraphID) ?? 0);
-    //   ReaderParagraph jumpToParagraph = _chapter!.paragraphs
-    //       .where((element) => element.iD == paragraphIDInt)
-    //       .first;
-    //   jumpTo = _chapter!.paragraphs.indexOf(jumpToParagraph);
-    // }
-    // Navigator.of(context).pushNamed(
-    //   MainNavigationRouteNames.chapterScreen,
-    //   arguments: id,
-    // );
+    Navigator.of(context).pushNamed(
+      MainNavigationRouteNames.chapterScreen,
+      arguments: url,
+    );
     return true;
   }
 }
