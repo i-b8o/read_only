@@ -86,7 +86,6 @@ class _DIContainer {
         chapterCount: _docService.chapterCount,
         chaptersOrderNums: _docService.chaptersOrderNums,
         pageController: PageController(initialPage: initPage),
-        itemScrollController: ItemScrollController(),
         textEditingController: TextEditingController(text: '$initPage'),
         chapterProvider: _makeChapterService(),
         id: id,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:provider/provider.dart';
-import 'package:read_only/domain/entity/chapter.dart';
+
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -42,13 +42,15 @@ class ChapterWidget extends StatelessWidget {
           ),
         ),
         body: PageView.builder(
-          itemCount: chapter.paragraphs.length,
+          itemCount: model.chapterCount,
           controller: model.pageController,
           onPageChanged: (_) {
             model.onPageChanged();
           },
           itemBuilder: (BuildContext context, int index) {
-            return const ParagraphList();
+            return ParagraphList(
+              itemScrollController: ItemScrollController(),
+            );
           },
         ));
   }
@@ -57,14 +59,29 @@ class ChapterWidget extends StatelessWidget {
 class ParagraphList extends StatelessWidget {
   const ParagraphList({
     Key? key,
+    required this.itemScrollController,
   }) : super(key: key);
+  final ItemScrollController itemScrollController;
+
+  void scrollToItem(int orderNum) {
+    if (orderNum < 1) {
+      return;
+    }
+    if (!itemScrollController.isAttached) {
+      return;
+    }
+    itemScrollController.jumpTo(index: orderNum);
+  }
 
   @override
   Widget build(BuildContext context) {
     final model = context.read<ChapterViewModel>();
     final chapter = model.chapter;
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => scrollToItem(model.paragraphOrderNum - 1));
+
     return ScrollablePositionedList.builder(
-      itemScrollController: model.itemScrollController,
+      itemScrollController: itemScrollController,
       itemCount: chapter!.paragraphs.length,
       itemBuilder: (BuildContext context, int index) {
         return Card(

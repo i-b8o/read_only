@@ -14,10 +14,11 @@ class ChapterViewModel extends ChangeNotifier {
   final int id;
   final int paragraphID;
   final Map<int, int> chaptersOrderNums;
-  final ItemScrollController itemScrollController;
+
   final PageController pageController;
   final TextEditingController textEditingController;
-  late int _paragraphOrderNum = 0;
+  int _paragraphOrderNum = 0;
+  int get paragraphOrderNum => _paragraphOrderNum;
   ReadOnlyChapter? _chapter;
   ReadOnlyChapter? get chapter => _chapter;
   int _currentPage = 0;
@@ -29,7 +30,6 @@ class ChapterViewModel extends ChangeNotifier {
     required this.paragraphID,
     required this.chapterCount,
     required this.chaptersOrderNums,
-    required this.itemScrollController,
     required this.pageController,
     required this.textEditingController,
   }) {
@@ -51,35 +51,12 @@ class ChapterViewModel extends ChangeNotifier {
       print("chapter null");
       return;
     }
+    print("paragraphID: $paragraphID");
     _paragraphOrderNum = chapter!.paragraphs
         .where((element) => element.id.toInt() == paragraphID)
         .first
         .num;
-    print("paragraph order num: $_paragraphOrderNum");
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => jumpTo(_paragraphOrderNum - 1));
-
-    // jumpTo(_paragraphOrderNum);
   }
-
-  void jumpTo(int index) {
-    if (!itemScrollController.isAttached) {
-      return;
-    }
-    itemScrollController.jumpTo(
-      index: index,
-    );
-  }
-
-  // void scrollToItem() {
-  //   if (_paragraphOrderNum < 1) {
-  //     return;
-  //   }
-  //   if (!itemScrollController.isAttached) {
-  //     return;
-  //   }
-  //   itemScrollController.jumpTo(index: _paragraphOrderNum);
-  // }
 
   Future<void> getOne(int id) async {
     _chapter = await chapterProvider.getOne(id);

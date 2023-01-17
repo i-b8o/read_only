@@ -1,4 +1,3 @@
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
@@ -25,7 +24,7 @@ class TypeListWidget extends StatelessWidget {
           ),
         ),
         drawer: const NavigationDrawer(),
-        body: model.types.isEmpty
+        body: types.isEmpty
             ? const Center(
                 child: CircularProgressIndicator(
                 // TODO get color value from theme
