@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'di/di_container.dart';
 
+// TODO styling for html
+
 abstract class AppFactory {
   Widget makeApp();
 }
