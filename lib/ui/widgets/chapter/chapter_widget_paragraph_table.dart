@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 import 'package:provider/provider.dart';
@@ -9,14 +12,26 @@ import 'chapter_model.dart';
 class ParagraphTable extends StatelessWidget {
   final int index;
   const ParagraphTable({Key? key, required this.index}) : super(key: key);
+
+  Image base64ImageRender(context, element) {
+    print('src=${element.attributes["src"]}');
+    final decodedImage = base64.decode(element.attributes["src"] != null
+        ? element.attributes["src"]!.split("base64,")[1].trim()
+        : "about:blank");
+    return Image.memory(
+      decodedImage,
+      width: 10,
+      height: 10,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     final model = context.read<ChapterViewModel>();
     final content =
         model.chapter!.paragraphs[index].content.trim().replaceAll("\n", " ");
-    print(
-        "content ,<====='${content.substring(content.length - 150)}'===============>");
+
     return Column(
       children: [
         // Row(
@@ -48,6 +63,18 @@ class ParagraphTable extends StatelessWidget {
             child: HtmlWidget(
               content,
               textStyle: Theme.of(context).textTheme.headline2,
+              customWidgetBuilder: (element) {
+                if (element.attributes['src'] == null) {
+                  return null;
+                }
+                base64ImageRender(context, element);
+                // if (element.attributes['src']!.startsWith('')) {
+                //   print(
+                //       'src=${element.attributes['src']!.replaceFirst("data:image/png;base64,", "")}');
+                //   return Image.memory(base64Decode(element.attributes['src']!
+                //       .replaceFirst("data:image/png;base64,", "")));
+                // }
+              },
               customStylesBuilder: (element) {
                 switch (element.localName) {
                   case 'table':

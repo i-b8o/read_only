@@ -9,8 +9,8 @@ import 'chapter_widget_focused_menu_holder.dart';
 import 'chapter_widget_focused_menu_item.dart';
 import 'chapter_widget_paragraph_bottom.dart';
 import 'chapter_widget_paragraph_nft.dart';
-import 'chapter_widget_selectable_text.dart';
-import 'chapter_widget_table.dart';
+import 'chapter_widget_paragraph_selectable_text.dart';
+import 'chapter_widget_paragraph_table.dart';
 
 class ParagraphCard extends StatelessWidget {
   const ParagraphCard({
