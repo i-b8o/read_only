@@ -18,8 +18,6 @@ class ParagraphTable extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
-        width: double.maxFinite,
-        height: double.maxFinite,
         color: Theme.of(context).textTheme.headline2!.backgroundColor,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -44,7 +42,6 @@ class ParagraphTable extends StatelessWidget {
               if (element.className.contains('align_center')) {
                 return {'text-align': 'center', 'width': '100%'};
               }
-              print("null");
               return null;
             },
             onTapUrl: (href) async {
