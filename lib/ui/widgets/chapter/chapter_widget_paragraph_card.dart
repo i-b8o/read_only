@@ -30,7 +30,6 @@ class ParagraphCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Paragraph card hash ${context.owner.hashCode}");
     final model = context.read<ChapterViewModel>();
     final paragraph = model.chapter!.paragraphs[index];
     final paragraphClass = paragraph.className;
@@ -59,6 +58,7 @@ class ParagraphCard extends StatelessWidget {
                               )
                             : SelectableTextWidget(
                                 index: index,
+                                passedContext: context,
                               )),
           )
         : FocusedMenuHolder(
@@ -172,6 +172,7 @@ class ParagraphCard extends StatelessWidget {
                                   )
                                 : SelectableTextWidget(
                                     index: index,
+                                    passedContext: context,
                                   ))),
           );
   }

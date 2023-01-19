@@ -8,14 +8,15 @@ class SelectableTextWidget extends StatelessWidget {
   const SelectableTextWidget({
     Key? key,
     required this.index,
+    required this.passedContext,
   }) : super(key: key);
 
   final int index;
+  final BuildContext passedContext;
 
   @override
   Widget build(BuildContext context) {
-    print("Selectable text hash ${context.owner.hashCode}");
-    final model = context.read<ChapterViewModel>();
+    final model = passedContext.read<ChapterViewModel>();
     final paragraph = model.chapter!.paragraphs[index];
     final pClass = paragraph.className;
     final content = paragraph.content;

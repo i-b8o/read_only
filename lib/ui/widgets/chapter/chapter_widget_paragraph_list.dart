@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -58,13 +57,6 @@ class ParagraphList extends StatelessWidget {
           );
         }
         return _buildParagraphCard(index);
-
-        // return Card(
-        //   child: HtmlWidget(
-        //     chapter.paragraphs[index].content,
-        //     onTapUrl: (href) => model.onTapUrl(context, href),
-        //   ),
-        // );
       },
     );
   }
