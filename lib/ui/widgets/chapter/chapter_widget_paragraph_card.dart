@@ -28,6 +28,37 @@ class ParagraphCard extends StatelessWidget {
     );
   }
 
+  Card buildCard(BuildContext context, String pClass) {
+    final model = context.read<ChapterViewModel>();
+    final paragraph = model.chapter!.paragraphs[index];
+    return Card(
+      elevation: 0,
+      color: Theme.of(context).scaffoldBackgroundColor,
+      margin: EdgeInsets.zero,
+      child: pClass == "indent"
+          ? const SizedBox(
+              height: 15,
+            )
+          : Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.symmetric(
+                  horizontal: 8.0, vertical: pClass == "" ? 16.0 : 2.0),
+              child: paragraph.isNFT
+                  ? ParagraphNFT(
+                      content: paragraph.content,
+                      index: index,
+                    )
+                  : paragraph.isTable
+                      ? ParagraphTable(
+                          index: index,
+                        )
+                      : SelectableTextWidget(
+                          passedContext: context,
+                          index: index,
+                        )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final model = context.read<ChapterViewModel>();
@@ -35,32 +66,7 @@ class ParagraphCard extends StatelessWidget {
     final paragraphClass = paragraph.className;
 
     return (paragraph.isNFT || paragraph.isTable)
-        ? Card(
-            elevation: 0,
-            color: Theme.of(context).scaffoldBackgroundColor,
-            margin: EdgeInsets.zero,
-            child: paragraphClass == "indent"
-                ? const SizedBox(
-                    height: 15,
-                  )
-                : Container(
-                    alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                        vertical: paragraphClass == "" ? 16.0 : 2.0),
-                    child: paragraph.isNFT
-                        ? ParagraphNFT(
-                            index: index,
-                          )
-                        : paragraph.isTable
-                            ? ParagraphTable(
-                                index: index,
-                              )
-                            : SelectableTextWidget(
-                                index: index,
-                                passedContext: context,
-                              )),
-          )
+        ? buildCard(context, paragraphClass)
         : FocusedMenuHolder(
             menuItems: [
               FocusedMenuItem(
@@ -149,31 +155,7 @@ class ParagraphCard extends StatelessWidget {
             menuOffset: 10,
             blurSize: 1,
             menuItemExtent: 60,
-            child: Card(
-                elevation: 0,
-                color: Theme.of(context).scaffoldBackgroundColor,
-                margin: EdgeInsets.zero,
-                child: paragraphClass == 'indent'
-                    ? const SizedBox(
-                        height: 15,
-                      )
-                    : Container(
-                        alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8.0,
-                            vertical: paragraphClass == "" ? 16.0 : 2.0),
-                        child: paragraph.isNFT
-                            ? ParagraphNFT(
-                                index: index,
-                              )
-                            : paragraph.isTable
-                                ? ParagraphTable(
-                                    index: index,
-                                  )
-                                : SelectableTextWidget(
-                                    index: index,
-                                    passedContext: context,
-                                  ))),
+            child: buildCard(context, paragraphClass),
           );
   }
 }

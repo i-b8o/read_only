@@ -6,7 +6,8 @@ import 'chapter_model.dart';
 
 class ParagraphNFT extends StatelessWidget {
   final int index;
-  const ParagraphNFT({Key? key, required this.index}) : super(key: key);
+  const ParagraphNFT({Key? key, required this.index, required String content})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     final model = context.read<ChapterViewModel>();

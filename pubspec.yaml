@@ -34,9 +34,11 @@ dependencies:
   grpc: ^3.1.0
   provider: ^6.0.5
   fixnum: ^1.0.1
-  flutter_widget_from_html: ^0.9.1
+  flutter_widget_from_html: ^0.8.5 # Do not update ^0.8.5
   scrollable_positioned_list: ^0.3.5
   flutter_share: ^2.0.0
+  flutter_html: ^2.2.1
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

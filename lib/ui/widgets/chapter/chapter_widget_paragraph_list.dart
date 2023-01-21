@@ -56,7 +56,12 @@ class ParagraphList extends StatelessWidget {
             ],
           );
         }
-        return _buildParagraphCard(index);
+        // TODO drop column
+        return Column(
+          children: [
+            _buildParagraphCard(index),
+          ],
+        );
       },
     );
   }

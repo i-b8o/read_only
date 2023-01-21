@@ -10,7 +10,6 @@ class ParagraphTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     final model = context.read<ChapterViewModel>();
     final content =
         model.chapter!.paragraphs[index].content.trim().replaceAll("\n", " ");
@@ -19,37 +18,39 @@ class ParagraphTable extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Container(
         color: Theme.of(context).textTheme.headline2!.backgroundColor,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0),
-          child: HtmlWidget(
-            content,
-            textStyle: Theme.of(context).textTheme.headline2,
-            customStylesBuilder: (element) {
-              switch (element.localName) {
-                case 'table':
-                  return {
-                    'border': '1px solid',
-                    'border-collapse': 'collapse',
-                    'font-size': '16px',
-                    'line-height': '18px',
-                    'letter-spacing': '0',
-                    'font-weight': '400',
-                    'font-family': 'Times New Roman',
-                  };
-                case 'td':
-                  return {'border': '1px solid', 'vertical-align': 'top'};
-              }
-              if (element.className.contains('align_center')) {
-                return {'text-align': 'center', 'width': '100%'};
-              }
-              return null;
-            },
-            onTapUrl: (href) async {
-              return false;
-            },
-          ),
-        ),
+        child: buildHtmlTable(content, context),
       ),
+    );
+  }
+
+  HtmlWidget buildHtmlTable(String content, BuildContext context) {
+    return HtmlWidget(
+      content,
+      textStyle: Theme.of(context).textTheme.headline2,
+      customStylesBuilder: (element) {
+        switch (element.localName) {
+          case 'table':
+            return {
+              'border': '1px solid',
+              'border-collapse': 'collapse',
+              'font-size': '16px',
+              'line-height': '18px',
+              'letter-spacing': '0',
+              'font-weight': '400',
+              'font-family': 'Times New Roman',
+            };
+          case 'td':
+            return {'border': '1px solid', 'vertical-align': 'top'};
+        }
+        if (element.className.contains('align_center')) {
+          return {'text-align': 'center', 'width': '100%'};
+        }
+        return null;
+      },
+      onTapUrl: (href) async {
+        print("tappeddddddddddddddddddddddddddddd");
+        return false;
+      },
     );
   }
 }
