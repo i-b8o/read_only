@@ -1,5 +1,5 @@
 import 'package:grpc/grpc.dart';
-import 'package:read_only/configuration/configuration.dart';
+import 'package:read_only/.configuration/configuration.dart';
 import 'package:read_only/library/grpc_client/pb/reader/service.pbgrpc.dart';
 
 class GrpcClient {
