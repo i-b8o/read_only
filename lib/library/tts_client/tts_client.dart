@@ -1,26 +1,25 @@
-import 'dart:developer';
-
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:read_only/library/tts_client/tts_settings.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract class TtsClient {
   Future<bool>? checkLanguage(String locale);
   Future<List<String>>? getVoices(String locale);
-  Future<bool> setVoice(String name);
-  Future<bool> setPitch(double pitch);
-  Future<bool> setSpeechRate(double rate);
-  Future<bool> setVolume(double volume);
-  Future<bool> speak(String text);
-  Future<bool> stop();
-  Future<bool> pause();
+  Future<void> setVoice(String name);
+  Future<void> setPitch(double pitch);
+  Future<void> setSpeechRate(double rate);
+  Future<void> setVolume(double volume);
+  Future<void> speak(String text);
+  Future<void> stop();
+  Future<void> pause();
+  TtsSettings getSettings();
 }
 
 class DefaultTtsClient implements TtsClient {
   static final _plugin = FlutterTts();
-  TtsSettings ttsSettings = const TtsSettings();
-
+  TtsSettings _ttsSettings = const TtsSettings();
+  @override
+  TtsSettings getSettings() => _ttsSettings;
   DefaultTtsClient() {
     asyncInit();
   }
@@ -28,15 +27,18 @@ class DefaultTtsClient implements TtsClient {
   asyncInit() async {
     try {
       await _plugin.awaitSpeakCompletion(true);
-    } catch (e) {
-      throw PlatformException(code: 'init_error', message: e.toString());
+    } catch (exception, stackTrace) {
+      throw PlatformException(
+          code: 'init_error',
+          message: exception.toString(),
+          details: stackTrace.toString());
     }
   }
 
   @override
   Future<bool>? checkLanguage(String locale) async {
     if (locale.isEmpty) {
-      throw UnsupportedError('The language name can not be empty');
+      throw UnsupportedError('the language name can not be empty');
     }
     try {
       List<String>? languages = List<String>.from(await _plugin.getLanguages);
@@ -46,8 +48,8 @@ class DefaultTtsClient implements TtsClient {
       return true;
     } catch (exception, stackTrace) {
       throw PlatformException(
-          code: 'check_language_error',
-          message: 'error while check language $locale',
+          code: 'get_languages_error',
+          message: 'error for $locale',
           details: exception,
           stacktrace: stackTrace.toString());
     }
@@ -55,7 +57,7 @@ class DefaultTtsClient implements TtsClient {
 
   @override
   Future<List<String>> getVoices(String locale) async {
-    List<String>? result = [];
+    List<String> result = [];
     try {
       var voices = await _plugin.getVoices;
       for (var v in voices) {
@@ -65,101 +67,140 @@ class DefaultTtsClient implements TtsClient {
       }
       return result;
     } catch (exception, stackTrace) {
-      await Sentry.captureException(
-        exception,
-        stackTrace: stackTrace,
-      );
-      return [];
+      throw PlatformException(
+          code: 'get_voices_error',
+          message: 'error for $locale',
+          details: exception,
+          stacktrace: stackTrace.toString());
     }
   }
 
   @override
-  Future<bool> setVoice(String name) async {
+  Future<void> setVoice(String voiceName) async {
+    if (voiceName.isEmpty) {
+      throw UnsupportedError('the voice name can not be empty');
+    }
     try {
       Map<String, String>? voice;
       List voices = await _plugin.getVoices;
       for (var v in voices) {
-        if (v['name'] == name) {
-          voice = {"name": name, "locale": v["locale"] ?? "ru-RU"};
+        if (v['name'] == voiceName) {
+          voice = {"name": voiceName, "locale": v["locale"] ?? "ru-RU"};
         }
       }
       if (voice == null) {
-        return false;
+        throw UnsupportedError('the voice $voiceName does not exist');
       }
-      ttsSettings = ttsSettings.copyWith(voice: voice["name"] ?? "");
+      _ttsSettings = _ttsSettings.copyWith(voice: voice["name"] ?? "");
       await _plugin.setVoice(voice);
-      return true;
     } catch (exception, stackTrace) {
-      await Sentry.captureException(
-        exception,
-        stackTrace: stackTrace,
-      );
-      return false;
+      throw PlatformException(
+          code: 'set_voice_error',
+          message: 'error for $voiceName',
+          details: exception,
+          stacktrace: stackTrace.toString());
     }
   }
 
   @override
-  Future<bool> setPitch(double pitch) async {
+  Future<void> setPitch(double pitch) async {
+    if (pitch < 0) {
+      throw UnsupportedError('pitch must be positive');
+    }
+    if (pitch > 1) {
+      throw UnsupportedError('pitch must be less than 1');
+    }
     try {
       // ranges from .5 to 2.0
       pitch = pitch * 1.5 + 0.5;
-      ttsSettings = ttsSettings.copyWith(pitch: pitch);
+      _ttsSettings = _ttsSettings.copyWith(pitch: pitch);
       await _plugin.setPitch(pitch);
-      return true;
     } catch (exception, stackTrace) {
-      await Sentry.captureException(
-        exception,
-        stackTrace: stackTrace,
-      );
-      return false;
+      throw PlatformException(
+          code: 'set_pitch_error',
+          message: 'error for $pitch',
+          details: exception,
+          stacktrace: stackTrace.toString());
     }
   }
 
   @override
-  Future<bool> setSpeechRate(double rate) async {
+  Future<void> setSpeechRate(double rate) async {
+    if (rate < 0) {
+      throw UnsupportedError('rate must be positive');
+    }
+    if (rate > 1) {
+      throw UnsupportedError('rate must be less than 1');
+    }
     try {
-      ttsSettings = ttsSettings.copyWith(speechRate: rate);
+      _ttsSettings = _ttsSettings.copyWith(speechRate: rate);
       await _plugin.setSpeechRate(rate);
-      return true;
     } catch (exception, stackTrace) {
-      await Sentry.captureException(
-        exception,
-        stackTrace: stackTrace,
-      );
-      return false;
+      throw PlatformException(
+          code: 'set_speech_rate_error',
+          message: 'error for $rate',
+          details: exception,
+          stacktrace: stackTrace.toString());
     }
   }
 
   @override
-  Future<bool> setVolume(double volume) async {
+  Future<void> setVolume(double volume) async {
+    if (volume < 0) {
+      throw UnsupportedError('volume must be positive');
+    }
+    if (volume > 1) {
+      throw UnsupportedError('volume must be less than 1');
+    }
     try {
-      ttsSettings = ttsSettings.copyWith(volume: volume);
+      _ttsSettings = _ttsSettings.copyWith(volume: volume);
       await _plugin.setVolume(volume);
-      return true;
     } catch (exception, stackTrace) {
-      await Sentry.captureException(
-        exception,
-        stackTrace: stackTrace,
-      );
-      return false;
+      throw PlatformException(
+          code: 'set_volume_error',
+          message: 'error for $volume',
+          details: exception,
+          stacktrace: stackTrace.toString());
     }
   }
 
   @override
-  Future<bool> speak(String text) {
-    // TODO: implement speak
-    throw UnimplementedError();
+  Future<void> speak(String text) async {
+    if (text.isEmpty) {
+      return;
+    }
+    try {
+      await _plugin.speak(text);
+    } catch (exception, stackTrace) {
+      throw PlatformException(
+          code: 'speek_error',
+          message: 'error for $text',
+          details: exception,
+          stacktrace: stackTrace.toString());
+    }
   }
 
   @override
-  Future stop() {
-    // TODO: implement stop
-    throw UnimplementedError();
+  Future<void> stop() async {
+    try {
+      await _plugin.stop();
+    } catch (exception, stackTrace) {
+      throw PlatformException(
+          code: 'stop_error',
+          details: exception,
+          stacktrace: stackTrace.toString());
+    }
   }
 
   @override
-  Future<bool> pause() {
-    // TODO: implement pause
-    throw UnimplementedError();
+  Future<void> pause() async {
+    try {
+      await _plugin.pause();
+    } catch (exception, stackTrace) {
+      throw PlatformException(
+          code: 'pause_error',
+          details: exception,
+          stacktrace: stackTrace.toString());
+    }
   }
 }
