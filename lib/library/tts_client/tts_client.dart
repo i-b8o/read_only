@@ -1,11 +1,12 @@
 import 'dart:developer';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:read_only/library/tts_client/tts_settings.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract class TtsClient {
-  Future<bool> checkLanguage(String locale);
+  Future<bool>? checkLanguage(String locale);
   Future<List<String>>? getVoices(String locale);
   Future<bool> setVoice(String name);
   Future<bool> setPitch(double pitch);
@@ -25,11 +26,18 @@ class DefaultTtsClient implements TtsClient {
   }
 
   asyncInit() async {
-    await _plugin.awaitSpeakCompletion(true);
+    try {
+      await _plugin.awaitSpeakCompletion(true);
+    } catch (e) {
+      throw PlatformException(code: 'init_error', message: e.toString());
+    }
   }
 
   @override
-  Future<bool> checkLanguage(String locale) async {
+  Future<bool>? checkLanguage(String locale) async {
+    if (locale.isEmpty) {
+      throw UnsupportedError('The language name can not be empty');
+    }
     try {
       List<String>? languages = List<String>.from(await _plugin.getLanguages);
       if (!languages.contains(locale)) {
@@ -37,11 +45,11 @@ class DefaultTtsClient implements TtsClient {
       }
       return true;
     } catch (exception, stackTrace) {
-      await Sentry.captureException(
-        exception,
-        stackTrace: stackTrace,
-      );
-      return false;
+      throw PlatformException(
+          code: 'check_language_error',
+          message: 'error while check language $locale',
+          details: exception,
+          stacktrace: stackTrace.toString());
     }
   }
 
