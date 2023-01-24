@@ -1,26 +1,24 @@
-import 'dart:developer';
-
-import 'package:read_only/domain/entity/chapter.dart';
-import 'package:read_only/domain/entity/doc.dart';
+import 'package:read_only/data_providers/subtype_data_providerdart';
 import 'package:read_only/domain/entity/doc_info.dart';
 import 'package:read_only/domain/entity/sub_type.dart';
+import 'package:read_only/library/grpc_client/grpc_client.dart';
 import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
 
-import '../../library/grpc_client/grpc_client.dart';
 import 'package:fixnum/fixnum.dart';
 
-class SubtypeDataProviderError {
+class GrpcSubtypeDataProviderError {
   final String m;
 
-  SubtypeDataProviderError(this.m);
+  GrpcSubtypeDataProviderError(this.m);
 }
 
-class SubtypeDataProvider {
-  const SubtypeDataProvider();
+class GrpcSubtypeDataProvider implements SubtypeDataProvider {
+  const GrpcSubtypeDataProvider();
+  @override
   Future<List<ReadOnlySubtype>> getAll(int id) async {
     // String? m = GrpcClient.check();
     // if (m != null) {
-    //   throw SubtypeDataProviderError(m);
+    //   throw GrpcSubtypeDataProviderError(m);
     // }
     try {
       // Request
@@ -33,14 +31,15 @@ class SubtypeDataProvider {
           .toList();
       return subtypes;
     } catch (e) {
-      throw SubtypeDataProviderError(e.toString());
+      throw GrpcSubtypeDataProviderError(e.toString());
     }
   }
 
+  @override
   Future<List<ReadOnlyDocInfo>> getDocs(int id) async {
     // String? m = GrpcClient.check();
     // if (m != null) {
-    //   throw SubtypeDataProviderError(m);
+    //   throw GrpcSubtypeDataProviderError(m);
     // }
     try {
       // Request
@@ -56,7 +55,7 @@ class SubtypeDataProvider {
           .toList();
       return docs;
     } catch (e) {
-      throw SubtypeDataProviderError(e.toString());
+      throw GrpcSubtypeDataProviderError(e.toString());
     }
   }
 }

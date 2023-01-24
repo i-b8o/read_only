@@ -1,8 +1,14 @@
 import 'package:read_only/domain/entity/doc_info.dart';
 import 'package:read_only/domain/entity/sub_type.dart';
 import 'package:read_only/ui/widgets/doc_list/doc_list_model.dart';
-import '../../data_providers/grpc/subtype.dart';
+
 import '../../ui/widgets/subtype_list/subtype_list_model.dart';
+
+abstract class SubtypeDataProvider {
+  const SubtypeDataProvider();
+  Future<List<ReadOnlySubtype>> getAll(int id);
+  Future<List<ReadOnlyDocInfo>> getDocs(int id);
+}
 
 class SubtypeService
     implements SubtypesListViewModelService, DocListViewModelService {

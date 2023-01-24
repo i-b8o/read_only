@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/doc.dart';
-import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
-
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
-abstract class ChapterListViewModelProvider {
+abstract class ChapterListViewModelService {
   Future<ReadOnlyDoc> getOne(int id);
 }
 
 class ChapterListViewModel extends ChangeNotifier {
-  final ChapterListViewModelProvider docsProvider;
+  final ChapterListViewModelService docsProvider;
   final int id;
   ReadOnlyDoc? _doc;
   ReadOnlyDoc? get doc => _doc;

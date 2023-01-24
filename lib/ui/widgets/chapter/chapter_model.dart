@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-abstract class ChapterViewModelProvider {
+abstract class ChapterViewModelService {
   Future<ReadOnlyChapter> getOne(int id);
 }
 
 class ChapterViewModel extends ChangeNotifier {
-  final ChapterViewModelProvider chapterProvider;
+  final ChapterViewModelService chapterProvider;
 
   final int chapterCount;
   final int id;

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:read_only/data_providers/grpc/chapter.dart';
-import 'package:read_only/data_providers/grpc/doc.dart';
-import 'package:read_only/data_providers/grpc/subtype.dart';
-import 'package:read_only/domain/service/chapter.dart';
-import 'package:read_only/domain/service/doc.dart';
-import 'package:read_only/domain/service/subtype.dart';
-import 'package:read_only/domain/service/type.dart';
+import 'package:read_only/data_providers/chapter_data_provider.dart';
+import 'package:read_only/data_providers/type_data_provider.dart';
+import 'package:read_only/data_providers/subtype_data_provider.dart';
+import 'package:read_only/domain/service/chapter_service.dart';
+import 'package:read_only/domain/service/doc_service.dart';
+import 'package:read_only/domain/service/subtype_service.dart';
+import 'package:read_only/domain/service/type_service.dart';
 import 'package:read_only/library/grpc_client/grpc_client.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_widget.dart';
@@ -17,9 +17,8 @@ import 'package:read_only/ui/widgets/doc_list/doc_list_widget.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_model.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_widget.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_widget.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-import '../data_providers/grpc/type.dart';
+import '../data_providers/doc_data_provider.dart';
 import '../main.dart';
 import '../ui/navigation/main_navigation.dart';
 import '../ui/widgets/app/app.dart';
@@ -40,19 +39,20 @@ class _DIContainer {
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
   final DocService _docService;
   _DIContainer()
-      : _docService = DocService(docDataProvider: const DocDataProvider()) {
+      : _docService = DocService(docDataProvider: const GrpcDocDataProvider()) {
     GrpcClient();
   }
   // Dispatch all of them?
   // final GrpcClient _grpcClient = GrpcClient();
   // ignore: prefer_const_constructors
-  TypeDataProvider _makeTypeDataProvider() => TypeDataProvider();
+  TypeDataProvider _makeTypeDataProvider() => const GrpcTypeDataProvider();
   ReadOnlyTypeService _makeTypeService() =>
       ReadOnlyTypeService(typeDataProvider: _makeTypeDataProvider());
   TypeListViewModel _makeTypeListViewModel() =>
       TypeListViewModel(typesProvider: _makeTypeService());
 
-  SubtypeDataProvider _makeSubtypeDataProvider() => const SubtypeDataProvider();
+  SubtypeDataProvider _makeSubtypeDataProvider() =>
+      const GrpcSubtypeDataProvider();
   SubtypeService _makeSubtypeService() =>
       SubtypeService(subtypeDataProvider: _makeSubtypeDataProvider());
   SubtypeListViewModel _makeSubtypeListViewModel(int id) =>
@@ -67,7 +67,8 @@ class _DIContainer {
   ChapterListViewModel _makeChapterListViewModel(int id) =>
       ChapterListViewModel(docsProvider: _docService, id: id);
 
-  ChapterDataProvider _makeChapterDataProvider() => const ChapterDataProvider();
+  ChapterDataProvider _makeChapterDataProvider() =>
+      const GrpcChapterDataProvider();
   ChapterService _makeChapterService() =>
       ChapterService(chapterDataProvider: _makeChapterDataProvider());
   ChapterViewModel _makeChapterViewModel(String url) {

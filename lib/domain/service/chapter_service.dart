@@ -1,8 +1,12 @@
-import 'package:read_only/data_providers/grpc/chapter.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
-class ChapterService implements ChapterViewModelProvider {
+abstract class ChapterDataProvider {
+  const ChapterDataProvider();
+  Future<ReadOnlyChapter> getOne(int id);
+}
+
+class ChapterService implements ChapterViewModelService {
   final ChapterDataProvider chapterDataProvider;
 
   const ChapterService({required this.chapterDataProvider});

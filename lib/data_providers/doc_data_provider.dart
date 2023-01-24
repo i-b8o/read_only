@@ -1,26 +1,24 @@
-import 'dart:developer';
-
 import 'package:fixnum/fixnum.dart';
-import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/chapter_info.dart';
 import 'package:read_only/domain/entity/doc.dart';
+import 'package:read_only/domain/service/doc_service.dart';
 
 import 'package:read_only/library/grpc_client/grpc_client.dart';
 import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
 
-class DocDataProviderError {
+class GrpcDocDataProviderError {
   final String m;
 
-  DocDataProviderError(this.m);
+  GrpcDocDataProviderError(this.m);
 }
 
-class DocDataProvider {
-  const DocDataProvider();
+class GrpcDocDataProvider implements DocDataProvider {
+  const GrpcDocDataProvider();
 
   Future<ReadOnlyDoc> getOne(int id) async {
     // String? m = GrpcClient.check();
     // if (m != null) {
-    //   throw DocDataProviderError(m);
+    //   throw GrpcDocDataProviderError(m);
     // }
     try {
       // Request
@@ -34,7 +32,7 @@ class DocDataProvider {
           .toList();
       return ReadOnlyDoc(name: resp.name, chapters: chapters);
     } catch (e) {
-      throw DocDataProviderError(e.toString());
+      throw GrpcDocDataProviderError(e.toString());
     }
   }
 }

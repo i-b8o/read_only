@@ -1,10 +1,13 @@
-import 'package:read_only/data_providers/grpc/doc.dart';
-import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/chapter_info.dart';
 import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
 
-class DocService implements ChapterListViewModelProvider {
+abstract class DocDataProvider {
+  const DocDataProvider();
+  Future<ReadOnlyDoc> getOne(int id);
+}
+
+class DocService implements ChapterListViewModelService {
   final DocDataProvider docDataProvider;
   late int _chapterCount;
   int get chapterCount => _chapterCount;

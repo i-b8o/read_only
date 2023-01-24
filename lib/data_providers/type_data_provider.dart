@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:read_only/domain/entity/type.dart';
+import 'package:read_only/domain/service/type_service.dart';
 import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
 
 import '../../library/grpc_client/grpc_client.dart';
@@ -11,9 +12,10 @@ class TypeDataProviderError {
   TypeDataProviderError(this.m);
 }
 
-class TypeDataProvider {
-  const TypeDataProvider();
+class GrpcTypeDataProvider implements TypeDataProvider {
+  const GrpcTypeDataProvider();
 
+  @override
   Future<List<ReadOnlyType>> getAll() async {
     // String? m = GrpcClient.check();
     // if (m != null) {

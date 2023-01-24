@@ -1,28 +1,26 @@
-import 'dart:io';
-
 import 'package:fixnum/fixnum.dart';
-import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
+import 'package:read_only/domain/service/chapter_service.dart';
 
 import 'package:read_only/library/grpc_client/grpc_client.dart';
 import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
 
-class ChapterDataProviderError {
+class GrpcChapterDataProviderError {
   final String m;
 
-  ChapterDataProviderError(this.m);
+  GrpcChapterDataProviderError(this.m);
 }
 
-class ChapterDataProvider {
-  const ChapterDataProvider();
+class GrpcChapterDataProvider implements ChapterDataProvider {
+  const GrpcChapterDataProvider();
 
   Future<ReadOnlyChapter> getOne(int id) async {
     // sleep(Duration(seconds: 2));
     try {
       // String? m = GrpcClient.check();
       // if (m != null) {
-      //   throw ChapterDataProviderError(m);
+      //   throw GrpcChapterDataProviderError(m);
       // }
       Int64 int64ID = Int64(id);
       GetOneChapterRequest req = GetOneChapterRequest(iD: int64ID);
@@ -46,7 +44,7 @@ class ChapterDataProvider {
           paragraphs: paragraphs,
           orderNum: resp.orderNum);
     } catch (e) {
-      throw ChapterDataProviderError(e.toString());
+      throw GrpcChapterDataProviderError(e.toString());
     }
   }
 }

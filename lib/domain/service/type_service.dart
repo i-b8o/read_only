@@ -1,7 +1,10 @@
-import 'package:read_only/data_providers/grpc/type.dart';
 import 'package:read_only/domain/entity/type.dart';
-
 import '../../ui/widgets/type_list/type_list_model.dart';
+
+abstract class TypeDataProvider {
+  const TypeDataProvider();
+  Future<List<ReadOnlyType>> getAll();
+}
 
 class ReadOnlyTypeService implements TypesListViewModelService {
   final TypeDataProvider typeDataProvider;
