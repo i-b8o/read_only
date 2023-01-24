@@ -36,10 +36,8 @@ class DefaultTtsClient implements TtsClient {
   }
 
   @override
-  Future<bool>? checkLanguage(String locale) async {
-    if (locale.isEmpty) {
-      throw UnsupportedError('the language name can not be empty');
-    }
+  Future<bool> checkLanguage(String locale) async {
+    assert(locale.isNotEmpty);
     try {
       List<String>? languages = List<String>.from(await _plugin.getLanguages);
       if (!languages.contains(locale)) {
@@ -57,8 +55,8 @@ class DefaultTtsClient implements TtsClient {
 
   @override
   Future<List<String>> getVoices(String locale) async {
-    List<String> result = [];
     try {
+      List<String> result = [];
       var voices = await _plugin.getVoices;
       for (var v in voices) {
         if (v['locale'] == locale) {
@@ -77,9 +75,7 @@ class DefaultTtsClient implements TtsClient {
 
   @override
   Future<void> setVoice(String voiceName) async {
-    if (voiceName.isEmpty) {
-      throw UnsupportedError('the voice name can not be empty');
-    }
+    assert(voiceName.isNotEmpty);
     try {
       Map<String, String>? voice;
       List voices = await _plugin.getVoices;
@@ -104,12 +100,7 @@ class DefaultTtsClient implements TtsClient {
 
   @override
   Future<void> setPitch(double pitch) async {
-    if (pitch < 0) {
-      throw UnsupportedError('pitch must be positive');
-    }
-    if (pitch > 1) {
-      throw UnsupportedError('pitch must be less than 1');
-    }
+    assert(pitch >= 0 && pitch <= 1);
     try {
       // ranges from .5 to 2.0
       pitch = pitch * 1.5 + 0.5;
@@ -126,12 +117,7 @@ class DefaultTtsClient implements TtsClient {
 
   @override
   Future<void> setSpeechRate(double rate) async {
-    if (rate < 0) {
-      throw UnsupportedError('rate must be positive');
-    }
-    if (rate > 1) {
-      throw UnsupportedError('rate must be less than 1');
-    }
+    assert(rate >= 0 && rate <= 1);
     try {
       _ttsSettings = _ttsSettings.copyWith(speechRate: rate);
       await _plugin.setSpeechRate(rate);
@@ -146,12 +132,7 @@ class DefaultTtsClient implements TtsClient {
 
   @override
   Future<void> setVolume(double volume) async {
-    if (volume < 0) {
-      throw UnsupportedError('volume must be positive');
-    }
-    if (volume > 1) {
-      throw UnsupportedError('volume must be less than 1');
-    }
+    assert(volume >= 0 && volume <= 1);
     try {
       _ttsSettings = _ttsSettings.copyWith(volume: volume);
       await _plugin.setVolume(volume);
@@ -166,9 +147,7 @@ class DefaultTtsClient implements TtsClient {
 
   @override
   Future<void> speak(String text) async {
-    if (text.isEmpty) {
-      return;
-    }
+    assert(text.isNotEmpty);
     try {
       await _plugin.speak(text);
     } catch (exception, stackTrace) {
