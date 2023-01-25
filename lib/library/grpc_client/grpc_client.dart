@@ -1,30 +1,28 @@
 import 'package:grpc/grpc.dart';
-import 'package:read_only/.configuration/configuration.dart';
-import 'package:read_only/library/grpc_client/pb/reader/service.pbgrpc.dart';
 
-class GrpcClient {
+abstract class GrpcClient {
+  ClientChannel channel();
+}
+
+class GrpcClientDefault implements GrpcClient {
   late final ClientChannel _channel;
-  static late final TypeGRPCClient typeStub;
-  static late final SubGRPCClient subtypeStub;
-  static late final DocGRPCClient docStub;
-  static late final ChapterGRPCClient chapterStub;
-  // static ConnectionState _connectionState = ConnectionState.connecting;
+  @override
+  ClientChannel channel() => _channel;
 
-  GrpcClient() {
+  GrpcClientDefault(
+      {required host,
+      required port,
+      options =
+          const ChannelOptions(credentials: ChannelCredentials.insecure())}) {
     _channel = ClientChannel(
-      Configuration.host,
-      port: Configuration.port,
-      options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
+      host,
+      port: port,
+      options: options,
     );
     // TODO add check connection and restart
     // _channel.onConnectionStateChanged.listen((event) {
     //   _connectionState = event;
     // });
-
-    typeStub = TypeGRPCClient(_channel);
-    subtypeStub = SubGRPCClient(_channel);
-    docStub = DocGRPCClient(_channel);
-    chapterStub = ChapterGRPCClient(_channel);
   }
 
   // static String? check() {

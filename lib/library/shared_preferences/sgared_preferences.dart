@@ -9,9 +9,7 @@ abstract class SharedPreferencesStorage {
   double? readDouble({required String key});
   String? readString({required String key});
   List<String>? readStringList({required String key});
-
   Future<void> write<T>({required String key, required T? value});
-
   Future<bool> delete({required String key});
 }
 

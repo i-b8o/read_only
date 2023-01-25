@@ -1,25 +1,21 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:read_only/library/tts_client/tts_settings.dart';
 
-abstract class TtsClient {
-  Future<bool>? checkLanguage(String locale);
-  Future<List<String>>? getVoices(String locale);
-  Future<void> setVoice(String name);
-  Future<void> setPitch(double pitch);
-  Future<void> setSpeechRate(double rate);
-  Future<void> setVolume(double volume);
-  Future<void> speak(String text);
-  Future<void> stop();
-  Future<void> pause();
-  TtsSettings getSettings();
-}
+// abstract class TtsClient {
+//   Future<bool>? checkLanguage(String locale);
+//   Future<List<String>>? getVoices(String locale);
+//   Future<void> setVoice(String name);
+//   Future<void> setPitch(double pitch);
+//   Future<void> setSpeechRate(double rate);
+//   Future<void> setVolume(double volume);
+//   Future<void> speak(String text);
+//   Future<void> stop();
+//   Future<void> pause();
+// }
 
 class DefaultTtsClient implements TtsClient {
-  static final _plugin = FlutterTts();
-  TtsSettings _ttsSettings = const TtsSettings();
-  @override
-  TtsSettings getSettings() => _ttsSettings;
+  final _plugin = FlutterTts();
+
   DefaultTtsClient() {
     asyncInit();
   }
@@ -87,7 +83,6 @@ class DefaultTtsClient implements TtsClient {
       if (voice == null) {
         throw UnsupportedError('the voice $voiceName does not exist');
       }
-      _ttsSettings = _ttsSettings.copyWith(voice: voice["name"] ?? "");
       await _plugin.setVoice(voice);
     } catch (exception, stackTrace) {
       throw PlatformException(
@@ -104,7 +99,6 @@ class DefaultTtsClient implements TtsClient {
     try {
       // ranges from .5 to 2.0
       pitch = pitch * 1.5 + 0.5;
-      _ttsSettings = _ttsSettings.copyWith(pitch: pitch);
       await _plugin.setPitch(pitch);
     } catch (exception, stackTrace) {
       throw PlatformException(
@@ -119,7 +113,6 @@ class DefaultTtsClient implements TtsClient {
   Future<void> setSpeechRate(double rate) async {
     assert(rate >= 0 && rate <= 1);
     try {
-      _ttsSettings = _ttsSettings.copyWith(speechRate: rate);
       await _plugin.setSpeechRate(rate);
     } catch (exception, stackTrace) {
       throw PlatformException(
@@ -134,7 +127,6 @@ class DefaultTtsClient implements TtsClient {
   Future<void> setVolume(double volume) async {
     assert(volume >= 0 && volume <= 1);
     try {
-      _ttsSettings = _ttsSettings.copyWith(volume: volume);
       await _plugin.setVolume(volume);
     } catch (exception, stackTrace) {
       throw PlatformException(

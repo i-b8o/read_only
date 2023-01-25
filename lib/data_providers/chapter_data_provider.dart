@@ -1,19 +1,17 @@
 import 'package:fixnum/fixnum.dart';
+import 'package:flutter/services.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
-
 import 'package:read_only/library/grpc_client/grpc_client.dart';
-import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
 
-class GrpcChapterDataProviderError {
-  final String m;
+import 'package:read_only/pb/reader/service.pbgrpc.dart';
 
-  GrpcChapterDataProviderError(this.m);
-}
-
-class GrpcChapterDataProvider implements ChapterDataProvider {
-  const GrpcChapterDataProvider();
+class ChapterDataProviderDefault implements ChapterDataProvider {
+  ChapterDataProviderDefault({required this.grpcClient})
+      : _chapterGRPCClient = ChapterGRPCClient(grpcClient.channel());
+  final GrpcClient grpcClient;
+  final ChapterGRPCClient _chapterGRPCClient;
 
   Future<ReadOnlyChapter> getOne(int id) async {
     // sleep(Duration(seconds: 2));
@@ -24,7 +22,7 @@ class GrpcChapterDataProvider implements ChapterDataProvider {
       // }
       Int64 int64ID = Int64(id);
       GetOneChapterRequest req = GetOneChapterRequest(iD: int64ID);
-      GetOneChapterResponse resp = await GrpcClient.chapterStub.getOne(req);
+      GetOneChapterResponse resp = await _chapterGRPCClient.getOne(req);
       // Mapping
       List<ReadOnlyParagraph> paragraphs = resp.paragraphs
           .map((e) => ReadOnlyParagraph(
@@ -44,7 +42,7 @@ class GrpcChapterDataProvider implements ChapterDataProvider {
           paragraphs: paragraphs,
           orderNum: resp.orderNum);
     } catch (e) {
-      throw GrpcChapterDataProviderError(e.toString());
+      throw PlatformException(code: "get_one_chapter_error", details: e);
     }
   }
 }

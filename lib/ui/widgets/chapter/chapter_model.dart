@@ -6,6 +6,8 @@ abstract class ChapterViewModelService {
   Future<ReadOnlyChapter> getOne(int id);
 }
 
+abstract class TtsService
+
 class ChapterViewModel extends ChangeNotifier {
   final ChapterViewModelService chapterProvider;
 

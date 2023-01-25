@@ -1,19 +1,17 @@
 import 'package:fixnum/fixnum.dart';
+import 'package:flutter/services.dart';
+
+import 'package:read_only/di/di_container.dart';
 import 'package:read_only/domain/entity/chapter_info.dart';
 import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/domain/service/doc_service.dart';
+import 'package:read_only/pb/reader/service.pbgrpc.dart';
 
-import 'package:read_only/library/grpc_client/grpc_client.dart';
-import 'package:read_only/library/grpc_client/pb/reader/service.pb.dart';
-
-class GrpcDocDataProviderError {
-  final String m;
-
-  GrpcDocDataProviderError(this.m);
-}
-
-class GrpcDocDataProvider implements DocDataProvider {
-  const GrpcDocDataProvider();
+class DocDataProviderDefault1 implements DocDataProvider {
+  DocDataProviderDefault1({required this.grpcClient})
+      : _docGRPCClient = DocGRPCClient(grpcClient.channel());
+  final GrpcClient grpcClient;
+  final DocGRPCClient _docGRPCClient;
 
   Future<ReadOnlyDoc> getOne(int id) async {
     // String? m = GrpcClient.check();
@@ -24,7 +22,7 @@ class GrpcDocDataProvider implements DocDataProvider {
       // Request
       Int64 int64ID = Int64(id);
       GetOneDocRequest req = GetOneDocRequest(iD: int64ID);
-      GetOneDocResponse resp = await GrpcClient.docStub.getOne(req);
+      GetOneDocResponse resp = await _docGRPCClient.getOne(req);
       // Mapping
       List<ReadOnlyChapterInfo> chapters = resp.chapters
           .map((e) => ReadOnlyChapterInfo(
@@ -32,7 +30,7 @@ class GrpcDocDataProvider implements DocDataProvider {
           .toList();
       return ReadOnlyDoc(name: resp.name, chapters: chapters);
     } catch (e) {
-      throw GrpcDocDataProviderError(e.toString());
+      throw PlatformException(code: "get_one_doc_error", details: e);
     }
   }
 }
