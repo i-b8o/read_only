@@ -19,10 +19,11 @@ class GrpcClientDefault implements GrpcClient {
       port: port,
       options: options,
     );
+
     // TODO add check connection and restart
-    // _channel.onConnectionStateChanged.listen((event) {
-    //   _connectionState = event;
-    // });
+    _channel.onConnectionStateChanged.listen((event) {
+      print(event);
+    });
   }
 
   // static String? check() {
