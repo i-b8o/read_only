@@ -1,17 +1,17 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-// abstract class TtsClient {
-//   Future<bool>? checkLanguage(String locale);
-//   Future<List<String>>? getVoices(String locale);
-//   Future<void> setVoice(String name);
-//   Future<void> setPitch(double pitch);
-//   Future<void> setSpeechRate(double rate);
-//   Future<void> setVolume(double volume);
-//   Future<void> speak(String text);
-//   Future<void> stop();
-//   Future<void> pause();
-// }
+abstract class TtsClient {
+  Future<bool>? checkLanguage(String locale);
+  Future<List<String>>? getVoices(String locale);
+  Future<void> setVoice(String name);
+  Future<void> setPitch(double pitch);
+  Future<void> setSpeechRate(double rate);
+  Future<void> setVolume(double volume);
+  Future<void> speak(String text);
+  Future<void> stop();
+  Future<void> pause();
+}
 
 class DefaultTtsClient implements TtsClient {
   final _plugin = FlutterTts();
