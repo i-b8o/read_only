@@ -2,6 +2,8 @@ import 'package:read_only/library/text/text.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:tts_client/tts_client.dart';
 
+abstract class TtsProvider {}
+
 class TtsService implements ChapterViewModelTtsService {
   final TtsClient ttsClient;
 

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'di/di_container.dart';
 
@@ -11,6 +13,7 @@ final appFactory = makeAppFactory();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
   final app = appFactory.makeApp();
   // await SentryFlutter.init(
   //   (options) {
