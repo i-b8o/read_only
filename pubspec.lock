@@ -208,7 +208,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_tts:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_tts
       url: "https://pub.dartlang.org"

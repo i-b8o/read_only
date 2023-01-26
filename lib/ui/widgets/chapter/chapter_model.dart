@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
@@ -13,6 +14,7 @@ abstract class ChapterViewModelTtsService {
 }
 
 class ChapterViewModel extends ChangeNotifier {
+  late FlutterTts flutterTts;
   final ChapterViewModelService chapterProvider;
   final ChapterViewModelTtsService ttsService;
   final int chapterCount;
@@ -44,6 +46,7 @@ class ChapterViewModel extends ChangeNotifier {
     pageController.addListener(() {
       _currentPage = pageController.page!.toInt();
     });
+    flutterTts = FlutterTts();
     asyncInit(id);
   }
 
@@ -87,8 +90,9 @@ class ChapterViewModel extends ChangeNotifier {
     if (chapter == null || activeParagraphIndex == null) {
       return;
     }
-    return ttsService
-        .startSpeak(chapter!.paragraphs[activeParagraphIndex!].content);
+    // return ttsService
+    //     .startSpeak(chapter!.paragraphs[activeParagraphIndex!].content);
+    await flutterTts.speak(chapter!.paragraphs[activeParagraphIndex!].content);
   }
 
   Future<void> startSpeakChapter() async {
@@ -97,7 +101,8 @@ class ChapterViewModel extends ChangeNotifier {
     }
     final paragraphs = chapter!.paragraphs;
     for (var i = 0; i < paragraphs.length; i++) {
-      await ttsService.startSpeak(paragraphs[i].content);
+      // await ttsService.startSpeak(paragraphs[i].content);
+      await flutterTts.speak(paragraphs[i].content);
     }
   }
 

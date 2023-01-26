@@ -13,16 +13,20 @@ abstract class TtsClient {
   Future<void> speak(String text);
   Future<void> stop();
   Future<void> pause();
+
+  // isLanguageAvailable
+  // isLanguageInstalled
 }
 
 class TtsClientDefault implements TtsClient {
-  static const platform = MethodChannel('tts_client');
-  // static const MethodChannel _channel = const MethodChannel('tts_client');
+  final FlutterTts _plugin;
   VoidCallback? completionHandler;
+  TtsClientDefault({required FlutterTts plugin}) : _plugin = plugin;
+  // _init();
 
-  TtsClientDefault() {
-    platform.setMethodCallHandler(platformCallHandler);
-  }
+  // _init() async {
+  //   await _plugin.awaitSpeakCompletion(true);
+  // }
 
   Future platformCallHandler(MethodCall call) async {
     switch (call.method) {
@@ -67,8 +71,7 @@ class TtsClientDefault implements TtsClient {
   Future<bool> checkLanguage(String locale) async {
     assert(locale.isNotEmpty);
     try {
-      List<String>? languages =
-          List<String>.from(await platform.invokeMethod('getLanguages'));
+      List<String>? languages = List<String>.from(await _plugin.getLanguages);
       if (!languages.contains(locale)) {
         return false;
       }
@@ -86,7 +89,7 @@ class TtsClientDefault implements TtsClient {
   Future<List<String>> getVoices(String locale) async {
     try {
       List<String> result = [];
-      var voices = await platform.invokeMethod('getVoices');
+      var voices = await _plugin.getVoices;
       for (var v in voices) {
         if (v['locale'] == locale) {
           result.add(v['name'] ?? "");
@@ -107,7 +110,7 @@ class TtsClientDefault implements TtsClient {
     assert(voiceName.isNotEmpty);
     try {
       Map<String, String>? voice;
-      List voices = await platform.invokeMethod('getVoices');
+      List voices = await _plugin.getVoices;
       for (var v in voices) {
         if (v['name'] == voiceName) {
           voice = {"name": voiceName, "locale": v["locale"] ?? "ru-RU"};
@@ -116,7 +119,7 @@ class TtsClientDefault implements TtsClient {
       if (voice == null) {
         throw UnsupportedError('the voice $voiceName does not exist');
       }
-      await platform.invokeMethod('setVoice', voice);
+      await _plugin.setVoice(voice);
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'set_voice_error',
@@ -133,7 +136,7 @@ class TtsClientDefault implements TtsClient {
     try {
       // ranges from .5 to 2.0
       pitch = pitch * 1.5 + 0.5;
-      await platform.invokeMethod('setPitch', pitch);
+      await _plugin.setPitch(pitch);
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'set_pitch_error',
@@ -148,7 +151,7 @@ class TtsClientDefault implements TtsClient {
     assert(rate >= 0 && rate <= 1);
     rate = _cutOff(rate);
     try {
-      await platform.invokeMethod('setSpeechRate', rate);
+      await _plugin.setSpeechRate(rate);
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'set_speech_rate_error',
@@ -163,7 +166,7 @@ class TtsClientDefault implements TtsClient {
     assert(volume >= 0 && volume <= 1);
     volume = _cutOff(volume);
     try {
-      await platform.invokeMethod('setVolume', volume);
+      await _plugin.setVolume(volume);
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'set_volume_error',
@@ -181,7 +184,7 @@ class TtsClientDefault implements TtsClient {
     }
     try {
       final completer = Completer<void>();
-      await platform.invokeMethod('speak', text);
+      await _plugin.speak(text);
       setCompletionHandler(() {
         completer.complete();
       });
@@ -198,7 +201,7 @@ class TtsClientDefault implements TtsClient {
   @override
   Future<void> stop() async {
     try {
-      await platform.invokeMethod('stop');
+      await _plugin.stop();
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'stop_error',
@@ -210,7 +213,7 @@ class TtsClientDefault implements TtsClient {
   @override
   Future<void> pause() async {
     try {
-      await platform.invokeMethod('pause');
+      await _plugin.pause();
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'pause_error',
