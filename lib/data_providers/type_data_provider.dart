@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 
 import 'package:read_only/domain/entity/type.dart';
 import 'package:read_only/domain/service/type_service.dart';
-import 'package:read_only/library/grpc_client/grpc_client.dart';
+import 'package:grpc_client/grpc_client.dart';
 import 'package:read_only/pb/reader/service.pbgrpc.dart';
 
 class TypeDataProviderDefault implements TypeDataProvider {

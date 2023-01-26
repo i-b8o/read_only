@@ -28,9 +28,8 @@ class ParagraphCard extends StatelessWidget {
     );
   }
 
-  Card buildCard(BuildContext context, String pClass) {
-    final model = context.read<ChapterViewModel>();
-    final paragraph = model.chapter!.paragraphs[index];
+  Card buildCard(
+      BuildContext context, String pClass, content, bool isNFT, isTable) {
     return Card(
       elevation: 0,
       color: Theme.of(context).scaffoldBackgroundColor,
@@ -43,12 +42,12 @@ class ParagraphCard extends StatelessWidget {
               alignment: Alignment.centerLeft,
               padding: EdgeInsets.symmetric(
                   horizontal: 8.0, vertical: pClass == "" ? 16.0 : 2.0),
-              child: paragraph.isNFT
+              child: isNFT
                   ? ParagraphNFT(
-                      content: paragraph.content,
+                      content: content,
                       index: index,
                     )
-                  : paragraph.isTable
+                  : isTable
                       ? ParagraphTable(
                           index: index,
                         )
@@ -64,17 +63,21 @@ class ParagraphCard extends StatelessWidget {
     final model = context.read<ChapterViewModel>();
     final paragraph = model.chapter!.paragraphs[index];
     final paragraphClass = paragraph.className;
+    final content = paragraph.content;
+    final isNFT = paragraph.isNFT;
+    final isTable = paragraph.isTable;
 
-    return (paragraph.isNFT || paragraph.isTable)
-        ? buildCard(context, paragraphClass)
+    return (isNFT || paragraph.isTable)
+        ? buildCard(context, paragraphClass, content, isNFT, isTable)
         : FocusedMenuHolder(
             menuItems: [
               FocusedMenuItem(
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 title: const Text("Редактировать"),
                 onPressed: () async {
+                  model.setActiveParagraphIndex(index);
                   TextEditingController _controller = TextEditingController();
-                  _controller.text = parseHtmlString(paragraph.content);
+                  _controller.text = parseHtmlString(content);
                   showDialog(
                       context: context,
                       builder: (_) => OrientationBuilder(
@@ -115,7 +118,7 @@ class ParagraphCard extends StatelessWidget {
                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   title: const Text("Поделиться"),
                   onPressed: () async {
-                    share(parseHtmlString(paragraph.content));
+                    share(parseHtmlString(content));
                   },
                   trailingIcon: Icon(
                     Icons.share,
@@ -124,13 +127,16 @@ class ParagraphCard extends StatelessWidget {
               FocusedMenuItem(
                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   title: const Text("Прослушать"),
-                  onPressed: () async {
+                  onPressed: (context) async {
+                    print("ASSSSSSSSSSSSSSSSSSSSSSSSSSS");
+                    model.setActiveParagraphIndex(index);
                     showModalBottomSheet(
                         isDismissible: false,
                         backgroundColor: Colors.transparent,
                         isScrollControlled: true,
                         context: context,
                         builder: (context) {
+                          print("AAAAAAAAAAAAAAAAAAAND");
                           return const ParagraphCardBottomSheet();
                         });
                   },
@@ -141,7 +147,9 @@ class ParagraphCard extends StatelessWidget {
               FocusedMenuItem(
                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   title: const Text("Заметки"),
-                  onPressed: () {},
+                  onPressed: () {
+                    model.setActiveParagraphIndex(index);
+                  },
                   trailingIcon: Icon(
                     Icons.note_alt_outlined,
                     color: Theme.of(context).textTheme.bodyText1!.color,
@@ -155,7 +163,7 @@ class ParagraphCard extends StatelessWidget {
             menuOffset: 10,
             blurSize: 1,
             menuItemExtent: 60,
-            child: buildCard(context, paragraphClass),
+            child: buildCard(context, paragraphClass, content, isNFT, isTable),
           );
   }
 }

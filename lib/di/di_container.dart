@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:grpc/grpc.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/data_providers/chapter_data_provider.dart';
 import 'package:read_only/data_providers/tts_settings_data_provider.dart';
@@ -8,10 +7,10 @@ import 'package:read_only/data_providers/subtype_data_provider.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:read_only/domain/service/doc_service.dart';
 import 'package:read_only/domain/service/subtype_service.dart';
+import 'package:read_only/domain/service/tts_service.dart';
 import 'package:read_only/domain/service/type_service.dart';
-import 'package:read_only/library/grpc_client/grpc_client.dart';
-import 'package:read_only/library/shared_preferences/sgared_preferences.dart';
-import 'package:read_only/library/tts_client/tts_client.dart';
+import 'package:grpc_client/grpc_client.dart';
+import 'package:tts_client/tts_client.dart';
 
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_widget.dart';
@@ -28,6 +27,7 @@ import 'package:read_only/main.dart';
 import 'package:read_only/ui/navigation/main_navigation.dart';
 import 'package:read_only/ui/widgets/app/app.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_model.dart';
+import 'package:shared_preferences_storage/shared_preferences_storage.dart';
 
 AppFactory makeAppFactory() => _AppFactoryDefault();
 
@@ -42,19 +42,30 @@ class _AppFactoryDefault implements AppFactory {
 class _DIContainer {
   ScreenFactory _makeScreenFactory() => ScreenFactoryDefault(this);
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
-  late final DocService _docService;
-  late final TtsSettingsDataProvider _ttsSettingsDataProvider;
+
   late final GrpcClientDefault _grpcClient;
-  // final GrpcClientDefault _grpcClient =
-  // GrpcClientDefault(host: Configuration.host, port: Configuration.port);
+  late final TtsClientDefault _ttsClient;
+
+  late final TtsSettingsDataProviderDefault _ttsSettingsDataProvider;
+
+  late final DocService _docService;
+  late final TtsService _ttsService;
 
   _DIContainer() {
-    DefaultTtsClient();
-    DefaultSharedPreferencesStorage();
+    asyncInit();
     _grpcClient =
         GrpcClientDefault(host: Configuration.host, port: Configuration.port);
     _docService = DocService(
         docDataProvider: DocDataProviderDefault1(grpcClient: _grpcClient));
+
+    _ttsClient = TtsClientDefault();
+    _ttsService = TtsService(_ttsClient);
+  }
+
+  void asyncInit() async {
+    final sp = DefaultSharedPreferencesStorage();
+    await sp.getInstance();
+    _ttsSettingsDataProvider = TtsSettingsDataProviderDefault(sp);
   }
 
   TypeDataProvider _makeTypeDataProvider() =>
@@ -81,9 +92,9 @@ class _DIContainer {
       ChapterDataProviderDefault(grpcClient: _grpcClient);
 
   ChapterService _makeChapterService() => ChapterService(
-      chapterDataProvider: _makeChapterDataProvider(),
-      ttsSettingsDataProvider: _ttsSettingsDataProvider,
-      ttsClient: DefaultTtsClient());
+        chapterDataProvider: _makeChapterDataProvider(),
+        ttsSettingsDataProvider: _ttsSettingsDataProvider,
+      );
   ChapterViewModel _makeChapterViewModel(String url) {
     final int id;
     final int paragraphID;
@@ -102,6 +113,7 @@ class _DIContainer {
         pageController: PageController(initialPage: initPage),
         textEditingController: TextEditingController(text: '$initPage'),
         chapterProvider: _makeChapterService(),
+        ttsService: _ttsService,
         id: id,
         paragraphID: paragraphID);
   }

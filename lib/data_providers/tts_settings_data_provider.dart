@@ -1,12 +1,9 @@
 import 'package:read_only/domain/service/chapter_service.dart';
-
-abstract class TtsSettingsStorage {
-  Future<void> write<T>({required String key, required T? value});
-  double? readDouble({required String key});
-}
+import 'package:shared_preferences_storage/shared_preferences_storage.dart';
 
 class TtsSettingsDataProviderDefault implements TtsSettingsDataProvider {
-  const TtsSettingsDataProviderDefault();
+  const TtsSettingsDataProviderDefault(this.storage);
+  final SharedPreferencesStorage storage;
 
   @override
   Future<void> saveVoice(String value) {

@@ -1,9 +1,10 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/services.dart';
+import 'package:grpc_client/grpc_client.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
-import 'package:read_only/library/grpc_client/grpc_client.dart';
+
 
 import 'package:read_only/pb/reader/service.pbgrpc.dart';
 

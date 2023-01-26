@@ -31,7 +31,7 @@ class SubtypeListViewModel extends ChangeNotifier {
   void onTap(BuildContext context, int index) {
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.docListScreen,
-      arguments: id,
+      arguments: index,
     );
   }
 }

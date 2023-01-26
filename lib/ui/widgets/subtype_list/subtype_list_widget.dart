@@ -1,4 +1,3 @@
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
@@ -106,9 +105,13 @@ class TypeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(id);
     final model = context.read<SubtypeListViewModel>();
     return GestureDetector(
-        onTap: () => model.onTap(context, id),
+        onTap: () {
+          print("here $id");
+          model.onTap(context, id);
+        },
         child: Card(
           margin: EdgeInsets.zero,
           shape: Border(

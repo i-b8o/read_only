@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum _DefaultTypes { bool, int, double, string, list }
 
 abstract class SharedPreferencesStorage {
+  Future getInstance();
   bool? readBool({required String key});
   int? readInt({required String key});
   double? readDouble({required String key});
@@ -36,11 +37,9 @@ class DefaultSharedPreferencesStorage implements SharedPreferencesStorage {
     _DefaultTypes.list: ((String key) => _preferences!.getStringList(key)),
   };
 
-  DefaultSharedPreferencesStorage() {
-    asyncInit();
-  }
+  DefaultSharedPreferencesStorage();
 
-  Future asyncInit() async {
+  Future getInstance() async {
     try {
       _preferences = await SharedPreferences.getInstance();
     } catch (exception, stackTrace) {

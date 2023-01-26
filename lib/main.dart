@@ -10,6 +10,7 @@ abstract class AppFactory {
 final appFactory = makeAppFactory();
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final app = appFactory.makeApp();
   // await SentryFlutter.init(
   //   (options) {

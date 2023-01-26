@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'chapter_model.dart';
 
 class ParagraphCardBottomSheet extends StatelessWidget {
   const ParagraphCardBottomSheet({
@@ -7,10 +10,12 @@ class ParagraphCardBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<ChapterViewModel>();
     return Wrap(alignment: WrapAlignment.center, children: [
       GestureDetector(
         onTap: () async {
           Navigator.pop(context);
+          model.startSpeakParagraph();
         },
         child: Container(
           decoration: BoxDecoration(
@@ -43,6 +48,7 @@ class ParagraphCardBottomSheet extends StatelessWidget {
       GestureDetector(
         onTap: () async {
           Navigator.pop(context);
+          model.startSpeakChapter();
         },
         child: Container(
           margin: const EdgeInsets.only(bottom: 10),

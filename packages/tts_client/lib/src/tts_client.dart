@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 
 abstract class TtsClient {
   Future<bool>? checkLanguage(String locale);
@@ -13,29 +14,58 @@ abstract class TtsClient {
   Future<void> pause();
 }
 
-class DefaultTtsClient implements TtsClient {
-  final _plugin = FlutterTts();
+class TtsClientDefault implements TtsClient {
+  static const MethodChannel _channel = const MethodChannel('tts_client');
+  VoidCallback? completionHandler;
 
-  DefaultTtsClient() {
-    asyncInit();
+  TtsClientDefault() {
+    _channel.setMethodCallHandler(platformCallHandler);
   }
 
-  asyncInit() async {
-    try {
-      await _plugin.awaitSpeakCompletion(true);
-    } catch (exception, stackTrace) {
-      throw PlatformException(
-          code: 'init_error',
-          message: exception.toString(),
-          details: stackTrace.toString());
+  Future platformCallHandler(MethodCall call) async {
+    switch (call.method) {
+      case "speak.onComplete":
+        if (completionHandler != null) {
+          completionHandler!();
+        }
+        break;
+
+      default:
+        print('Unknowm method ${call.method}');
     }
+  }
+
+  void setCompletionHandler(VoidCallback callback) {
+    completionHandler = callback;
+  }
+
+  // Future getInstance() async {
+  //   try {
+  //     await _plugin.awaitSpeakCompletion(true);
+  //   } catch (exception, stackTrace) {
+  //     throw PlatformException(
+  //         code: 'init_error',
+  //         message: exception.toString(),
+  //         details: stackTrace.toString());
+  //   }
+  // }
+
+  double _cutOff(double value) {
+    if (value < 0) {
+      return 0;
+    }
+    if (value > 1) {
+      return 1;
+    }
+    return value;
   }
 
   @override
   Future<bool> checkLanguage(String locale) async {
     assert(locale.isNotEmpty);
     try {
-      List<String>? languages = List<String>.from(await _plugin.getLanguages);
+      List<String>? languages =
+          List<String>.from(await _channel.invokeMethod('getLanguages'));
       if (!languages.contains(locale)) {
         return false;
       }
@@ -53,7 +83,7 @@ class DefaultTtsClient implements TtsClient {
   Future<List<String>> getVoices(String locale) async {
     try {
       List<String> result = [];
-      var voices = await _plugin.getVoices;
+      var voices = await _channel.invokeMethod('getVoices');
       for (var v in voices) {
         if (v['locale'] == locale) {
           result.add(v['name'] ?? "");
@@ -74,7 +104,7 @@ class DefaultTtsClient implements TtsClient {
     assert(voiceName.isNotEmpty);
     try {
       Map<String, String>? voice;
-      List voices = await _plugin.getVoices;
+      List voices = await _channel.invokeMethod('getVoices');
       for (var v in voices) {
         if (v['name'] == voiceName) {
           voice = {"name": voiceName, "locale": v["locale"] ?? "ru-RU"};
@@ -83,7 +113,7 @@ class DefaultTtsClient implements TtsClient {
       if (voice == null) {
         throw UnsupportedError('the voice $voiceName does not exist');
       }
-      await _plugin.setVoice(voice);
+      await _channel.invokeMethod('setVoice', voice);
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'set_voice_error',
@@ -96,10 +126,11 @@ class DefaultTtsClient implements TtsClient {
   @override
   Future<void> setPitch(double pitch) async {
     assert(pitch >= 0 && pitch <= 1);
+    pitch = _cutOff(pitch);
     try {
       // ranges from .5 to 2.0
       pitch = pitch * 1.5 + 0.5;
-      await _plugin.setPitch(pitch);
+      await _channel.invokeMethod('setPitch', pitch);
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'set_pitch_error',
@@ -112,8 +143,9 @@ class DefaultTtsClient implements TtsClient {
   @override
   Future<void> setSpeechRate(double rate) async {
     assert(rate >= 0 && rate <= 1);
+    rate = _cutOff(rate);
     try {
-      await _plugin.setSpeechRate(rate);
+      await _channel.invokeMethod('setSpeechRate', rate);
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'set_speech_rate_error',
@@ -126,8 +158,9 @@ class DefaultTtsClient implements TtsClient {
   @override
   Future<void> setVolume(double volume) async {
     assert(volume >= 0 && volume <= 1);
+    volume = _cutOff(volume);
     try {
-      await _plugin.setVolume(volume);
+      await _channel.invokeMethod('setVolume', volume);
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'set_volume_error',
@@ -140,8 +173,16 @@ class DefaultTtsClient implements TtsClient {
   @override
   Future<void> speak(String text) async {
     assert(text.isNotEmpty);
+    if (text.isEmpty) {
+      return;
+    }
     try {
-      await _plugin.speak(text);
+      final completer = Completer<void>();
+      await _channel.invokeMethod('speak', text);
+      setCompletionHandler(() {
+        completer.complete();
+      });
+      return completer.future;
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'speek_error',
@@ -154,7 +195,7 @@ class DefaultTtsClient implements TtsClient {
   @override
   Future<void> stop() async {
     try {
-      await _plugin.stop();
+      await _channel.invokeMethod('stop');
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'stop_error',
@@ -166,7 +207,7 @@ class DefaultTtsClient implements TtsClient {
   @override
   Future<void> pause() async {
     try {
-      await _plugin.pause();
+      await _channel.invokeMethod('pause');
     } catch (exception, stackTrace) {
       throw PlatformException(
           code: 'pause_error',

@@ -6,15 +6,21 @@ abstract class ChapterViewModelService {
   Future<ReadOnlyChapter> getOne(int id);
 }
 
-abstract class TtsService
+abstract class ChapterViewModelTtsService {
+  Future<void> pauseSpeak();
+  Future<void> startSpeak(String text);
+  Future<void> stopSpeak();
+}
 
 class ChapterViewModel extends ChangeNotifier {
   final ChapterViewModelService chapterProvider;
-
+  final ChapterViewModelTtsService ttsService;
   final int chapterCount;
   final int id;
   final int paragraphID;
   final Map<int, int> chaptersOrderNums;
+  int? activeParagraphIndex;
+  void setActiveParagraphIndex(int index) => activeParagraphIndex = index;
 
   final PageController pageController;
   final TextEditingController textEditingController;
@@ -27,6 +33,7 @@ class ChapterViewModel extends ChangeNotifier {
 
   ChapterViewModel({
     required this.chapterProvider,
+    required this.ttsService,
     required this.id,
     required this.paragraphID,
     required this.chapterCount,
@@ -41,18 +48,14 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<void> asyncInit(int id) async {
-    print("asyncInit");
     await getOne(id);
-    print("got");
     if (paragraphID == 0) {
-      print("zero");
       return;
     }
     if (chapter == null) {
-      print("chapter null");
       return;
     }
-    print("paragraphID: $paragraphID");
+
     _paragraphOrderNum = chapter!.paragraphs
         .where((element) => element.id.toInt() == paragraphID)
         .first
@@ -78,5 +81,27 @@ class ChapterViewModel extends ChangeNotifier {
       arguments: url,
     );
     return true;
+  }
+
+  Future<void> startSpeakParagraph() async {
+    if (chapter == null || activeParagraphIndex == null) {
+      return;
+    }
+    return ttsService
+        .startSpeak(chapter!.paragraphs[activeParagraphIndex!].content);
+  }
+
+  Future<void> startSpeakChapter() async {
+    if (chapter == null) {
+      return;
+    }
+    final paragraphs = chapter!.paragraphs;
+    for (var i = 0; i < paragraphs.length; i++) {
+      await ttsService.startSpeak(paragraphs[i].content);
+    }
+  }
+
+  Future<void> stopSpeak() async {
+    await ttsService.stopSpeak();
   }
 }
