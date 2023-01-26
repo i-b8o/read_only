@@ -6,11 +6,14 @@ import 'chapter_model.dart';
 class ParagraphCardBottomSheet extends StatelessWidget {
   const ParagraphCardBottomSheet({
     Key? key,
+    required this.parentContext,
   }) : super(key: key);
+
+  final BuildContext parentContext;
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<ChapterViewModel>();
+    final model = parentContext.read<ChapterViewModel>();
     return Wrap(alignment: WrapAlignment.center, children: [
       GestureDetector(
         onTap: () async {

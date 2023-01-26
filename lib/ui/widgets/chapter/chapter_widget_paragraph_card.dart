@@ -127,8 +127,9 @@ class ParagraphCard extends StatelessWidget {
               FocusedMenuItem(
                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   title: const Text("Прослушать"),
-                  onPressed: (context) async {
-                    print("ASSSSSSSSSSSSSSSSSSSSSSSSSSS");
+                  onPressed: () async {
+                    BuildContext parentContext = context;
+
                     model.setActiveParagraphIndex(index);
                     showModalBottomSheet(
                         isDismissible: false,
@@ -136,8 +137,9 @@ class ParagraphCard extends StatelessWidget {
                         isScrollControlled: true,
                         context: context,
                         builder: (context) {
-                          print("AAAAAAAAAAAAAAAAAAAND");
-                          return const ParagraphCardBottomSheet();
+                          return ParagraphCardBottomSheet(
+                            parentContext: parentContext,
+                          );
                         });
                   },
                   trailingIcon: Icon(
