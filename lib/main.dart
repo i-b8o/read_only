@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'di/di_container.dart';
+
+const platform = MethodChannel("com.i-b8o.read_only");
 
 // TODO styling for html
 // TODO SafeArea

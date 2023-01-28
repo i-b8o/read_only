@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
+import 'package:read_only/.configuration/configuration.dart';
 import 'package:read_only/data_providers/chapter_data_provider.dart';
 import 'package:read_only/data_providers/tts_settings_data_provider.dart';
 import 'package:read_only/data_providers/type_data_provider.dart';
@@ -11,7 +12,6 @@ import 'package:read_only/domain/service/subtype_service.dart';
 import 'package:read_only/domain/service/tts_service.dart';
 import 'package:read_only/domain/service/type_service.dart';
 import 'package:grpc_client/grpc_client.dart';
-import 'package:tts_client/tts_client.dart';
 
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_widget.dart';
@@ -22,7 +22,6 @@ import 'package:read_only/ui/widgets/doc_list/doc_list_widget.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_model.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_widget.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_widget.dart';
-import 'package:read_only/.configuration/configuration.dart';
 import 'package:read_only/data_providers/doc_data_provider.dart';
 import 'package:read_only/main.dart';
 import 'package:read_only/ui/navigation/main_navigation.dart';
@@ -45,7 +44,6 @@ class _DIContainer {
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
 
   late final GrpcClientDefault _grpcClient;
-  late final TtsClientDefault _ttsClient;
 
   late final TtsSettingsDataProviderDefault _ttsSettingsDataProvider;
 
@@ -59,8 +57,7 @@ class _DIContainer {
     _docService = DocService(
         docDataProvider: DocDataProviderDefault1(grpcClient: _grpcClient));
 
-    _ttsClient = TtsClientDefault(plugin: FlutterTts());
-    _ttsService = TtsService(_ttsClient);
+    _ttsService = const TtsService();
   }
 
   void asyncInit() async {

@@ -51,8 +51,6 @@ dependencies:
   shared_preferences_storage:
     path: packages/shared_preferences_storage
 
-  tts_client:
-    path: packages/tts_client
 
 dev_dependencies:
   flutter_test:
