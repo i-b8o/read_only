@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ib8o.read_only">
+    package="com.b8o.read_only">
    <application
         android:label="read_only"
         android:name="${applicationName}"

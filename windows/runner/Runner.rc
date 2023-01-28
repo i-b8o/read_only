@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.i-b8o" "\0"
+            VALUE "CompanyName", "com.b8o" "\0"
             VALUE "FileDescription", "read_only" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "read_only" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 com.i-b8o. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2023 com.b8o. All rights reserved." "\0"
             VALUE "OriginalFilename", "read_only.exe" "\0"
             VALUE "ProductName", "read_only" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

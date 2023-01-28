@@ -1,4 +1,4 @@
-import 'package:read_only/library/text/text.dart';
+import 'package:read_only/main.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
 abstract class TtsProvider {}
@@ -15,12 +15,11 @@ class TtsService implements ChapterViewModelTtsService {
     if (text.isEmpty) {
       return;
     }
-    final clearText = parseHtmlString(text);
-    // return await ttsClient.speak(clearText);
+    await platform.invokeMethod("speak", text);
   }
 
   @override
   Future<void> stopSpeak() async {
-    // return await ttsClient.stop();
+    await platform.invokeMethod("stop");
   }
 }

@@ -26,7 +26,9 @@ class ChapterWidget extends StatelessWidget {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.stop),
-          onPressed: () {},
+          onPressed: () {
+            model.stopSpeak();
+          },
         ),
         resizeToAvoidBottomInset: false,
         appBar: PreferredSize(
