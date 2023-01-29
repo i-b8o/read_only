@@ -6,6 +6,7 @@ abstract class ChapterViewModelService {
   Future<ReadOnlyChapter> getOne(int id);
 }
 
+// TODO drop extra methods
 abstract class ChapterViewModelTtsService {
   Future<void> pauseSpeak();
   Future<void> startSpeak(String text);

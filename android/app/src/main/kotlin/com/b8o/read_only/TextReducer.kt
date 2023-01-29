@@ -7,8 +7,7 @@ interface TextReducer  {
 class TextReducerDefault(private val textCleaner:TextCleaner): TextReducer {
     override fun reduce(text: String): List<String> {
         if(text.length < 250) {
-            var cleanText = textCleaner.dropPunctuations(text)
-            return listOf(cleanText)
+            return text.split(". ")
         }
 //        Text is not short enough
         val preparedText = mutableListOf<String>()
@@ -16,8 +15,7 @@ class TextReducerDefault(private val textCleaner:TextCleaner): TextReducer {
         for(sentence:String in sentences){
             var words = sentence.split(" ")
             if (words.size <= 40){
-                var cleanText = textCleaner.dropPunctuations(sentence)
-                preparedText.add(cleanText)
+                preparedText.add(sentence)
                 continue
             }
             var parts = sentence.split(",")

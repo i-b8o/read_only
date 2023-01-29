@@ -7,7 +7,7 @@ class TtsService implements ChapterViewModelTtsService {
   const TtsService();
   @override
   Future<void> pauseSpeak() async {
-    // return await ttsClient.pause();
+    await ttsChannel.invokeMethod("pause");
   }
 
   @override
@@ -15,11 +15,48 @@ class TtsService implements ChapterViewModelTtsService {
     if (text.isEmpty) {
       return;
     }
-    await platform.invokeMethod("speak", text);
+    await ttsChannel.invokeMethod("speak", text);
   }
 
   @override
   Future<void> stopSpeak() async {
-    await platform.invokeMethod("stop");
+    await ttsChannel.invokeMethod("stop");
   }
+  @override
+  Future<dynamic> getLanguages() async {
+    final languages = await ttsChannel.invokeMethod('getLanguages');
+    return languages;
+  }
+
+  Future<bool> highlighting() async{
+    return await ttsChannel.invokeMethod("highlighting") as bool;
+  }
+
+  @override
+  Future<List<String>?> getVoices() async {
+    final voices = await ttsChannel.invokeMethod('getVoices') as List<dynamic>?;
+    if (voices != null){
+      return List<String>.from(voices);
+    }
+    return null;
+  }
+
+  @override
+  Future<bool> setLanguage(String language) async {
+    return await ttsChannel.invokeMethod('setLanguage', language) as bool;
+  }
+
+  Future<bool> setVoice(String voice) async =>
+      await ttsChannel.invokeMethod('setVoice', voice) as bool;
+
+  @override
+  Future<bool> setVolume(double volume) async =>
+      await ttsChannel.invokeMethod('setVolume', volume) as bool;
+
+  Future<bool> setPitch(double pitch) async =>
+      await ttsChannel.invokeMethod('setPitch', pitch) as bool;
+
+  @override
+  Future<bool> setSpeechRate(double rate) async =>
+      await ttsChannel.invokeMethod('setSpeechRate', rate) as bool;
 }

@@ -2,9 +2,9 @@ package com.b8o.read_only
 
 
 
-class TextHandler(private  val text:String, private val textCleaner:TextCleaner, private val textReducer:TextReducer) {
+class TextHandler(private val textCleaner:TextCleaner, private val textReducer:TextReducer) {
     //   TODO roman numbers?
-       fun apply(): List<String> {
+       fun apply(text: String): List<String> {
         var cleanText = textCleaner.dropHtml(text)
         return  textReducer.reduce(cleanText)
     }
