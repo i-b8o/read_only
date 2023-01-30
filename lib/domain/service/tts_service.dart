@@ -11,11 +11,11 @@ class TtsService implements ChapterViewModelTtsService {
   }
 
   @override
-  Future<void> startSpeak(String text) async {
+  Future<bool> startSpeak(String text) async {
     if (text.isEmpty) {
-      return;
+      return false;
     }
-    await ttsChannel.invokeMethod("speak", text);
+    return await ttsChannel.invokeMethod("speak", text);
   }
 
   @override

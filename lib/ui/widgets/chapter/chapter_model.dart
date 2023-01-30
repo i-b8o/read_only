@@ -9,7 +9,7 @@ abstract class ChapterViewModelService {
 // TODO drop extra methods
 abstract class ChapterViewModelTtsService {
   Future<void> pauseSpeak();
-  Future<void> startSpeak(String text);
+  Future<bool> startSpeak(String text);
   Future<void> stopSpeak();
 }
 

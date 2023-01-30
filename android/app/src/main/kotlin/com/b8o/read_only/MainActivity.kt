@@ -80,10 +80,10 @@ class MainActivity: FlutterActivity() {
                }
                "speak" -> {
                    var text = call.arguments.toString()
-                   tts.speak(handler.apply(text))
+                   result.success(tts.speak(handler.apply(text)))
 
                }
-               "paause" -> {
+               "pause" -> {
                    tts.stop()
                }
                "stop" -> {

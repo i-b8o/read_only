@@ -6,17 +6,22 @@ import android.content.Context
 import android.speech.tts.*
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
 
 class VoiceService(context:Context): TextToSpeech.OnInitListener {
     private val tag = "Voice"
     private val googleTtsEngine = "com.google.android.tts"
     private var currentText: String? = null
-    private var currentLanguageTag: String = "ru-RU"
+    private var speaking = false
+    private var currentPartIndex = 0
+    private var totalParts: Int? = null
+    private var currentLanguageTag = "ru-RU"
     private var bundle: Bundle = Bundle()
-
+    private val SYNTHESIZE_TO_FILE_PREFIX = "STF_"
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
+            tts!!.setOnUtteranceProgressListener(utteranceProgressListener)
             val result = tts!!.setLanguage(Locale.US)
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 println("The Language not supported!")
@@ -24,8 +29,46 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
         }
     }
 
-    private val utteranceProgressListener: UtteranceProgressListener = object : UtteranceProgressListener(){
+    private val utteranceProgressListener: UtteranceProgressListener =
+        object : UtteranceProgressListener() {
+        override fun onStart(utteranceId: String) {
+            currentPartIndex++
+            Log.d(tag, "Utterance ID has started: $utteranceId")
+        }
 
+        override fun onDone(utteranceId: String) {
+            if (currentPartIndex == totalParts){
+                speaking = false
+                Log.d(tag, "All Utterance has completed")
+            }
+            Log.d(tag, "Utterance ID has completed: $utteranceId")
+        }
+
+        override fun onStop(utteranceId: String, interrupted: Boolean) {
+            Log.d(tag,"Utterance ID has been stopped: $utteranceId. Interrupted: $interrupted")
+        }
+
+        private fun onProgress(utteranceId: String?, startAt: Int, endAt: Int) {
+            if (utteranceId != null) {
+                Log.d(tag,"Utterance ID: $utteranceId on progress startAt $startAt. andAt: $endAt, $currentPartIndex == $totalParts")
+            }
+        }
+
+        override fun onRangeStart(utteranceId: String, startAt: Int, endAt: Int, frame: Int) {
+            if (!utteranceId.startsWith(SYNTHESIZE_TO_FILE_PREFIX)) {
+                onProgress(utteranceId, startAt, endAt)
+            }
+        }
+            @Deprecated("")
+            override fun onError(utteranceId: String) {
+                Log.d(tag,"Utterance ID: $utteranceId ")
+            }
+
+            override fun onError(utteranceId: String, errorCode: Int) {
+            if (utteranceId.startsWith(SYNTHESIZE_TO_FILE_PREFIX)) {
+                Log.d(tag,"Utterance ID: $utteranceId on ")
+            }
+        }
     }
 
     private var tts = TextToSpeech(context, this, googleTtsEngine)
@@ -125,11 +168,29 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
 
     }
 //    TODO https://stackoverflow.com/questions/58888101/flutter-how-to-get-a-data-stream-with-an-event-channel-from-native-to-the-flut
-    fun speak(texts:List<String>){
+    fun speak(texts:List<String>):Boolean{
+        if (texts.isEmpty()) return false
+        speaking = true
+        Log.d(tag, "speak started")
+        currentPartIndex = 0
+        totalParts = texts.size
         for (text:String in texts){
-            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null,"")
+            Log.d(tag, "speak: $text")
+            tts!!.speak(text, TextToSpeech.QUEUE_ADD, null,"")
+        }
+    this.waitSpeakFinish {}
+        Log.d(tag, "speak stoped")
+        return true
+    }
+
+    private fun waitSpeakFinish(callback: (Boolean) -> Unit){
+        thread {
+            while (speaking){}
+            callback.invoke(true)
+            Log.d(tag, "DONE!!! $speaking")
         }
     }
+
     fun stop(){
         tts!!.stop()
         tts!!.shutdown()
