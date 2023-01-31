@@ -6,7 +6,9 @@ import android.content.Context
 import android.speech.tts.*
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.concurrent.thread
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 
 
 class VoiceService(context:Context): TextToSpeech.OnInitListener {
@@ -168,52 +170,26 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
 
     }
 //    TODO https://stackoverflow.com/questions/58888101/flutter-how-to-get-a-data-stream-with-an-event-channel-from-native-to-the-flut
-    fun speak(texts:List<String>):Boolean{
-        if (texts.isEmpty()) return false
+    fun speak(ch: Channel<Int>, texts:List<String>){
+        if (texts.isEmpty()) return
         speaking = true
-        Log.d(tag, "speak started")
         currentPartIndex = 0
         totalParts = texts.size
         for (text:String in texts){
-            Log.d(tag, "speak: $text")
             tts!!.speak(text, TextToSpeech.QUEUE_ADD, null,"")
         }
-    this.waitSpeakFinish {}
-        Log.d(tag, "speak stoped")
-        return true
+        waitSpeakFinish(ch)
     }
 
-    private fun waitSpeakFinish(callback: (Boolean) -> Unit){
-        thread {
+    private fun waitSpeakFinish(ch: Channel<Int>){
+        CoroutineScope(Dispatchers.IO).launch {
             while (speaking){}
-            callback.invoke(true)
-            Log.d(tag, "DONE!!! $speaking")
+            ch.send(1)
         }
     }
 
     fun stop(){
         tts!!.stop()
-        tts!!.shutdown()
     }
 
 }
-
-//private class Voice implements TextToSpeech.OnInitListener {
-//    Context context = getApplicationContext ();
-//    TextToSpeech tts = new TextToSpeech(context, this);
-//
-//    public void onInit(int initStatus) {
-//        if (initStatus == TextToSpeech.SUCCESS) {
-//            tts.setLanguage(Locale.US);
-//            // try it!
-//            voice.say("Can you hear this sentence?");
-//            // If you want to another "say", check this log.
-//            // Your voice will say after you see this log at logcat.
-//            Log.i("TAG", "TextToSpeech instance initialization is finished.");
-//        }
-//    }
-//
-//    private void say(String announcement) {
-//        tts.speak(announcement, TextToSpeech.QUEUE_FLUSH, null);
-//    }
-//}

@@ -6,7 +6,9 @@ import io.flutter.plugin.common.MethodChannel
 import java.util.*
 import android.os.Build
 import io.flutter.Log
-
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 
 class MainActivity: FlutterActivity() {
     private val TTS_CHANNEL = "com.b8o.read_only/tts"
@@ -80,7 +82,13 @@ class MainActivity: FlutterActivity() {
                }
                "speak" -> {
                    var text = call.arguments.toString()
-                   result.success(tts.speak(handler.apply(text)))
+                   val ch = Channel<Int>()
+                   tts.speak(ch, handler.apply(text))
+                   CoroutineScope(Dispatchers.IO).launch{
+                       ch.receive()
+                       result.success(true)
+                   }
+
 
                }
                "pause" -> {

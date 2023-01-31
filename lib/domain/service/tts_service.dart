@@ -15,7 +15,10 @@ class TtsService implements ChapterViewModelTtsService {
     if (text.isEmpty) {
       return false;
     }
-    return await ttsChannel.invokeMethod("speak", text);
+    print("Speaking started!");
+    bool ok = await ttsChannel.invokeMethod("speak", text);
+    print("Speaking stoped with $ok");
+    return ok;
   }
 
   @override
