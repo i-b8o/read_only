@@ -8,9 +8,10 @@ abstract class ChapterViewModelService {
 
 // TODO drop extra methods
 abstract class ChapterViewModelTtsService {
-  Future<void> pauseSpeak();
-  Future<bool> startSpeak(String text);
+  Future<bool> startSpeak(List<String> texts);
   Future<void> stopSpeak();
+  Future<void> pauseSpeak();
+  Future<bool> resumeSpeak();
 }
 
 class ChapterViewModel extends ChangeNotifier {
@@ -91,21 +92,31 @@ class ChapterViewModel extends ChangeNotifier {
     // return ttsService
     //     .startSpeak(chapter!.paragraphs[activeParagraphIndex!].content);
     await ttsService
-        .startSpeak(chapter!.paragraphs[activeParagraphIndex!].content);
+        .startSpeak([chapter!.paragraphs[activeParagraphIndex!].content]);
   }
 
   Future<void> startSpeakChapter() async {
     if (chapter == null) {
       return;
     }
-    final paragraphs = chapter!.paragraphs;
-    for (var i = 0; i < paragraphs.length; i++) {
+    final texts = chapter!.paragraphs.map((paragraph) => paragraph.content).toList();
+
+    // for (var i = 0; i < paragraphs.length; i++) {
       // await ttsService.startSpeak(paragraphs[i].content);
-      await ttsService.startSpeak(paragraphs[i].content);
-    }
+      // await ttsService.startSpeak(paragraphs[i].content);
+    // }
+    await ttsService.startSpeak(texts);
   }
 
   Future<void> stopSpeak() async {
     await ttsService.stopSpeak();
+  }
+
+  Future<void> pauseSpeak() async {
+    await ttsService.pauseSpeak();
+  }
+  Future<void> resumeSpeak() async {
+    bool ok = await ttsService.resumeSpeak();
+    print("pauseSpeak: $ok");
   }
 }

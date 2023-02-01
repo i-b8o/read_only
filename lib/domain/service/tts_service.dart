@@ -4,22 +4,52 @@ import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 abstract class TtsProvider {}
 
 class TtsService implements ChapterViewModelTtsService {
-  const TtsService();
+  TtsService();
+
+  int _currentParagraphIndex = 0;
+  List<String> _texts = [];
+
+  Future<bool> _speak(List<String> texts) async {
+   for (var i = 0; i < texts.length; i++) {
+      _currentParagraphIndex = i;
+      final text = texts[i].trim();
+      bool ok = await ttsChannel.invokeMethod("speak", text);
+      if (!ok){
+        print("was returned false in _speak");
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @override
+  Future<bool> startSpeak(List<String> texts) async {
+    if (texts.isEmpty) {
+      return false;
+    }
+    _texts = texts;
+    return await _speak(texts);
+  }
+
+  @override
+  Future<bool> resumeSpeak() async {
+    print("resume");
+    bool ok = await ttsChannel.invokeMethod("resume");
+    if (!ok){
+      print("was returned false in _resumespeak");
+      return false;
+    }
+    final texts = _texts.skip(_currentParagraphIndex+1).toList();
+    print("resumeSpeak ${texts.length}");
+    return await _speak(texts);
+
+  }
+
   @override
   Future<void> pauseSpeak() async {
     await ttsChannel.invokeMethod("pause");
   }
 
-  @override
-  Future<bool> startSpeak(String text) async {
-    if (text.isEmpty) {
-      return false;
-    }
-    print("Speaking started!");
-    bool ok = await ttsChannel.invokeMethod("speak", text);
-    print("Speaking stoped with $ok");
-    return ok;
-  }
 
   @override
   Future<void> stopSpeak() async {
@@ -62,4 +92,5 @@ class TtsService implements ChapterViewModelTtsService {
   @override
   Future<bool> setSpeechRate(double rate) async =>
       await ttsChannel.invokeMethod('setSpeechRate', rate) as bool;
+
 }

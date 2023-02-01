@@ -24,11 +24,30 @@ class ChapterWidget extends StatelessWidget {
 
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.stop),
-          onPressed: () {
-            model.stopSpeak();
-          },
+        floatingActionButton: Row(
+          children: [
+            FloatingActionButton(
+              heroTag: "btn1",
+              onPressed: () {
+                model.stopSpeak();
+              },
+              child: const Icon(Icons.stop),
+            ),
+            FloatingActionButton(
+              heroTag: "btn2",
+              onPressed: () {
+                model.pauseSpeak();
+              },
+              child: const Icon(Icons.pause),
+            ),
+            FloatingActionButton(
+              heroTag: "btn3",
+              onPressed: () {
+                model.resumeSpeak();
+              },
+              child: const Icon(Icons.play_arrow),
+            ),
+          ],
         ),
         resizeToAvoidBottomInset: false,
         appBar: PreferredSize(

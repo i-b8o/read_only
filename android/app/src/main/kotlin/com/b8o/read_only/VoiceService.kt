@@ -14,10 +14,12 @@ import kotlinx.coroutines.launch
 class VoiceService(context:Context): TextToSpeech.OnInitListener {
     private val tag = "Voice"
     private val googleTtsEngine = "com.google.android.tts"
-    private var currentText: String? = null
+    private var currentText: List<String>? = null
     private var speaking = false
     private var currentPartIndex = 0
-    private var totalParts: Int? = null
+    private var start = 0
+    private var end = 0
+    private var totalParts: Int = 0
     private var currentLanguageTag = "ru-RU"
     private var bundle: Bundle = Bundle()
     private val SYNTHESIZE_TO_FILE_PREFIX = "STF_"
@@ -35,12 +37,16 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
         object : UtteranceProgressListener() {
         override fun onStart(utteranceId: String) {
             currentPartIndex++
+            Log.d(tag, "currentPartIndex: $currentPartIndex")
             Log.d(tag, "Utterance ID has started: $utteranceId")
         }
 
         override fun onDone(utteranceId: String) {
+            Log.d(tag, "CURRENT $currentPartIndex TOTAL $totalParts")
             if (currentPartIndex == totalParts){
                 speaking = false
+                currentText = null
+                currentPartIndex = 0
                 Log.d(tag, "All Utterance has completed")
             }
             Log.d(tag, "Utterance ID has completed: $utteranceId")
@@ -52,6 +58,8 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
 
         private fun onProgress(utteranceId: String?, startAt: Int, endAt: Int) {
             if (utteranceId != null) {
+                start = startAt
+                end = endAt
                 Log.d(tag,"Utterance ID: $utteranceId on progress startAt $startAt. andAt: $endAt, $currentPartIndex == $totalParts")
             }
         }
@@ -61,12 +69,12 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
                 onProgress(utteranceId, startAt, endAt)
             }
         }
-            @Deprecated("")
-            override fun onError(utteranceId: String) {
-                Log.d(tag,"Utterance ID: $utteranceId ")
-            }
+        @Deprecated("")
+        override fun onError(utteranceId: String) {
+            Log.d(tag,"Utterance ID: $utteranceId ")
+        }
 
-            override fun onError(utteranceId: String, errorCode: Int) {
+        override fun onError(utteranceId: String, errorCode: Int) {
             if (utteranceId.startsWith(SYNTHESIZE_TO_FILE_PREFIX)) {
                 Log.d(tag,"Utterance ID: $utteranceId on ")
             }
@@ -112,8 +120,6 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
     fun getVoices():ArrayList<String>? {
         val voices = ArrayList<String>()
         try {
-//            val voices: MutableSet<Voice> =
-
             for (voice in tts!!.getVoices()) {
                 if (voice.getLocale().toLanguageTag() != currentLanguageTag){
                     continue
@@ -154,29 +160,53 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
         var newValue: Float = if (value < 0)  0.0f else value
         return if (newValue > 1.0f) 1.0f else value
     }
+
     fun setVolume(volume: Float) {
         val newVolume = cutOff(volume)
         bundle!!.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, newVolume)
     }
+
     fun setPitch(pitch: Float) {
         val newPitch = cutOff(pitch)*1.5f+0.5f
         tts!!.setPitch(newPitch)
-
     }
+
     fun setSpeechRate(pitch: Float): Boolean {
         val newSpeechRate = cutOff(pitch)*2f
         val ok: Int = tts!!.setSpeechRate(newSpeechRate)
         return ok == 1
-
     }
-//    TODO https://stackoverflow.com/questions/58888101/flutter-how-to-get-a-data-stream-with-an-event-channel-from-native-to-the-flut
+
     fun speak(ch: Channel<Int>, texts:List<String>){
+        Log.d(tag, "speaking")
         if (texts.isEmpty()) return
         speaking = true
+        currentText = texts
+        Log.d(tag, "texts: $texts currentText: $currentText")
         currentPartIndex = 0
         totalParts = texts.size
+        Log.d(tag, "totalParts: $totalParts")
         for (text:String in texts){
             tts!!.speak(text, TextToSpeech.QUEUE_ADD, null,"")
+        }
+        waitSpeakFinish(ch)
+    }
+
+    fun resume (ch: Channel<Int>){
+        if (currentText == null) {
+            CoroutineScope(Dispatchers.IO).launch {
+                ch.send(0)
+                ch.close()
+            }
+            return
+        }
+        if (currentText!!.isEmpty()) return
+        var temp = currentText
+        if (temp != null){
+           var texts = temp.subList(currentPartIndex-1, totalParts)
+            for (text:String in texts){
+                tts!!.speak(text, TextToSpeech.QUEUE_ADD, null,"")
+            }
         }
         waitSpeakFinish(ch)
     }
@@ -184,12 +214,24 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
     private fun waitSpeakFinish(ch: Channel<Int>){
         CoroutineScope(Dispatchers.IO).launch {
             while (speaking){}
+            Log.d(tag, "sending...")
             ch.send(1)
+            Log.d(tag, "sent successfully")
+            ch.close()
+            Log.d(tag, "closed")
         }
+    }
+
+    fun pause() {
+        tts!!.stop()
     }
 
     fun stop(){
         tts!!.stop()
-    }
+        currentText = null
+        currentPartIndex = 0
+        start = 0
+        end = 0
 
+    }
 }

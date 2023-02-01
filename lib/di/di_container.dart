@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/.configuration/configuration.dart';
 import 'package:read_only/data_providers/chapter_data_provider.dart';
@@ -57,7 +56,7 @@ class _DIContainer {
     _docService = DocService(
         docDataProvider: DocDataProviderDefault1(grpcClient: _grpcClient));
 
-    _ttsService = const TtsService();
+    _ttsService = TtsService();
   }
 
   void asyncInit() async {

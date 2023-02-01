@@ -68,8 +68,6 @@ class MainActivity: FlutterActivity() {
                         result.success(false)
                     }
                }
-
-
                "setSpeechRate" -> {
                    var value : String = call.arguments.toString()
                    try {
@@ -84,15 +82,23 @@ class MainActivity: FlutterActivity() {
                    var text = call.arguments.toString()
                    val ch = Channel<Int>()
                    tts.speak(ch, handler.apply(text))
-                   CoroutineScope(Dispatchers.IO).launch{
+                   CoroutineScope(Dispatchers.IO).launch {
                        ch.receive()
                        result.success(true)
                    }
-
-
                }
+
+               "resume" -> {
+                   val ch = Channel<Int>()
+                   tts.resume(ch)
+                   CoroutineScope(Dispatchers.IO).launch {
+                       ch.receive()
+                       result.success(true)
+                   }
+               }
+
                "pause" -> {
-                   tts.stop()
+                   tts.pause()
                }
                "stop" -> {
                    tts.stop()
