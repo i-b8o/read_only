@@ -11,7 +11,7 @@ import 'package:read_only/domain/service/subtype_service.dart';
 import 'package:read_only/domain/service/tts_service.dart';
 import 'package:read_only/domain/service/type_service.dart';
 import 'package:grpc_client/grpc_client.dart';
-
+import 'package:flutter/services.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_widget.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
@@ -41,7 +41,8 @@ class _AppFactoryDefault implements AppFactory {
 class _DIContainer {
   ScreenFactory _makeScreenFactory() => ScreenFactoryDefault(this);
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
-
+  final ttsMethodChannel = const MethodChannel("com.b8o.read_only/tts");
+  final ttsPositionChannel = const EventChannel("com.b8o.read_only/tts_pos");
   late final GrpcClientDefault _grpcClient;
 
   late final TtsSettingsDataProviderDefault _ttsSettingsDataProvider;
@@ -56,7 +57,7 @@ class _DIContainer {
     _docService = DocService(
         docDataProvider: DocDataProviderDefault1(grpcClient: _grpcClient));
 
-    _ttsService = TtsService();
+    _ttsService = TtsService(ttsChannel: ttsMethodChannel, ttsPositionChannel: ttsPositionChannel);
   }
 
   void asyncInit() async {

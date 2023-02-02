@@ -1,21 +1,31 @@
-import 'package:read_only/main.dart';
+import 'package:flutter/services.dart';
+import 'package:read_only/library/text/text.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
 abstract class TtsProvider {}
 
 class TtsService implements ChapterViewModelTtsService {
-  TtsService();
+  TtsService({required this.ttsChannel,required  this.ttsPositionChannel}){
+    final networkStream = ttsPositionChannel
+        .receiveBroadcastStream()
+        .distinct()
+        .map((dynamic event) => print(event as int));
+  }
+  final MethodChannel ttsChannel;
+  final EventChannel ttsPositionChannel;
+  bool _stoped = false;
 
-  int _currentParagraphIndex = 0;
-  List<String> _texts = [];
+
 
   Future<bool> _speak(List<String> texts) async {
+    _stoped = false;
    for (var i = 0; i < texts.length; i++) {
-      _currentParagraphIndex = i;
-      final text = texts[i].trim();
+      final text = parseHtmlString(texts[i].trim());
       bool ok = await ttsChannel.invokeMethod("speak", text);
+      if(_stoped){
+        break;
+      }
       if (!ok){
-        print("was returned false in _speak");
         return false;
       }
     }
@@ -27,22 +37,16 @@ class TtsService implements ChapterViewModelTtsService {
     if (texts.isEmpty) {
       return false;
     }
-    _texts = texts;
     return await _speak(texts);
   }
 
   @override
   Future<bool> resumeSpeak() async {
-    print("resume");
-    bool ok = await ttsChannel.invokeMethod("resume");
-    if (!ok){
-      print("was returned false in _resumespeak");
-      return false;
-    }
-    final texts = _texts.skip(_currentParagraphIndex+1).toList();
-    print("resumeSpeak ${texts.length}");
-    return await _speak(texts);
-
+    return await ttsChannel.invokeMethod("resume");
+    // if (!ok){
+    //   return false;
+    // }
+    // return await _speak(texts);
   }
 
   @override
@@ -53,6 +57,7 @@ class TtsService implements ChapterViewModelTtsService {
 
   @override
   Future<void> stopSpeak() async {
+    _stoped = true;
     await ttsChannel.invokeMethod("stop");
   }
   @override

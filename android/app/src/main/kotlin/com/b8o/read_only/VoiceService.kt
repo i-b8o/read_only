@@ -2,6 +2,7 @@ package com.b8o.read_only
 import io.flutter.Log
 import android.os.Build
 import android.os.Bundle
+
 import android.content.Context
 import android.speech.tts.*
 import java.util.*
@@ -14,12 +15,7 @@ import kotlinx.coroutines.launch
 class VoiceService(context:Context): TextToSpeech.OnInitListener {
     private val tag = "Voice"
     private val googleTtsEngine = "com.google.android.tts"
-    private var currentText: List<String>? = null
     private var speaking = false
-    private var currentPartIndex = 0
-    private var start = 0
-    private var end = 0
-    private var totalParts: Int = 0
     private var currentLanguageTag = "ru-RU"
     private var bundle: Bundle = Bundle()
     private val SYNTHESIZE_TO_FILE_PREFIX = "STF_"
@@ -36,32 +32,18 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
     private val utteranceProgressListener: UtteranceProgressListener =
         object : UtteranceProgressListener() {
         override fun onStart(utteranceId: String) {
-            currentPartIndex++
-            Log.d(tag, "currentPartIndex: $currentPartIndex")
-            Log.d(tag, "Utterance ID has started: $utteranceId")
+            speaking = true
         }
 
         override fun onDone(utteranceId: String) {
-            Log.d(tag, "CURRENT $currentPartIndex TOTAL $totalParts")
-            if (currentPartIndex == totalParts){
-                speaking = false
-                currentText = null
-                currentPartIndex = 0
-                Log.d(tag, "All Utterance has completed")
-            }
-            Log.d(tag, "Utterance ID has completed: $utteranceId")
+            speaking = false
         }
 
         override fun onStop(utteranceId: String, interrupted: Boolean) {
-            Log.d(tag,"Utterance ID has been stopped: $utteranceId. Interrupted: $interrupted")
+            speaking = false
         }
 
         private fun onProgress(utteranceId: String?, startAt: Int, endAt: Int) {
-            if (utteranceId != null) {
-                start = startAt
-                end = endAt
-                Log.d(tag,"Utterance ID: $utteranceId on progress startAt $startAt. andAt: $endAt, $currentPartIndex == $totalParts")
-            }
         }
 
         override fun onRangeStart(utteranceId: String, startAt: Int, endAt: Int, frame: Int) {
@@ -71,12 +53,10 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
         }
         @Deprecated("")
         override fun onError(utteranceId: String) {
-            Log.d(tag,"Utterance ID: $utteranceId ")
         }
 
         override fun onError(utteranceId: String, errorCode: Int) {
             if (utteranceId.startsWith(SYNTHESIZE_TO_FILE_PREFIX)) {
-                Log.d(tag,"Utterance ID: $utteranceId on ")
             }
         }
     }
@@ -104,7 +84,6 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
                 for (locale in Locale.getAvailableLocales()) {
                     if (locale.variant.isEmpty() && isLanguageAvailable(locale)) {
                         languages.add(locale.toLanguageTag())
-                        Log.d(tag, "getLanguages: " + locale.toLanguageTag())
                     }
                 }
             }
@@ -129,7 +108,6 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
             }
             return voices
         } catch (e: NullPointerException) {
-            Log.d(tag, "getVoices: " + e.message)
             return  null
         }
     }
@@ -177,61 +155,22 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
         return ok == 1
     }
 
-    fun speak(ch: Channel<Int>, texts:List<String>){
-        Log.d(tag, "speaking")
-        if (texts.isEmpty()) return
-        speaking = true
-        currentText = texts
-        Log.d(tag, "texts: $texts currentText: $currentText")
-        currentPartIndex = 0
-        totalParts = texts.size
-        Log.d(tag, "totalParts: $totalParts")
-        for (text:String in texts){
-            tts!!.speak(text, TextToSpeech.QUEUE_ADD, null,"")
-        }
-        waitSpeakFinish(ch)
-    }
-
-    fun resume (ch: Channel<Int>){
-        if (currentText == null) {
-            CoroutineScope(Dispatchers.IO).launch {
-                ch.send(0)
-                ch.close()
-            }
-            return
-        }
-        if (currentText!!.isEmpty()) return
-        var temp = currentText
-        if (temp != null){
-           var texts = temp.subList(currentPartIndex-1, totalParts)
-            for (text:String in texts){
-                tts!!.speak(text, TextToSpeech.QUEUE_ADD, null,"")
-            }
-        }
+    fun speak(ch: Channel<Int>, text:String){
+        tts!!.speak(text, TextToSpeech.QUEUE_ADD, null,"")
         waitSpeakFinish(ch)
     }
 
     private fun waitSpeakFinish(ch: Channel<Int>){
         CoroutineScope(Dispatchers.IO).launch {
             while (speaking){}
-            Log.d(tag, "sending...")
             ch.send(1)
-            Log.d(tag, "sent successfully")
             ch.close()
-            Log.d(tag, "closed")
+            Log.d(tag, "good")
         }
-    }
-
-    fun pause() {
-        tts!!.stop()
     }
 
     fun stop(){
         tts!!.stop()
-        currentText = null
-        currentPartIndex = 0
-        start = 0
-        end = 0
-
+        Log.d(tag, "stoped")
     }
 }
