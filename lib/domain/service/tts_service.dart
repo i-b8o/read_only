@@ -4,15 +4,25 @@ import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
 abstract class TtsProvider {}
 
+class TtsPosition {
+  final int start;
+  final int end;
+
+  TtsPosition(this.start, this.end);
+
+
+  TtsPosition.fromStream(List<int> data): start = data[0], end = data[1];
+
+}
+
 class TtsService implements ChapterViewModelTtsService {
   TtsService({required this.ttsChannel,required  this.ttsPositionChannel}){
-    final networkStream = ttsPositionChannel
-        .receiveBroadcastStream()
-        .distinct()
-        .map((dynamic event) => print(event as int));
+    _positionEvent = ttsPositionChannel.receiveBroadcastStream().map((event) => TtsPosition.fromStream(event.cast<int>()));
   }
   final MethodChannel ttsChannel;
   final EventChannel ttsPositionChannel;
+  late Stream<TtsPosition> _positionEvent;
+  Stream<TtsPosition> positionEvent() => _positionEvent;
   bool _stoped = false;
 
 

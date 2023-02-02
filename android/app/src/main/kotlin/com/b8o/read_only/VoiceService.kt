@@ -2,7 +2,7 @@ package com.b8o.read_only
 import io.flutter.Log
 import android.os.Build
 import android.os.Bundle
-
+import io.flutter.embedding.android.FlutterActivity
 import android.content.Context
 import android.speech.tts.*
 import java.util.*
@@ -10,9 +10,10 @@ import kotlin.collections.ArrayList
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import io.flutter.plugin.common.EventChannel
 
 
-class VoiceService(context:Context): TextToSpeech.OnInitListener {
+class VoiceService(context:Context, sink:EventChannel.EventSink?): TextToSpeech.OnInitListener {
     private val tag = "Voice"
     private val googleTtsEngine = "com.google.android.tts"
     private var speaking = false
@@ -44,6 +45,12 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
         }
 
         private fun onProgress(utteranceId: String?, startAt: Int, endAt: Int) {
+            if (sink == null) return
+            val values  = listOf<Int>(startAt, endAt)
+            (context as FlutterActivity).runOnUiThread {
+                sink.success(values)
+            }
+
         }
 
         override fun onRangeStart(utteranceId: String, startAt: Int, endAt: Int, frame: Int) {
@@ -165,12 +172,10 @@ class VoiceService(context:Context): TextToSpeech.OnInitListener {
             while (speaking){}
             ch.send(1)
             ch.close()
-            Log.d(tag, "good")
         }
     }
 
     fun stop(){
         tts!!.stop()
-        Log.d(tag, "stoped")
     }
 }

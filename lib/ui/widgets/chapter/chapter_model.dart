@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/chapter.dart';
+import 'package:read_only/domain/service/tts_service.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
 abstract class ChapterViewModelService {
@@ -12,6 +13,7 @@ abstract class ChapterViewModelTtsService {
   Future<void> stopSpeak();
   Future<void> pauseSpeak();
   Future<bool> resumeSpeak();
+  Stream<TtsPosition> positionEvent();
 }
 
 class ChapterViewModel extends ChangeNotifier {
@@ -47,6 +49,9 @@ class ChapterViewModel extends ChangeNotifier {
       _currentPage = pageController.page!.toInt();
     });
     asyncInit(id);
+    ttsService.positionEvent().listen((event) {
+      print("start1: ${event.start}, end: ${event.end}");
+    });
   }
 
   Future<void> asyncInit(int id) async {

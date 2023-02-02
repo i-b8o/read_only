@@ -10,54 +10,40 @@ import io.flutter.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import android.os.Handler
-import android.os.Bundle
-import java.util.Objects;
 
 
-class MainActivity: FlutterActivity() {
+class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
+    private lateinit var voiceService: VoiceService
+    private var  eventSink: EventChannel.EventSink? = null
     private val TTS_CHANNEL = "com.b8o.read_only/tts"
     private val TTS_POSITION_CHANNEL = "com.b8o.read_only/tts_pos"
-    private var attachEvent: EventChannel.EventSink? = null
-    private var count = 1
-    private var handler: Handler? = null
 
 
     private val TAG_NAME = "MainActivity"
 
-    private val runnable: Runnable = object : Runnable {
 
-        override fun run() {
-            val TOTAL_COUNT = 100
-            if (count > TOTAL_COUNT) {
-                attachEvent!!.endOfStream()
-            } else {
-                val percentage = count as Double / TOTAL_COUNT
-                Log.w(TAG_NAME, "\nParsing From Native:  $percentage")
-                attachEvent!!.success(percentage)
-            }
-            count++
-            handler!!.postDelayed(this, 200)
-        }
-    }
 
     override protected fun onDestroy() {
         super.onDestroy()
-        handler!!.removeCallbacks(runnable)
-        handler = null
-        attachEvent = null
+
     }
 
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+        eventSink = events
+        voiceService = VoiceService(this, eventSink)
+    }
 
+    override fun onCancel(arguments: Any?) {
+        eventSink = null
+    }
 
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        var voice = VoiceService(this)
-        var cleaner = TextCleanerDefault()
-        var reducer = TextReducerDefault(cleaner)
-        var handler = TextHandler(cleaner, reducer)
 
+        var positionEvent = EventChannel(flutterEngine.dartExecutor.binaryMessenger, TTS_POSITION_CHANNEL)
+
+        positionEvent.setStreamHandler(this)
 
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, TTS_CHANNEL).setMethodCallHandler { call, result ->
@@ -69,21 +55,21 @@ class MainActivity: FlutterActivity() {
                     result.success(good)
                 }
                "getEngines" -> {
-                   result.success(voice.getEngines())
+                   result.success(voiceService.getEngines())
                }
                "getLanguages" -> {
-                   result.success(voice.getLanguages())
+                   result.success(voiceService.getLanguages())
                }
                "getVoices" -> {
-                   result.success(voice.getVoices())
+                   result.success(voiceService.getVoices())
                }
                "setLanguage" -> {
                    val language: String = call.arguments.toString()
-                   result.success(voice.setLanguage(language))
+                   result.success(voiceService.setLanguage(language))
                }
                "setVoice" -> {
                    val name: String? = call.arguments()
-                   result.success(voice.setVoice(name))
+                   result.success(voiceService.setVoice(name))
                }
 //               TODO doesn't work
                "setVolume" -> {
@@ -91,7 +77,7 @@ class MainActivity: FlutterActivity() {
 
                    try {
                        val newVolume: Float = value.toFloat()
-                       voice.setVolume(newVolume)
+                       voiceService.setVolume(newVolume)
                        result.success(true)
                    } catch (e: NumberFormatException) {
                        Log.e(TAG_NAME, "toFloat: " + e.message)
@@ -102,7 +88,7 @@ class MainActivity: FlutterActivity() {
                     var value : String = call.arguments.toString()
                     try {
                         val newPitch: Float = value.toFloat()
-                        voice.setPitch(newPitch)
+                        voiceService.setPitch(newPitch)
                         result.success(true)
                     } catch (e: NumberFormatException) {
                         Log.e(TAG_NAME, "toFloat: " + e.message)
@@ -113,7 +99,7 @@ class MainActivity: FlutterActivity() {
                    var value : String = call.arguments.toString()
                    try {
                        val newSpeechRate: Float = value.toFloat()
-                       result.success(voice.setSpeechRate(newSpeechRate))
+                       result.success(voiceService.setSpeechRate(newSpeechRate))
                    } catch (e: NumberFormatException) {
                        Log.e(TAG_NAME, "toFloat: " + e.message)
                        result.success(false)
@@ -122,7 +108,7 @@ class MainActivity: FlutterActivity() {
                "speak" -> {
                    var text = call.arguments.toString()
                    val ch = Channel<Int>()
-                   voice.speak(ch, text)
+                   voiceService.speak(ch, text)
                    CoroutineScope(Dispatchers.IO).launch {
                        ch.receive()
                        result.success(true)
@@ -130,7 +116,7 @@ class MainActivity: FlutterActivity() {
                }
 
               "stop" -> {
-                   voice.stop()
+                   voiceService.stop()
                }
 
             }
