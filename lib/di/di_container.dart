@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/.configuration/configuration.dart';
 import 'package:read_only/data_providers/chapter_data_provider.dart';
+import 'package:read_only/data_providers/tts_data_provider.dart';
 import 'package:read_only/data_providers/tts_settings_data_provider.dart';
 import 'package:read_only/data_providers/type_data_provider.dart';
 import 'package:read_only/data_providers/subtype_data_provider.dart';
@@ -41,9 +42,12 @@ class _AppFactoryDefault implements AppFactory {
 class _DIContainer {
   ScreenFactory _makeScreenFactory() => ScreenFactoryDefault(this);
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
-  final ttsMethodChannel = const MethodChannel("com.b8o.read_only/tts");
-  final ttsPositionChannel = const EventChannel("com.b8o.read_only/tts_pos");
   late final GrpcClientDefault _grpcClient;
+
+  static const ttsMethodChannel = MethodChannel("com.b8o.read_only/tts");
+  static const ttsPositionChannel = EventChannel("com.b8o.read_only/tts_pos");
+  final ttsDataProvider =
+      TtsDataProviderDefault(ttsMethodChannel, ttsPositionChannel);
 
   late final TtsSettingsDataProviderDefault _ttsSettingsDataProvider;
 
@@ -57,7 +61,7 @@ class _DIContainer {
     _docService = DocService(
         docDataProvider: DocDataProviderDefault1(grpcClient: _grpcClient));
 
-    _ttsService = TtsService(ttsChannel: ttsMethodChannel, ttsPositionChannel: ttsPositionChannel);
+    _ttsService = TtsService(ttsDataProvider);
   }
 
   void asyncInit() async {

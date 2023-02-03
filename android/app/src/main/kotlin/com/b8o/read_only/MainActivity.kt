@@ -17,24 +17,24 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
     private var  eventSink: EventChannel.EventSink? = null
     private val TTS_CHANNEL = "com.b8o.read_only/tts"
     private val TTS_POSITION_CHANNEL = "com.b8o.read_only/tts_pos"
-
-
     private val TAG_NAME = "MainActivity"
 
 
 
     override protected fun onDestroy() {
+        voiceService.onDestroy()
         super.onDestroy()
-
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
         eventSink = events
         voiceService = VoiceService(this, eventSink)
+        Log.d(TAG_NAME, "onListen ${events != null}")
     }
 
     override fun onCancel(arguments: Any?) {
         eventSink = null
+        Log.d(TAG_NAME, "onListen ${eventSink == null}")
     }
 
 
@@ -116,7 +116,12 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
                }
 
               "stop" -> {
-                   voiceService.stop()
+                  val ch = Channel<Int>()
+                   voiceService.stop(ch)
+                  CoroutineScope(Dispatchers.IO).launch {
+                      ch.receive()
+                      result.success(true)
+                  }
                }
 
             }

@@ -14,12 +14,18 @@ import io.flutter.plugin.common.EventChannel
 
 
 class VoiceService(context:Context, sink:EventChannel.EventSink?): TextToSpeech.OnInitListener {
-    private val tag = "Voice"
+    private val TAG_NAME = "Voice"
     private val googleTtsEngine = "com.google.android.tts"
     private var speaking = false
     private var currentLanguageTag = "ru-RU"
     private var bundle: Bundle = Bundle()
     private val SYNTHESIZE_TO_FILE_PREFIX = "STF_"
+    private var tts = TextToSpeech(context, this, googleTtsEngine)
+
+    fun onDestroy(){
+        tts.shutdown()
+    }
+
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             tts!!.setOnUtteranceProgressListener(utteranceProgressListener)
@@ -33,15 +39,17 @@ class VoiceService(context:Context, sink:EventChannel.EventSink?): TextToSpeech.
     private val utteranceProgressListener: UtteranceProgressListener =
         object : UtteranceProgressListener() {
         override fun onStart(utteranceId: String) {
-            speaking = true
+
         }
 
         override fun onDone(utteranceId: String) {
+
             speaking = false
         }
 
         override fun onStop(utteranceId: String, interrupted: Boolean) {
             speaking = false
+
         }
 
         private fun onProgress(utteranceId: String?, startAt: Int, endAt: Int) {
@@ -68,7 +76,6 @@ class VoiceService(context:Context, sink:EventChannel.EventSink?): TextToSpeech.
         }
     }
 
-    private var tts = TextToSpeech(context, this, googleTtsEngine)
     fun getEngines():ArrayList<String>{
         val engines = ArrayList<String>()
         for (engin in tts.getEngines()){
@@ -95,9 +102,9 @@ class VoiceService(context:Context, sink:EventChannel.EventSink?): TextToSpeech.
                 }
             }
         } catch (e: MissingResourceException) {
-            Log.d(tag, "getLanguages: " + e.message)
+            Log.d(TAG_NAME, "getLanguages: " + e.message)
         } catch (e: NullPointerException) {
-            Log.d(tag, "getLanguages: " + e.message)
+            Log.d(TAG_NAME, "getLanguages: " + e.message)
         }
         return languages
     }
@@ -137,7 +144,7 @@ class VoiceService(context:Context, sink:EventChannel.EventSink?): TextToSpeech.
                 return true
             }
         }
-        Log.d(tag, "Voice name not found: $voiceName")
+        Log.d(TAG_NAME, "Voice name not found: $voiceName")
         return false
     }
 
@@ -163,6 +170,7 @@ class VoiceService(context:Context, sink:EventChannel.EventSink?): TextToSpeech.
     }
 
     fun speak(ch: Channel<Int>, text:String){
+        speaking = true
         tts!!.speak(text, TextToSpeech.QUEUE_ADD, null,"")
         waitSpeakFinish(ch)
     }
@@ -175,7 +183,8 @@ class VoiceService(context:Context, sink:EventChannel.EventSink?): TextToSpeech.
         }
     }
 
-    fun stop(){
+    fun stop(ch: Channel<Int>){
         tts!!.stop()
+        waitSpeakFinish(ch)
     }
 }
