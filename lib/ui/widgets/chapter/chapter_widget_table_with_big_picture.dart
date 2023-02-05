@@ -17,7 +17,7 @@ class TableWithBigPictures extends StatelessWidget {
 
   Widget buildHtmlTable(String content, BuildContext context) {
     content =
-        '<div style="margin-bottom:20px;overflow: scroll;display: flex;align-items: center;justify-content: start;">$content</div>';
+        '<div style="margin-bottom:20px;overflow: scroll;display: flex;align-items: center;justify-content: start;">${content.replaceAll("<td", "<td style='border:1px solid black;margin:0;' ").replaceAll("<table", "<table style='width:100%;' ")}</div>';
 
     return WebView(
       javascriptMode: JavascriptMode.unrestricted,
@@ -30,8 +30,8 @@ class TableWithBigPictures extends StatelessWidget {
       onWebViewCreated: (WebViewController webViewController) {
         _controller = webViewController;
         _loadHtmlFromString(content);
-        _controller.runJavascript(
-            'let tds = document.getElementsByTagName("td");alert("aasdffgghgfjugthykj"+tds.length);');
+        // _controller.runJavascript(
+        //     'document.addEventListener("load", function () {alert("Its loaded!")})');
       },
     );
   }
