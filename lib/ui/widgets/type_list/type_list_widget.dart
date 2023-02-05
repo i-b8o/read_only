@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_model.dart';
 
-import '../navigation_drawer/navigation_drawer.dart';
-
 class TypeListWidget extends StatelessWidget {
   const TypeListWidget({super.key});
 
@@ -23,7 +21,9 @@ class TypeListWidget extends StatelessWidget {
             child: const ReadOnlyAppBar(child: TypeListAppBar()),
           ),
         ),
-        drawer: const NavigationDrawer(),
+        drawer: const NavigationDrawer(
+          children: [],
+        ),
         body: types.isEmpty
             ? const Center(
                 child: CircularProgressIndicator(

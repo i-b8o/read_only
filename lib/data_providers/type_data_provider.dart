@@ -13,12 +13,6 @@ class TypeDataProviderDefault implements TypeDataProvider {
 
   @override
   Future<List<ReadOnlyType>> getAll() async {
-    // String? m = GrpcClient.check();
-    // if (m != null) {
-    //   print(m);
-    //   // catch exceptions
-    //   throw TypeDataProviderError(m);
-    // }
     try {
       // Request
       GetAllTypesResponse resp = await _typeGRPCClient.getAll(Empty());

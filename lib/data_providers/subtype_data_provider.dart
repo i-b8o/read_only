@@ -36,7 +36,6 @@ class SubtypeDataProviderDefault implements SubtypeDataProvider {
 
   @override
   Future<List<ReadOnlyDocInfo>> getDocs(int id) async {
-    print("getDocs $id");
     // String? m = GrpcClient.check();
     // if (m != null) {
     //   throw GrpcSubtypeDataProviderError(m);

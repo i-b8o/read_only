@@ -5,7 +5,6 @@ import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
 
-
 import 'package:read_only/pb/reader/service.pbgrpc.dart';
 
 class ChapterDataProviderDefault implements ChapterDataProvider {
@@ -14,6 +13,7 @@ class ChapterDataProviderDefault implements ChapterDataProvider {
   final GrpcClient grpcClient;
   final ChapterGRPCClient _chapterGRPCClient;
 
+  @override
   Future<ReadOnlyChapter> getOne(int id) async {
     // sleep(Duration(seconds: 2));
     try {

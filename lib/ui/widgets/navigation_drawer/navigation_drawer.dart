@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 // TODO highlighting
 class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer({Key? key}) : super(key: key);
@@ -128,67 +127,63 @@ class FontMenuItem extends StatelessWidget {
           padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0),
-            child: Container(
-              // height: MediaQuery.of(context).size.height * 0.5,
-              child: SingleChildScrollView(
-                  child: Column(children: [
-                MenuSubItem(
-                  leading: 'Размер',
-                  value: 11,
-                  alertDialog: AlertDialog(
-                    backgroundColor:
-                        Theme.of(context).navigationRailTheme.backgroundColor,
-                    content: FontSlider(
-                      title: 'Размер',
-                      text: 'text%',
-                      color: const Color(0xFF5aa9f7),
-                      value: 11,
-                      onChanged: (double value) {},
-                      onChangeEnd: (value) {},
-                    ),
+            child: SingleChildScrollView(
+                child: Column(children: [
+              MenuSubItem(
+                leading: 'Размер',
+                value: 11,
+                alertDialog: AlertDialog(
+                  backgroundColor:
+                      Theme.of(context).navigationRailTheme.backgroundColor,
+                  content: FontSlider(
+                    title: 'Размер',
+                    text: 'text%',
+                    color: const Color(0xFF5aa9f7),
+                    value: 11,
+                    onChanged: (double value) {},
+                    onChangeEnd: (value) {},
                   ),
                 ),
-                MenuSubItem(
-                  leading: 'Насыщенность',
-                  value: 11,
-                  alertDialog: AlertDialog(
-                    backgroundColor:
-                        Theme.of(context).navigationRailTheme.backgroundColor,
-                    content: FontSlider(
-                      title: 'Насыщенность',
-                      text: "",
-                      color: const Color(0xFF5aa9f7),
-                      value: 11,
-                      onChanged: (double value) {},
-                      onChangeEnd: (value) {},
-                    ),
+              ),
+              MenuSubItem(
+                leading: 'Насыщенность',
+                value: 11,
+                alertDialog: AlertDialog(
+                  backgroundColor:
+                      Theme.of(context).navigationRailTheme.backgroundColor,
+                  content: FontSlider(
+                    title: 'Насыщенность',
+                    text: "",
+                    color: const Color(0xFF5aa9f7),
+                    value: 11,
+                    onChanged: (double value) {},
+                    onChangeEnd: (value) {},
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    color:
-                        Theme.of(context).navigationRailTheme.backgroundColor,
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height * 0.07,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Сбросить настройки",
-                          style: TextStyle(
-                            color: Theme.of(context)
-                                .navigationRailTheme
-                                .unselectedLabelTextStyle!
-                                .color,
-                          ),
+              ),
+              GestureDetector(
+                onTap: () {},
+                child: Container(
+                  color: Theme.of(context).navigationRailTheme.backgroundColor,
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Сбросить настройки",
+                        style: TextStyle(
+                          color: Theme.of(context)
+                              .navigationRailTheme
+                              .unselectedLabelTextStyle!
+                              .color,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              ])),
-            ),
+              ),
+            ])),
           ),
         )
       ],
@@ -216,7 +211,7 @@ class FontSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.width * 0.3,
       child: Row(
         children: [
@@ -226,8 +221,8 @@ class FontSlider extends StatelessWidget {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
+                children: const [
+                  Text(
                     'Текст',
                     overflow: TextOverflow.ellipsis,
                     style:
@@ -238,7 +233,7 @@ class FontSlider extends StatelessWidget {
               SliderTheme(
                 data: SliderThemeData(
                     overlayShape: SliderComponentShape.noOverlay),
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.5,
                   child: Slider(
                     divisions: 7,
@@ -412,7 +407,7 @@ class SoundSlider extends StatelessWidget {
   final void Function()? onIconTap;
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.width * 0.2,
       child: Row(
         children: [
@@ -426,7 +421,7 @@ class SoundSlider extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(
                     left: MediaQuery.of(context).size.width * 0.03),
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.47,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -450,7 +445,7 @@ class SoundSlider extends StatelessWidget {
               SliderTheme(
                 data: SliderThemeData(
                     overlayShape: SliderComponentShape.noOverlay),
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.5,
                   child: Slider(
                     activeColor: color,
@@ -486,7 +481,7 @@ class VoiceBtn extends StatelessWidget {
           color: color,
           shape: BoxShape.circle,
         ),
-        child: new Icon(
+        child: const Icon(
           true ? Icons.volume_off_outlined : Icons.volume_up_outlined,
           color: Colors.white,
         ),

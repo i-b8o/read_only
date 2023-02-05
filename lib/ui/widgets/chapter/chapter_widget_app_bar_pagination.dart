@@ -12,7 +12,6 @@ class ChapterWidgetAppBarPagination extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.read<ChapterViewModel>();
     final String textEditingText = model.textEditingController.text;
-    final int pageIndex = model.currentPage;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [

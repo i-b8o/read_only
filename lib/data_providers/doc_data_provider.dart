@@ -13,6 +13,7 @@ class DocDataProviderDefault1 implements DocDataProvider {
   final GrpcClient grpcClient;
   final DocGRPCClient _docGRPCClient;
 
+  @override
   Future<ReadOnlyDoc> getOne(int id) async {
     // String? m = GrpcClient.check();
     // if (m != null) {

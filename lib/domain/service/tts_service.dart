@@ -5,47 +5,41 @@ import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 abstract class TtsDataProvider {
   Future<bool> speak(String text);
   Future<bool> stop();
+  Future<bool> pause();
+  Future<bool> resume();
   Future<bool> highlighting();
   Stream<TtsPosition>? positionStream();
 }
 
 class TtsService implements ChapterViewModelTtsService {
-  // TtsService({required this.ttsChannel, required this.ttsPositionChannel}) {
-  //   _positionEvent = ttsPositionChannel
-  //       .receiveBroadcastStream()
-  //       .map((event) => TtsPosition.fromStream(event.cast<int>()));
-  // }
-  // final MethodChannel ttsChannel;
-  // final EventChannel ttsPositionChannel;
   final TtsDataProvider ttsDataProvider;
-  // final Stream<TtsPosition> _positionEvent;
-  // @override
-  // Stream<TtsPosition> positionEvent() => _positionEvent;
-
-  bool _stoped = false;
-
+  List<String>? currentTexts;
+  int currentParagraphIndex = 0;
+  bool paused = false;
+  bool stoped = false;
   TtsService(this.ttsDataProvider);
 
-  Future<bool> _speak(List<String> texts) async {
-    print("But here ${texts.length} $texts");
-    _stoped = false;
+  Future<bool> _speak(List<String> texts, {bool multiple = true}) async {
+    stoped = false;
+    currentTexts = texts;
+
     for (var i = 0; i < texts.length; i++) {
-      print("so here $i ${texts[i]}|");
-      final text = parseHtmlString(texts[i].replaceAll("\n", " "));
-      print("then$text|");
-      final ok = await ttsDataProvider.speak(text);
-      if (_stoped) {
+      if (paused || stoped) {
         break;
       }
-      if (!ok) {
-        return false;
+      if (multiple && (i <= currentParagraphIndex)) {
+        continue;
       }
+
+      currentParagraphIndex = i;
+      final text = parseHtmlString(texts[i].replaceAll("\n", " "));
+      await ttsDataProvider.speak(text);
     }
     return true;
   }
 
   @override
-  Future<bool> startSpeak(List<String> texts) async {
+  Future<bool> speakList(List<String> texts) async {
     if (texts.isEmpty) {
       return false;
     }
@@ -53,29 +47,38 @@ class TtsService implements ChapterViewModelTtsService {
   }
 
   @override
+  Future<bool> speakOne(String text) async {
+    if (text.isEmpty) {
+      return false;
+    }
+    return await _speak([text], multiple: false);
+  }
+
+  @override
   Future<bool> resumeSpeak() async {
-    // return await ttsChannel.invokeMethod("resume");
-    // if (!ok){
-    //   return false;
-    // }
-    // return await _speak(texts);
-    throw Exception();
+    paused = false;
+    final ok = await ttsDataProvider.resume();
+    if (!ok || currentTexts == null) {
+      return false;
+    }
+
+    return await _speak(currentTexts!);
   }
 
   @override
   Future<void> pauseSpeak() async {
-    // await ttsChannel.invokeMethod("pause");
-    throw Exception();
+    paused = true;
+    ttsDataProvider.pause();
   }
 
   @override
   Future<bool> stopSpeak() async {
-    // await ttsChannel.invokeMethod("stop");
+    stoped = true;
+    currentParagraphIndex = 0;
     final ok = await ttsDataProvider.stop();
     if (!ok) {
       return false;
     }
-    _stoped = true;
     return true;
   }
 

@@ -1,4 +1,3 @@
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/app/app.dart';

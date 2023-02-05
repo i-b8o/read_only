@@ -185,6 +185,7 @@ class VoiceService(context:Context, sink:EventChannel.EventSink?): TextToSpeech.
 
     fun stop(ch: Channel<Int>){
         tts!!.stop()
+
         waitSpeakFinish(ch)
     }
 }

@@ -76,8 +76,8 @@ class ParagraphCard extends StatelessWidget {
                 title: const Text("Редактировать"),
                 onPressed: () async {
                   model.setActiveParagraphIndex(index);
-                  TextEditingController _controller = TextEditingController();
-                  _controller.text = parseHtmlString(content);
+                  TextEditingController controller = TextEditingController();
+                  controller.text = parseHtmlString(content);
                   showDialog(
                       context: context,
                       builder: (_) => OrientationBuilder(
@@ -91,7 +91,7 @@ class ParagraphCard extends StatelessWidget {
                                 keyboardType: TextInputType.multiline,
                                 minLines: 2,
                                 maxLines: 25,
-                                controller: _controller,
+                                controller: controller,
                               ),
                               actionsAlignment: MainAxisAlignment.spaceEvenly,
                               actions: [

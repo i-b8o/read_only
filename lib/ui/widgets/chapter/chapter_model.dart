@@ -9,12 +9,15 @@ abstract class ChapterViewModelService {
 }
 
 abstract class ChapterViewModelTtsService {
-  Future<bool> startSpeak(List<String> texts);
+  Future<bool> speakList(List<String> texts);
+  Future<bool> speakOne(String text);
   Future<bool> stopSpeak();
   Future<void> pauseSpeak();
   Future<bool> resumeSpeak();
   Stream<TtsPosition>? positionEvent();
 }
+
+enum SpeakState { silence, speaking, paused }
 
 class ChapterViewModel extends ChangeNotifier {
   final ChapterViewModelService chapterProvider;
@@ -23,6 +26,16 @@ class ChapterViewModel extends ChangeNotifier {
   final int id;
   final int paragraphID;
   final Map<int, int> chaptersOrderNums;
+  SpeakState _speakState = SpeakState.silence;
+  SpeakState get speakState => _speakState;
+  void setSpeakState(SpeakState value) {
+    if (_speakState == SpeakState.paused && value == SpeakState.silence) {
+      return;
+    }
+    _speakState = value;
+    notifyListeners();
+  }
+
   int? activeParagraphIndex;
   void setActiveParagraphIndex(int index) => activeParagraphIndex = index;
 
@@ -49,12 +62,11 @@ class ChapterViewModel extends ChangeNotifier {
       _currentPage = pageController.page!.toInt();
     });
     asyncInit(id);
-    if (ttsService.positionEvent() != null){
+    if (ttsService.positionEvent() != null) {
       ttsService.positionEvent()!.listen((event) {
         print("start1: ${event.start}, end: ${event.end}");
       });
     }
-
   }
 
   Future<void> asyncInit(int id) async {
@@ -97,11 +109,11 @@ class ChapterViewModel extends ChangeNotifier {
     if (chapter == null || activeParagraphIndex == null) {
       return;
     }
-    // return ttsService
-    //     .startSpeak(chapter!.paragraphs[activeParagraphIndex!].content);
 
+    setSpeakState(SpeakState.speaking);
     await ttsService
-        .startSpeak([chapter!.paragraphs[activeParagraphIndex!].content]);
+        .speakOne(chapter!.paragraphs[activeParagraphIndex!].content);
+    setSpeakState(SpeakState.silence);
   }
 
   Future<void> startSpeakChapter() async {
@@ -110,24 +122,24 @@ class ChapterViewModel extends ChangeNotifier {
     }
     final texts =
         chapter!.paragraphs.map((paragraph) => paragraph.content).toList();
-
-    // for (var i = 0; i < paragraphs.length; i++) {
-    // await ttsService.startSpeak(paragraphs[i].content);
-    // await ttsService.startSpeak(paragraphs[i].content);
-    // }
-    await ttsService.startSpeak(texts);
+    setSpeakState(SpeakState.speaking);
+    await ttsService.speakList(texts);
+    setSpeakState(SpeakState.silence);
   }
 
   Future<void> stopSpeak() async {
     await ttsService.stopSpeak();
+    setSpeakState(SpeakState.silence);
   }
 
   Future<void> pauseSpeak() async {
     await ttsService.pauseSpeak();
+    setSpeakState(SpeakState.paused);
   }
 
   Future<void> resumeSpeak() async {
-    bool ok = await ttsService.resumeSpeak();
-    print("pauseSpeak: $ok");
+    setSpeakState(SpeakState.speaking);
+    await ttsService.resumeSpeak();
+    setSpeakState(SpeakState.silence);
   }
 }

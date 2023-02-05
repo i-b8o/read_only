@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
+import 'package:read_only/ui/widgets/chapter/chapter_widget_floating_action_btns.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'chapter_widget_app_bar.dart';
@@ -24,31 +25,7 @@ class ChapterWidget extends StatelessWidget {
 
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Row(
-          children: [
-            FloatingActionButton(
-              heroTag: "btn1",
-              onPressed: () {
-                model.stopSpeak();
-              },
-              child: const Icon(Icons.stop),
-            ),
-            FloatingActionButton(
-              heroTag: "btn2",
-              onPressed: () {
-                model.pauseSpeak();
-              },
-              child: const Icon(Icons.pause),
-            ),
-            FloatingActionButton(
-              heroTag: "btn3",
-              onPressed: () {
-                model.resumeSpeak();
-              },
-              child: const Icon(Icons.play_arrow),
-            ),
-          ],
-        ),
+        floatingActionButton: const ChapterWidgetFloatingActionBtns(),
         resizeToAvoidBottomInset: false,
         appBar: PreferredSize(
           preferredSize:

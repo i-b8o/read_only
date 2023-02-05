@@ -1,9 +1,7 @@
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
 
-import '../navigation_drawer/navigation_drawer.dart';
 import 'chapter_list_model.dart';
 
 class ChapterListWidget extends StatelessWidget {
@@ -24,7 +22,9 @@ class ChapterListWidget extends StatelessWidget {
             child: const ReadOnlyAppBar(child: TypeListAppBar()),
           ),
         ),
-        drawer: const NavigationDrawer(),
+        drawer: const NavigationDrawer(
+          children: [],
+        ),
         body: doc == null
             ? Container()
             : ListView(
