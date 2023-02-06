@@ -3,18 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum _DefaultTypes { bool, int, double, string, list }
 
-abstract class SharedPreferencesStorage {
-  Future getInstance();
-  bool? readBool({required String key});
-  int? readInt({required String key});
-  double? readDouble({required String key});
-  String? readString({required String key});
-  List<String>? readStringList({required String key});
-  Future<void> write<T>({required String key, required T? value});
-  Future<bool> delete({required String key});
-}
-
-class DefaultSharedPreferencesStorage implements SharedPreferencesStorage {
+class SharedPreferencesClient  {
   static SharedPreferences? _preferences;
   final Map<Type, Function> _writeMethods = <Type, Function>{
     bool: ((String key, bool value) async =>
@@ -37,7 +26,7 @@ class DefaultSharedPreferencesStorage implements SharedPreferencesStorage {
     _DefaultTypes.list: ((String key) => _preferences!.getStringList(key)),
   };
 
-  DefaultSharedPreferencesStorage();
+  SharedPreferencesClient();
 
   Future getInstance() async {
     try {
@@ -50,7 +39,6 @@ class DefaultSharedPreferencesStorage implements SharedPreferencesStorage {
     }
   }
 
-  @override
   Future<bool> delete({required String key}) async {
     try {
       final success = await _preferences!.remove(key);
@@ -64,7 +52,6 @@ class DefaultSharedPreferencesStorage implements SharedPreferencesStorage {
     }
   }
 
-  @override
   Future<void> write<T>({required String key, required T? value}) async {
     if (value == null) {
       return;
@@ -98,27 +85,22 @@ class DefaultSharedPreferencesStorage implements SharedPreferencesStorage {
     }
   }
 
-  @override
   bool? readBool({required String key}) {
     return _read(key: key, t: _DefaultTypes.bool);
   }
 
-  @override
   double? readDouble({required String key}) {
     return _read(key: key, t: _DefaultTypes.double);
   }
 
-  @override
   int? readInt({required String key}) {
     return _read(key: key, t: _DefaultTypes.int);
   }
 
-  @override
   String? readString({required String key}) {
     return _read(key: key, t: _DefaultTypes.string);
   }
 
-  @override
   List<String>? readStringList({required String key}) {
     return _read(key: key, t: _DefaultTypes.list);
   }

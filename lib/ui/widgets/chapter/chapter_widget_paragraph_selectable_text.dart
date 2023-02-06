@@ -26,6 +26,7 @@ class SelectableTextWidget extends StatelessWidget {
         color: Theme.of(context).textTheme.bodyText2!.color,
       ),
       onTapUrl: (href) async {
+        print("tapped $href");
         // goTo(context, href);
         return false;
       },

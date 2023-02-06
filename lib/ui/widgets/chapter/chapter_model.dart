@@ -98,6 +98,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<bool> onTapUrl(BuildContext context, String url) async {
+    print("url: $url");
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.chapterScreen,
       arguments: url,

@@ -42,7 +42,7 @@ class _AppFactoryDefault implements AppFactory {
 class _DIContainer {
   ScreenFactory _makeScreenFactory() => ScreenFactoryDefault(this);
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
-  late final GrpcClientDefault _grpcClient;
+  late final GrpcClient _grpcClient;
 
   static const ttsMethodChannel = MethodChannel("com.b8o.read_only/tts");
   static const ttsPositionChannel = EventChannel("com.b8o.read_only/tts_pos");
@@ -57,7 +57,7 @@ class _DIContainer {
   _DIContainer() {
     asyncInit();
     _grpcClient =
-        GrpcClientDefault(host: Configuration.host, port: Configuration.port);
+        GrpcClient(host: Configuration.host, port: Configuration.port);
     _docService = DocService(
         docDataProvider: DocDataProviderDefault1(grpcClient: _grpcClient));
 
@@ -65,7 +65,7 @@ class _DIContainer {
   }
 
   void asyncInit() async {
-    final sp = DefaultSharedPreferencesStorage();
+    final sp = SharedPreferencesClient();
     await sp.getInstance();
     _ttsSettingsDataProvider = TtsSettingsDataProviderDefault(sp);
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer.dart';
 
 import 'chapter_list_model.dart';
 
@@ -23,7 +24,7 @@ class ChapterListWidget extends StatelessWidget {
           ),
         ),
         drawer: const NavigationDrawer(
-          children: [],
+          // children: [],
         ),
         body: doc == null
             ? Container()

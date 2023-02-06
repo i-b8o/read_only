@@ -3,7 +3,7 @@ import 'package:shared_preferences_storage/shared_preferences_storage.dart';
 
 class TtsSettingsDataProviderDefault implements TtsSettingsDataProvider {
   const TtsSettingsDataProviderDefault(this.storage);
-  final SharedPreferencesStorage storage;
+  final SharedPreferencesClient storage;
 
   @override
   Future<void> saveVoice(String value) {

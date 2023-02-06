@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_model.dart';
 
 class TypeListWidget extends StatelessWidget {
@@ -22,7 +23,7 @@ class TypeListWidget extends StatelessWidget {
           ),
         ),
         drawer: const NavigationDrawer(
-          children: [],
+
         ),
         body: types.isEmpty
             ? const Center(

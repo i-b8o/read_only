@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
 
+import '../navigation_drawer/navigation_drawer.dart';
 import 'doc_list_model.dart';
 
 class DocListWidget extends StatelessWidget {
@@ -23,7 +24,7 @@ class DocListWidget extends StatelessWidget {
           ),
         ),
         drawer: const NavigationDrawer(
-          children: [],
+
         ),
         body: ListView(
           children: docs

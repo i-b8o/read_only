@@ -15,6 +15,7 @@ class ChapterDataProviderDefault implements ChapterDataProvider {
 
   @override
   Future<ReadOnlyChapter> getOne(int id) async {
+    print("get chapter with id:$id");
     // sleep(Duration(seconds: 2));
     try {
       // String? m = GrpcClient.check();

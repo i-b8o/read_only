@@ -1,11 +1,6 @@
 import 'package:grpc/grpc.dart';
 
-abstract class GrpcClient {
-  ClientChannel channel();
-  bool check();
-}
-
-class GrpcClientDefault implements GrpcClient {
+class GrpcClient {
   late final ClientChannel _channel;
   @override
   ClientChannel channel() => _channel;
@@ -13,7 +8,7 @@ class GrpcClientDefault implements GrpcClient {
   bool _connected = false;
   bool check() => _connected;
 
-  GrpcClientDefault(
+  GrpcClient(
       {required String host,
       required int port,
       options =

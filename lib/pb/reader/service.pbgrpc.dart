@@ -129,6 +129,12 @@ class DocGRPCClient extends $grpc.Client {
           ($0.GetOneDocRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) =>
               $0.GetOneDocResponse.fromBuffer(value));
+  static final _$getEntireDoc =
+      $grpc.ClientMethod<$0.GetEntireDocRequest, $0.GetEntireDocResponse>(
+          '/reader.v1.DocGRPC/GetEntireDoc',
+          ($0.GetEntireDocRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $0.GetEntireDocResponse.fromBuffer(value));
 
   DocGRPCClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -138,6 +144,12 @@ class DocGRPCClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.GetOneDocResponse> getOne($0.GetOneDocRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$getOne, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.GetEntireDocResponse> getEntireDoc(
+      $0.GetEntireDocRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$getEntireDoc, request, options: options);
   }
 }
 
@@ -152,6 +164,15 @@ abstract class DocGRPCServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.GetOneDocRequest.fromBuffer(value),
         ($0.GetOneDocResponse value) => value.writeToBuffer()));
+    $addMethod(
+        $grpc.ServiceMethod<$0.GetEntireDocRequest, $0.GetEntireDocResponse>(
+            'GetEntireDoc',
+            getEntireDoc_Pre,
+            false,
+            false,
+            ($core.List<$core.int> value) =>
+                $0.GetEntireDocRequest.fromBuffer(value),
+            ($0.GetEntireDocResponse value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.GetOneDocResponse> getOne_Pre($grpc.ServiceCall call,
@@ -159,8 +180,16 @@ abstract class DocGRPCServiceBase extends $grpc.Service {
     return getOne(call, await request);
   }
 
+  $async.Future<$0.GetEntireDocResponse> getEntireDoc_Pre(
+      $grpc.ServiceCall call,
+      $async.Future<$0.GetEntireDocRequest> request) async {
+    return getEntireDoc(call, await request);
+  }
+
   $async.Future<$0.GetOneDocResponse> getOne(
       $grpc.ServiceCall call, $0.GetOneDocRequest request);
+  $async.Future<$0.GetEntireDocResponse> getEntireDoc(
+      $grpc.ServiceCall call, $0.GetEntireDocRequest request);
 }
 
 class ChapterGRPCClient extends $grpc.Client {
