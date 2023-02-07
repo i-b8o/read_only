@@ -7,12 +7,18 @@ class GrpcClient {
 
   bool _connected = false;
   bool check() => _connected;
+  final String _host;
+  final int _port;
+  final ChannelOptions _options;
 
   GrpcClient(
       {required String host,
       required int port,
       options =
-          const ChannelOptions(credentials: ChannelCredentials.insecure())}) {
+          const ChannelOptions(credentials: ChannelCredentials.insecure())})
+      : _host = host,
+        _port = port,
+        _options = options {
     _channel = ClientChannel(
       host,
       port: port,
@@ -25,6 +31,15 @@ class GrpcClient {
         return;
       }
       _connected = false;
+      _recreateChannel();
     });
+  }
+
+  void _recreateChannel() {
+    _channel = ClientChannel(
+      _host,
+      port: _port,
+      options: _options,
+    );
   }
 }

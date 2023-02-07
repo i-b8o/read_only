@@ -34,6 +34,12 @@ class SqfliteClient {
     );
   }
 
+  Future<bool> checkIdExists(int id, String tableName, Database db) async {
+    final count = await db.rawQuery("SELECT * FROM $tableName WHERE id = $id");
+
+    return count.isNotEmpty;
+  }
+
   Future<int> insert(String tableName, Map<String, dynamic> json) async =>
       _database!.insert(tableName, json);
 
