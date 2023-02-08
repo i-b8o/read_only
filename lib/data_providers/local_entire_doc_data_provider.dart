@@ -1,55 +1,12 @@
-import 'package:fixnum/fixnum.dart';
-import 'package:flutter/services.dart';
-import 'package:grpc_client/grpc_client.dart';
 import 'package:read_only/domain/entity/chapter_info.dart';
 import 'package:read_only/domain/entity/doc_paragraps.dart';
-import 'package:read_only/pb/reader/service.pbgrpc.dart';
 import 'package:sqflite/sqflite.dart';
 
-class EntireDocDataProviderDefault {
-  EntireDocDataProviderDefault({
-    required this.grpcClient,
+class LocalEntireDocDataProviderDefault {
+  LocalEntireDocDataProviderDefault({
     required this.db,
-  }) : _docGRPCClient = DocGRPCClient(grpcClient.channel());
-  final GrpcClient grpcClient;
-  final DocGRPCClient _docGRPCClient;
+  });
   final Database db;
-
-  Future<void> saveDoc(int id) async {
-    final paragraphs = await _getEntireDoc(id);
-    await _insertParagraphs(paragraphs);
-    final chapters = _mapParagraphsToChapters(paragraphs);
-    await _insertChapters(chapters, db);
-  }
-
-  Future<List<DocParagraph>> _getEntireDoc(int id) async {
-    try {
-      // Request
-      Int64 int64ID = Int64(id);
-      GetEntireDocRequest req = GetEntireDocRequest(iD: int64ID);
-      GetEntireDocResponse resp = await _docGRPCClient.getEntireDoc(req);
-      // Mapping
-      List<DocParagraph> paragraphs = resp.paragraphs
-          .map((e) => DocParagraph(
-                docName: e.docName,
-                chapterID: e.chapterID.toInt(),
-                chapterName: e.chapterName,
-                chapterNumber: e.chupterNumber,
-                chapterOrderNum: e.chupterOrderNum,
-                paragraphID: e.paragraphID.toInt(),
-                paragraphOrderNum: e.paragraphOrderNum,
-                paragraphclass: e.class_11,
-                hasLinks: e.hasLinks,
-                isNFT: e.isNFT,
-                isTable: e.isTable,
-                content: e.content,
-              ))
-          .toList();
-      return paragraphs;
-    } catch (e) {
-      throw PlatformException(code: "get_entire_doc_error", details: e);
-    }
-  }
 
   Future<void> _insertParagraphs(List<DocParagraph> paragraphs) async {
     Batch batch = db.batch();
