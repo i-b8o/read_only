@@ -27,7 +27,8 @@ class InitSQL {
     '''
       CREATE TABLE doc (
         id INTEGER PRIMARY KEY,
-        name TEXT
+        name TEXT,
+        last_access TIME
       );
     ''',
   ];

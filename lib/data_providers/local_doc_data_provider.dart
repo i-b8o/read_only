@@ -86,4 +86,20 @@ class LocalDocDataProviderDefault implements LocalDocDataProvider {
     }
     return null;
   }
+
+  @override
+  Future<void> updateLastAccess(int id) async {
+    try {
+      // Update the last_access field in the doc table
+      return await _updateLastAccess(id);
+    } on Exception catch (e) {
+      // Rethrow the exception if it occurs
+      rethrow;
+    }
+  }
+
+  Future<void> _updateLastAccess(int id) async {
+    final now = DateTime.now().toIso8601String();
+    await db.execute("UPDATE doc SET last_access = '$now' WHERE id = $id");
+  }
 }
