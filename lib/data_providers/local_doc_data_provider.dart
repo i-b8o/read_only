@@ -1,47 +1,21 @@
 import 'package:read_only/domain/entity/chapter_info.dart';
 import 'package:read_only/domain/entity/doc.dart';
+import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:read_only/domain/service/doc_service.dart';
 import 'package:sqflite/sqflite.dart';
 
-class LocalDocDataProviderDefault implements LocalDocDataProvider {
+class LocalDocDataProviderDefault
+    implements
+        DocServiceLocalDocDataProvider,
+        ChapterServiceLocalDocDataProvider {
   const LocalDocDataProviderDefault(this.db);
   final Database db;
 
   @override
   Future<void> saveOne(ReadOnlyDoc doc, int id) async {
     await _insertReadOnlyDoc(doc, id);
-    return await _insertReadOnlyChapterInfos(doc.chapters);
-  }
 
-  Future<void> _insertReadOnlyDoc(ReadOnlyDoc doc, int id) async {
-    await db.insert(
-      'doc',
-      {
-        'id': id,
-        'name': doc.name,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  Future<void> _insertReadOnlyChapterInfos(
-      List<ReadOnlyChapterInfo> chapterInfos) async {
-    Batch batch = db.batch();
-
-    for (ReadOnlyChapterInfo chapterInfo in chapterInfos) {
-      batch.insert(
-        'chapter',
-        {
-          'id': chapterInfo.id,
-          'name': chapterInfo.name,
-          'orderNum': chapterInfo.orderNum,
-          'num': chapterInfo.num,
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    }
-
-    await batch.commit();
+    await _insertReadOnlyChapterInfos(doc.chapters);
   }
 
   @override
@@ -50,56 +24,124 @@ class LocalDocDataProviderDefault implements LocalDocDataProvider {
     if (chapters == null) {
       return null;
     }
+
     return await _getReadOnlyDocById(id, chapters);
+  }
+
+  @override
+  Future<void> updateLastAccess(int chapterID) async {
+    final docID = await _getDocIdByChapterId(chapterID);
+    if (docID == null) {
+      print(
+          "There is no such doc with the id=$docID (the chapter id=$chapterID)");
+      return;
+    }
+    return await _updateLastAccess(docID);
   }
 
   Future<List<ReadOnlyChapterInfo>?> _getReadOnlyChaptersByDocId(
       int docID) async {
-    final List<Map<String, dynamic>> maps = await db.query('chapter',
-        columns: ['id', 'name', 'orderNum', 'num'],
-        where: 'docID = ?',
-        whereArgs: [docID]);
+    const columns = ['id', 'name', 'orderNum', 'num'];
+    try {
+      final List<Map<String, dynamic>> maps = await db.query('chapter',
+          columns: columns, where: 'docID = ?', whereArgs: [docID]);
 
-    if (maps.isNotEmpty) {
-      return List.generate(maps.length, (i) {
-        return ReadOnlyChapterInfo(
-          id: maps[i]['id'],
-          name: maps[i]['name'],
-          orderNum: maps[i]['orderNum'],
-          num: maps[i]['num'],
-        );
-      });
+      if (maps.isNotEmpty) {
+        return List.generate(maps.length, (i) {
+          return ReadOnlyChapterInfo(
+            id: maps[i][columns[0]],
+            name: maps[i][columns[1]],
+            orderNum: maps[i][columns[2]],
+            num: maps[i][columns[3]],
+          );
+        });
+      }
+
+      return null;
+    } catch (e) {
+      print(e);
+      return null;
     }
-    return null;
   }
 
   Future<ReadOnlyDoc?> _getReadOnlyDocById(
       int id, List<ReadOnlyChapterInfo>? chapters) async {
-    if (chapters == null) {
-      return null;
-    }
-    final List<Map<String, dynamic>> maps = await db.query('doc',
-        columns: ['id', 'name'], where: 'id = ?', whereArgs: [id]);
+    const columns = ['id', 'name'];
 
-    if (maps.isNotEmpty) {
-      return ReadOnlyDoc(name: maps.first['name'], chapters: chapters);
-    }
-    return null;
-  }
-
-  @override
-  Future<void> updateLastAccess(int id) async {
     try {
-      // Update the last_access field in the doc table
-      return await _updateLastAccess(id);
-    } on Exception catch (e) {
-      // Rethrow the exception if it occurs
-      rethrow;
+      if (chapters == null) {
+        return null;
+      }
+      final List<Map<String, dynamic>> maps = await db
+          .query('doc', columns: columns, where: 'id = ?', whereArgs: [id]);
+
+      if (maps.isNotEmpty) {
+        return ReadOnlyDoc(name: maps.first['name'], chapters: chapters);
+      }
+      return null;
+    } catch (e) {
+      print(e);
+      return null;
     }
   }
 
   Future<void> _updateLastAccess(int id) async {
-    final now = DateTime.now().toIso8601String();
-    await db.execute("UPDATE doc SET last_access = '$now' WHERE id = $id");
+    try {
+      final now = DateTime.now().toIso8601String();
+      await db.execute("UPDATE doc SET last_access = '$now' WHERE id = $id");
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _insertReadOnlyDoc(ReadOnlyDoc doc, int id) async {
+    try {
+      await db.insert(
+        'doc',
+        {
+          'id': id,
+          'name': doc.name,
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _insertReadOnlyChapterInfos(
+      List<ReadOnlyChapterInfo> chapterInfos) async {
+    await db.transaction((txn) async {
+      for (ReadOnlyChapterInfo chapterInfo in chapterInfos) {
+        await txn.insert(
+          'chapter',
+          {
+            'id': chapterInfo.id,
+            'name': chapterInfo.name,
+            'orderNum': chapterInfo.orderNum,
+            'num': chapterInfo.num,
+          },
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+    });
+  }
+
+  Future<int?> _getDocIdByChapterId(int chapterId) async {
+    try {
+      final List<Map<String, dynamic>> maps = await db.query(
+        'chapter',
+        columns: ['docID'],
+        where: 'id = ?',
+        whereArgs: [chapterId],
+      );
+      if (maps.isNotEmpty) {
+        return maps.first['docID'];
+      }
+      return null;
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 }

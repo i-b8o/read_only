@@ -107,11 +107,11 @@ class _DIContainer {
       id = int.tryParse(url) ?? 0;
       paragraphID = 0;
     }
-    final int initPage = _docService.chaptersOrderNums.keys
-        .firstWhere((key) => _docService.chaptersOrderNums[key] == id);
+    final int initPage = _docService.orderNumToChapterIdMap.keys
+        .firstWhere((key) => _docService.orderNumToChapterIdMap[key] == id);
     return ChapterViewModel(
-        chapterCount: _docService.chapterCount,
-        chaptersOrderNums: _docService.chaptersOrderNums,
+        chapterCount: _docService.totalChapters,
+        chaptersOrderNums: _docService.orderNumToChapterIdMap,
         pageController: PageController(initialPage: initPage),
         textEditingController: TextEditingController(text: '$initPage'),
         chapterProvider: _makeChapterService(),

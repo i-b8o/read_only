@@ -5,7 +5,7 @@ import 'package:read_only/domain/entity/tts_position.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
 abstract class ChapterViewModelService {
-  Future<ReadOnlyChapter> getOne(int id);
+  Future<ReadOnlyChapter?> getOne(int id);
 }
 
 abstract class ChapterViewModelTtsService {
@@ -20,6 +20,7 @@ abstract class ChapterViewModelTtsService {
 enum SpeakState { silence, speaking, paused }
 
 class ChapterViewModel extends ChangeNotifier {
+  String? _errorMessage;
   final ChapterViewModelService chapterProvider;
   final ChapterViewModelTtsService ttsService;
   final int chapterCount;
@@ -86,6 +87,7 @@ class ChapterViewModel extends ChangeNotifier {
 
   Future<void> getOne(int id) async {
     _chapter = await chapterProvider.getOne(id);
+    _errorMessage = chapter != null ? "Не удалось загрузить главу" : null;
     notifyListeners();
   }
 
