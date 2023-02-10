@@ -19,12 +19,12 @@ class SqfliteClient {
     if (_database != null) return _database!;
 
     // if _database is null we instantiate it
-    _database = await _initDB();
+    await _initDB();
     return _database!;
   }
 
-  Future<Database> _initDB() async {
-    return await openDatabase(
+  Future<void> _initDB() async {
+    _database = await openDatabase(
       join(await getDatabasesPath(), dbName),
       onCreate: (db, version) async {
         for (final sqlQuery in sqlInit) {

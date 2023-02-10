@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/.configuration/configuration.dart';
 import 'package:read_only/data_providers/chapter_data_provider.dart';
+import 'package:read_only/data_providers/local_chapter_data_provider.dart';
+import 'package:read_only/data_providers/local_doc_data_provider.dart';
 import 'package:read_only/data_providers/tts_data_provider.dart';
 import 'package:read_only/data_providers/tts_settings_data_provider.dart';
 import 'package:read_only/data_providers/type_data_provider.dart';
@@ -13,6 +15,7 @@ import 'package:read_only/domain/service/tts_service.dart';
 import 'package:read_only/domain/service/type_service.dart';
 import 'package:grpc_client/grpc_client.dart';
 import 'package:flutter/services.dart';
+import 'package:read_only/sql/init.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_widget.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
@@ -28,6 +31,7 @@ import 'package:read_only/ui/navigation/main_navigation.dart';
 import 'package:read_only/ui/widgets/app/app.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_model.dart';
 import 'package:shared_preferences_storage/shared_preferences_storage.dart';
+import 'package:sqflite_client/sqflite_client.dart';
 
 AppFactory makeAppFactory() => _AppFactoryDefault();
 
@@ -42,7 +46,12 @@ class _AppFactoryDefault implements AppFactory {
 class _DIContainer {
   ScreenFactory _makeScreenFactory() => ScreenFactoryDefault(this);
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
+
   late final GrpcClient _grpcClient;
+  // final sqfliteClient =
+  //     SqfliteClient(name: InitSQL.dbName, sql: InitSQL.queries);
+
+  late final _localDatabase;
 
   static const ttsMethodChannel = MethodChannel("com.b8o.read_only/tts");
   static const ttsPositionChannel = EventChannel("com.b8o.read_only/tts_pos");
@@ -55,11 +64,18 @@ class _DIContainer {
   late final TtsService _ttsService;
 
   _DIContainer() {
+    Future<void> initDatabase() async {
+      await SqfliteClient(name: InitSQL.dbName, sql: InitSQL.queries)
+          .database();
+    }
+
+    initDatabase();
     asyncInit();
     _grpcClient =
         GrpcClient(host: Configuration.host, port: Configuration.port);
     _docService = DocService(
-        docDataProvider: DocDataProviderDefault1(grpcClient: _grpcClient));
+        docDataProvider: DocDataProviderDefault1(grpcClient: _grpcClient),
+        localDocDataProvider: LocalDocDataProviderDefault(_localDatabase));
 
     _ttsService = TtsService(ttsDataProvider);
   }
@@ -92,11 +108,20 @@ class _DIContainer {
 
   ChapterDataProvider _makeChapterDataProvider() =>
       ChapterDataProviderDefault(grpcClient: _grpcClient);
+  LocalChapterDataProviderDefault _makeLocalChapterDataProviderDefault() =>
+      LocalChapterDataProviderDefault(_localDatabase);
+
+  ChapterServiceLocalDocDataProvider
+      _makeChapterServiceLocalDocDataProvider() =>
+          LocalDocDataProviderDefault(_localDatabase);
 
   ChapterService _makeChapterService() => ChapterService(
-        chapterDataProvider: _makeChapterDataProvider(),
-        ttsSettingsDataProvider: _ttsSettingsDataProvider,
-      );
+      chapterDataProvider: _makeChapterDataProvider(),
+      ttsSettingsDataProvider: _ttsSettingsDataProvider,
+      chapterServiceLocalChapterDataProvider:
+          _makeLocalChapterDataProviderDefault(),
+      chapterServiceLocalDocDataProvider:
+          _makeChapterServiceLocalDocDataProvider());
   ChapterViewModel _makeChapterViewModel(String url) {
     final int id;
     final int paragraphID;
