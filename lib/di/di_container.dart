@@ -64,12 +64,6 @@ class _DIContainer {
   late final TtsService _ttsService;
 
   _DIContainer() {
-    Future<void> initDatabase() async {
-      await SqfliteClient(name: InitSQL.dbName, sql: InitSQL.queries)
-          .database();
-    }
-
-    initDatabase();
     asyncInit();
     _grpcClient =
         GrpcClient(host: Configuration.host, port: Configuration.port);
