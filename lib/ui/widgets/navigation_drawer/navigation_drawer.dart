@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 // TODO highlighting
-class NavigationDrawer extends StatelessWidget {
-  const NavigationDrawer({Key? key}) : super(key: key);
+class ReadOnlyNavigationDrawer extends StatelessWidget {
+  const ReadOnlyNavigationDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

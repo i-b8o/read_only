@@ -4,14 +4,15 @@ class InitSQL {
     '''
       CREATE TABLE paragraph (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Paragraphid INTEGER,
+        paragraphID INTEGER,
         num INTEGER,
         hasLinks INTEGER,
         isTable INTEGER,
         isNFT INTEGER,
         className TEXT,
         content TEXT,
-        FOREIGN KEY (chapterID) REFERENCES chapter (id)
+        chapterID INTEGER,
+        FOREIGN KEY (chapterID) REFERENCES chapter(id)
       );
     ''',
     '''
@@ -20,7 +21,8 @@ class InitSQL {
         name TEXT,
         orderNum INTEGER,
         num TEXT,
-        FOREIGN KEY (docID) REFERENCES doc (id)
+        docID INTEGER,
+        FOREIGN KEY (docID) REFERENCES doc(id)
       );
 
     ''',

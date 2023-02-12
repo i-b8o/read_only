@@ -12,30 +12,30 @@ class ChapterListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<ChapterListViewModel>();
     final doc = model.doc;
-    return Scaffold(
-        appBar: PreferredSize(
-          preferredSize:
-              Size.fromHeight(Theme.of(context).appBarTheme.elevation!),
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top,
+    return SafeArea(
+      child: Scaffold(
+          appBar: PreferredSize(
+            preferredSize:
+                Size.fromHeight(Theme.of(context).appBarTheme.elevation!),
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+              ),
+              child: const ReadOnlyAppBar(child: TypeListAppBar()),
             ),
-            child: const ReadOnlyAppBar(child: TypeListAppBar()),
           ),
-        ),
-        drawer: const NavigationDrawer(
-          // children: [],
-        ),
-        body: doc == null
-            ? Container()
-            : ListView(
-                children: doc.chapters
-                    .map((e) => TypeCard(
-                          name: e.name,
-                          id: e.id,
-                        ))
-                    .toList(),
-              ));
+          drawer: const ReadOnlyNavigationDrawer(),
+          body: doc == null
+              ? Container()
+              : ListView(
+                  children: doc.chapters
+                      .map((e) => TypeCard(
+                            name: e.name,
+                            id: e.id,
+                          ))
+                      .toList(),
+                )),
+    );
   }
 }
 

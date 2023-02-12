@@ -3,45 +3,48 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum _DefaultTypes { bool, int, double, string, list }
 
-class SharedPreferencesClient  {
-  static SharedPreferences? _preferences;
+class SharedPreferencesClient {
+  static late final SharedPreferences instance;
+
+  static Future<void> init() async =>
+      instance = await SharedPreferences.getInstance();
+
   final Map<Type, Function> _writeMethods = <Type, Function>{
     bool: ((String key, bool value) async =>
-        await _preferences!.setBool(key, value)),
-    int: ((String key, int value) async =>
-        await _preferences!.setInt(key, value)),
+        await instance.setBool(key, value)),
+    int: ((String key, int value) async => await instance.setInt(key, value)),
     double: ((String key, double value) async =>
-        await _preferences!.setDouble(key, value)),
+        await instance.setDouble(key, value)),
     String: ((String key, String value) async =>
-        await _preferences!.setString(key, value)),
+        await instance.setString(key, value)),
     List<String>: ((String key, List<String> value) async =>
-        await _preferences!.setStringList(key, value)),
+        await instance.setStringList(key, value)),
   };
 
   final Map<_DefaultTypes, Function> _readMethods = <_DefaultTypes, Function>{
-    _DefaultTypes.bool: ((String key) => _preferences!.getBool(key)),
-    _DefaultTypes.int: ((String key) => _preferences!.getInt(key)),
-    _DefaultTypes.double: ((String key) => _preferences!.getDouble(key)),
-    _DefaultTypes.string: ((String key) => _preferences!.getString(key)),
-    _DefaultTypes.list: ((String key) => _preferences!.getStringList(key)),
+    _DefaultTypes.bool: ((String key) => instance.getBool(key)),
+    _DefaultTypes.int: ((String key) => instance.getInt(key)),
+    _DefaultTypes.double: ((String key) => instance.getDouble(key)),
+    _DefaultTypes.string: ((String key) => instance.getString(key)),
+    _DefaultTypes.list: ((String key) => instance.getStringList(key)),
   };
 
   SharedPreferencesClient();
 
-  Future getInstance() async {
-    try {
-      _preferences = await SharedPreferences.getInstance();
-    } catch (exception, stackTrace) {
-      throw PlatformException(
-          code: 'init_error',
-          details: exception.toString(),
-          stacktrace: stackTrace.toString());
-    }
-  }
+  // static Future getInstance() async {
+  //   try {
+  //     _preferences = await SharedPreferences.getInstance();
+  //   } catch (exception, stackTrace) {
+  //     throw PlatformException(
+  //         code: 'init_error',
+  //         details: exception.toString(),
+  //         stacktrace: stackTrace.toString());
+  //   }
+  // }
 
   Future<bool> delete({required String key}) async {
     try {
-      final success = await _preferences!.remove(key);
+      final success = await instance.remove(key);
       return success;
     } catch (exception, stackTrace) {
       throw PlatformException(

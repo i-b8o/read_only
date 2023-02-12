@@ -36,9 +36,12 @@ class ParagraphList extends StatelessWidget {
     WidgetsBinding.instance
         .addPostFrameCallback((_) => scrollToItem(model.paragraphOrderNum - 1));
 
+    if (chapter == null) {
+      return Container();
+    }
     return ScrollablePositionedList.builder(
       itemScrollController: itemScrollController,
-      itemCount: chapter!.paragraphs.length,
+      itemCount: chapter.paragraphs.length,
       itemBuilder: (BuildContext context, int index) {
         if (index == 0) {
           return Column(

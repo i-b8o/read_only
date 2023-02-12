@@ -15,41 +15,41 @@ class ChapterWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<ChapterViewModel>();
-    final chapter = model.chapter;
-    if (chapter == null) {
-      return const Center(
-          child: CircularProgressIndicator(
-        color: Colors.black,
-      ));
-    }
-
-    return Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: const ChapterWidgetFloatingActionBtns(),
-        resizeToAvoidBottomInset: false,
-        appBar: PreferredSize(
-          preferredSize:
-              Size.fromHeight(Theme.of(context).appBarTheme.elevation ?? 74),
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top,
-            ),
-            child: const ReadOnlyAppBar(
-              child: ChapterWidgetAppBar(),
+    final errorMessage = model.errorMessage;
+    return SafeArea(
+      child: Scaffold(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: const ChapterWidgetFloatingActionBtns(),
+          resizeToAvoidBottomInset: false,
+          appBar: PreferredSize(
+            preferredSize:
+                Size.fromHeight(Theme.of(context).appBarTheme.elevation ?? 74),
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+              ),
+              child: const ReadOnlyAppBar(
+                child: ChapterWidgetAppBar(),
+              ),
             ),
           ),
-        ),
-        body: PageView.builder(
-          itemCount: model.chapterCount,
-          controller: model.pageController,
-          onPageChanged: (_) {
-            model.onPageChanged();
-          },
-          itemBuilder: (BuildContext context, int index) {
-            return ParagraphList(
-              itemScrollController: ItemScrollController(),
-            );
-          },
-        ));
+          body: errorMessage == null
+              ? PageView.builder(
+                  itemCount: model.chapterCount,
+                  controller: model.pageController,
+                  onPageChanged: (_) {
+                    model.onPageChanged();
+                  },
+                  itemBuilder: (BuildContext context, int index) {
+                    return ParagraphList(
+                      itemScrollController: ItemScrollController(),
+                    );
+                  },
+                )
+              : Center(
+                  child: Text(errorMessage),
+                )),
+    );
   }
 }

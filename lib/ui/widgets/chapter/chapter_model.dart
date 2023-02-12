@@ -21,6 +21,8 @@ enum SpeakState { silence, speaking, paused }
 
 class ChapterViewModel extends ChangeNotifier {
   String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+
   final ChapterViewModelService chapterProvider;
   final ChapterViewModelTtsService ttsService;
   final int chapterCount;
@@ -87,7 +89,7 @@ class ChapterViewModel extends ChangeNotifier {
 
   Future<void> getOne(int id) async {
     _chapter = await chapterProvider.getOne(id);
-    _errorMessage = chapter != null ? "Не удалось загрузить главу" : null;
+    _errorMessage = chapter == null ? "Этот документ пока недоступен" : null;
     notifyListeners();
   }
 
@@ -97,6 +99,7 @@ class ChapterViewModel extends ChangeNotifier {
     getOne(chaptersOrderNums[index + 1] ?? id);
 
     textEditingController.text = '${index + 1}';
+    notifyListeners();
   }
 
   Future<bool> onTapUrl(BuildContext context, String url) async {
@@ -144,5 +147,71 @@ class ChapterViewModel extends ChangeNotifier {
     setSpeakState(SpeakState.speaking);
     await ttsService.resumeSpeak();
     setSpeakState(SpeakState.silence);
+  }
+
+  void onAppBarTextFormFieldChanged(String text) {
+    print("changed:$text");
+    textEditingController.text = text;
+    textEditingController.selection =
+        TextSelection.collapsed(offset: textEditingController.text.length);
+    notifyListeners();
+  }
+
+  void onAppBarTextFormFieldEditingComplete(BuildContext context) {
+    print("completed");
+    final text = textEditingController.text;
+    int pageNum = int.tryParse(text) ?? 1;
+    if (pageNum > chapterCount) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+            '$pageNum-ой страницы не существует, страниц в документе всего $chapterCount!'),
+      ));
+      notifyListeners();
+      return;
+    } else if (pageNum < 1) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('$pageNum-ой страницы не существует!'),
+      ));
+      notifyListeners();
+      return;
+    }
+    if (pageController.page == null) {
+      return;
+    }
+    pageController.animateToPage(pageNum,
+        duration: const Duration(seconds: 1), curve: Curves.ease);
+  }
+
+  void onPrevPressed(BuildContext context) async {
+    int? pageNum = int.tryParse(textEditingController.text);
+    if (pageNum == 1) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Это первая страница!'),
+      ));
+      return;
+    }
+    if (pageController.page == null) {
+      return;
+    }
+    pageController.previousPage(
+        duration: const Duration(seconds: 1), curve: Curves.ease);
+  }
+
+  void onForwardPressed(BuildContext context) async {
+    int? pageNum = int.tryParse(textEditingController.text);
+    if (pageNum == null) {
+      return;
+    }
+    if (pageNum == chapterCount) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Это последняя страница!'),
+      ));
+      return;
+    }
+    if (pageController.page == null) {
+      return;
+    }
+    pageController.nextPage(
+        duration: const Duration(seconds: 1), curve: Curves.ease);
   }
 }

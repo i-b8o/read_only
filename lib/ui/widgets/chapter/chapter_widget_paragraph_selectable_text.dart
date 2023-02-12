@@ -20,15 +20,14 @@ class SelectableTextWidget extends StatelessWidget {
     final paragraph = model.chapter!.paragraphs[index];
     final pClass = paragraph.className;
     final content = paragraph.content;
+    final onTapUrl = model.onTapUrl;
     return HtmlWidget(
       content,
       textStyle: TextStyle(
         color: Theme.of(context).textTheme.bodyText2!.color,
       ),
       onTapUrl: (href) async {
-        print("tapped $href");
-        // goTo(context, href);
-        return false;
+        return await onTapUrl(context, href);
       },
       customStylesBuilder: pClass == ""
           ? null

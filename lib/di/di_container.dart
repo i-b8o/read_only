@@ -47,50 +47,72 @@ class _DIContainer {
   ScreenFactory _makeScreenFactory() => ScreenFactoryDefault(this);
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
 
-  late final GrpcClient _grpcClient;
-  // final sqfliteClient =
-  //     SqfliteClient(name: InitSQL.dbName, sql: InitSQL.queries);
-
-  late final _localDatabase;
-
+  // channels for communicating with platform
   static const ttsMethodChannel = MethodChannel("com.b8o.read_only/tts");
   static const ttsPositionChannel = EventChannel("com.b8o.read_only/tts_pos");
+
+  // data providers
   final ttsDataProvider =
       TtsDataProviderDefault(ttsMethodChannel, ttsPositionChannel);
 
-  late final TtsSettingsDataProviderDefault _ttsSettingsDataProvider;
+  TypeDataProvider _makeTypeDataProvider() => TypeDataProviderDefault();
+
+  SubtypeDataProvider _makeSubtypeDataProvider() =>
+      SubtypeDataProviderDefault();
+
+  ChapterDataProvider _makeChapterDataProvider() =>
+      ChapterDataProviderDefault();
+
+  LocalChapterDataProviderDefault _makeLocalChapterDataProviderDefault() =>
+      LocalChapterDataProviderDefault();
+
+  ChapterServiceLocalDocDataProvider
+      _makeChapterServiceLocalDocDataProvider() =>
+          LocalDocDataProviderDefault();
+
+  final TtsSettingsDataProviderDefault _ttsSettingsDataProvider =
+      const TtsSettingsDataProviderDefault();
 
   late final DocService _docService;
   late final TtsService _ttsService;
 
   _DIContainer() {
     asyncInit();
-    _grpcClient =
-        GrpcClient(host: Configuration.host, port: Configuration.port);
     _docService = DocService(
-        docDataProvider: DocDataProviderDefault1(grpcClient: _grpcClient),
-        localDocDataProvider: LocalDocDataProviderDefault(_localDatabase));
+        docDataProvider: DocDataProviderDefault(),
+        localDocDataProvider: LocalDocDataProviderDefault());
 
     _ttsService = TtsService(ttsDataProvider);
   }
 
   void asyncInit() async {
-    final sp = SharedPreferencesClient();
-    await sp.getInstance();
-    _ttsSettingsDataProvider = TtsSettingsDataProviderDefault(sp);
+    GrpcClient().init(host: Configuration.host, port: Configuration.port);
+    List<Future> futures = [
+      SqfliteClient().init(InitSQL.dbName, initSQL: InitSQL.queries),
+      SharedPreferencesClient.init(),
+    ];
+    await Future.wait(futures);
   }
 
-  TypeDataProvider _makeTypeDataProvider() =>
-      TypeDataProviderDefault(grpcClient: _grpcClient);
+  // Services
   ReadOnlyTypeService _makeTypeService() =>
       ReadOnlyTypeService(typeDataProvider: _makeTypeDataProvider());
+
+  SubtypeService _makeSubtypeService() =>
+      SubtypeService(subtypeDataProvider: _makeSubtypeDataProvider());
+
+  ChapterService _makeChapterService() => ChapterService(
+      chapterDataProvider: _makeChapterDataProvider(),
+      ttsSettingsDataProvider: _ttsSettingsDataProvider,
+      chapterServiceLocalChapterDataProvider:
+          _makeLocalChapterDataProviderDefault(),
+      chapterServiceLocalDocDataProvider:
+          _makeChapterServiceLocalDocDataProvider());
+
+  // ViewModels
   TypeListViewModel _makeTypeListViewModel() =>
       TypeListViewModel(typesProvider: _makeTypeService());
 
-  SubtypeDataProvider _makeSubtypeDataProvider() =>
-      SubtypeDataProviderDefault(grpcClient: _grpcClient);
-  SubtypeService _makeSubtypeService() =>
-      SubtypeService(subtypeDataProvider: _makeSubtypeDataProvider());
   SubtypeListViewModel _makeSubtypeListViewModel(int id) =>
       SubtypeListViewModel(subtypesService: _makeSubtypeService(), id: id);
 
@@ -100,34 +122,26 @@ class _DIContainer {
   ChapterListViewModel _makeChapterListViewModel(int id) =>
       ChapterListViewModel(docsProvider: _docService, id: id);
 
-  ChapterDataProvider _makeChapterDataProvider() =>
-      ChapterDataProviderDefault(grpcClient: _grpcClient);
-  LocalChapterDataProviderDefault _makeLocalChapterDataProviderDefault() =>
-      LocalChapterDataProviderDefault(_localDatabase);
-
-  ChapterServiceLocalDocDataProvider
-      _makeChapterServiceLocalDocDataProvider() =>
-          LocalDocDataProviderDefault(_localDatabase);
-
-  ChapterService _makeChapterService() => ChapterService(
-      chapterDataProvider: _makeChapterDataProvider(),
-      ttsSettingsDataProvider: _ttsSettingsDataProvider,
-      chapterServiceLocalChapterDataProvider:
-          _makeLocalChapterDataProviderDefault(),
-      chapterServiceLocalDocDataProvider:
-          _makeChapterServiceLocalDocDataProvider());
   ChapterViewModel _makeChapterViewModel(String url) {
-    final int id;
+    // prepairing IDs
+    final int chapterID;
     final int paragraphID;
     if (url.contains("#")) {
-      id = int.tryParse(url.split("#")[0]) ?? 0;
+      chapterID = int.tryParse(url.split("#")[0]) ?? 0;
       paragraphID = int.tryParse(url.split("#")[1]) ?? 0;
     } else {
-      id = int.tryParse(url) ?? 0;
+      chapterID = int.tryParse(url) ?? 0;
       paragraphID = 0;
     }
-    final int initPage = _docService.orderNumToChapterIdMap.keys
-        .firstWhere((key) => _docService.orderNumToChapterIdMap[key] == id);
+    // it is necessary to specify init page number for the PageController
+    final chapterIDOrderNumMap = _docService.orderNumToChapterIdMap;
+    int initPage = 0;
+    // if requested a current doc
+    if (chapterIDOrderNumMap.containsValue(chapterID)) {
+      initPage = chapterIDOrderNumMap.keys.firstWhere(
+          (key) => _docService.orderNumToChapterIdMap[key] == chapterID);
+    }
+
     return ChapterViewModel(
         chapterCount: _docService.totalChapters,
         chaptersOrderNums: _docService.orderNumToChapterIdMap,
@@ -135,7 +149,7 @@ class _DIContainer {
         textEditingController: TextEditingController(text: '$initPage'),
         chapterProvider: _makeChapterService(),
         ttsService: _ttsService,
-        id: id,
+        id: chapterID,
         paragraphID: paragraphID);
   }
 }

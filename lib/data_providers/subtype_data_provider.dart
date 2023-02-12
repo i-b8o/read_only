@@ -9,9 +9,9 @@ import 'package:grpc_client/grpc_client.dart';
 import 'package:read_only/pb/reader/service.pbgrpc.dart';
 
 class SubtypeDataProviderDefault implements SubtypeDataProvider {
-  SubtypeDataProviderDefault({required this.grpcClient})
-      : _subtypeGRPCClient = SubGRPCClient(grpcClient.channel());
-  final GrpcClient grpcClient;
+  SubtypeDataProviderDefault()
+      : _subtypeGRPCClient = SubGRPCClient(GrpcClient().channel());
+
   final SubGRPCClient _subtypeGRPCClient;
   @override
   Future<List<ReadOnlySubtype>> getAll(int id) async {

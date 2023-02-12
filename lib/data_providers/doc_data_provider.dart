@@ -7,11 +7,10 @@ import 'package:read_only/domain/service/doc_service.dart';
 import 'package:grpc_client/grpc_client.dart';
 import 'package:read_only/pb/reader/service.pbgrpc.dart';
 
-class DocDataProviderDefault1 implements DocDataProvider {
-  DocDataProviderDefault1({
-    required this.grpcClient,
-  }) : _docGRPCClient = DocGRPCClient(grpcClient.channel());
-  final GrpcClient grpcClient;
+class DocDataProviderDefault implements DocDataProvider {
+  DocDataProviderDefault()
+      : _docGRPCClient = DocGRPCClient(GrpcClient().channel());
+
   final DocGRPCClient _docGRPCClient;
 
   @override

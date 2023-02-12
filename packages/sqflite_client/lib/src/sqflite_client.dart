@@ -3,75 +3,49 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class SqfliteClient {
-  SqfliteClient._();
-  static final SqfliteClient _sqfliteClient = SqfliteClient._();
   static Database? _database;
-  late String dbName;
-  late List<String> sqlInit;
+  static Database? get db => _database;
 
-  factory SqfliteClient({required String name, required List<String> sql}) {
-    _sqfliteClient.dbName = name;
-    _sqfliteClient.sqlInit = sql;
-    return _sqfliteClient;
-  }
+  SqfliteClient();
 
-  Future<Database> database() async {
-    if (_database != null) return _database!;
-
-    // if _database is null we instantiate it
-    await _initDB();
-    return _database!;
-  }
-
-  Future<void> _initDB() async {
+  Future<void> init(String databaseName,
+      {required List<String> initSQL, int version = 1}) async {
     _database = await openDatabase(
-      join(await getDatabasesPath(), dbName),
-      onCreate: (db, version) async {
-        for (final sqlQuery in sqlInit) {
-          await db.execute(sqlQuery);
+      join(await getDatabasesPath(), '$databaseName.db'),
+      onCreate: (_database, version) {
+        for (final sqlQuery in initSQL) {
+          _database.execute(sqlQuery);
         }
       },
+      version: 1,
     );
   }
 
-  Future<bool> checkIdExists(int id, String tableName, Database db) async {
-    final count = await db.rawQuery("SELECT * FROM $tableName WHERE id = $id");
-
-    return count.isNotEmpty;
+  static Future<void> printAllRecordsFromTable(String tableName, tag) async {
+    if (_database == null) {
+      print("$tag can not connect to the database");
+      return;
+    }
+    final records = await _database!.query(tableName);
+    if (records.isEmpty) {
+      print("$tag => the $tableName table is empty");
+    }
+    for (final record in records) {
+      print('$tag => $record');
+    }
   }
 
-  Future<int> insert(String tableName, Map<String, dynamic> json) async =>
-      _database!.insert(tableName, json);
-
-  Future<List<Map<String, dynamic>>> query(
-    String tableName, {
-    required String where,
-    required List<dynamic> whereArgs,
-  }) async {
-    return _database!.query(
-      tableName,
-      where: where,
-      whereArgs: whereArgs,
-    );
-  }
-
-  Future<int> update(String tableName, Map<String, dynamic> json,
-      {required String where, required List<dynamic> whereArgs}) async {
-    return _database!.update(
-      tableName,
-      json,
-      where: where,
-      whereArgs: whereArgs,
-    );
-  }
-
-  // use: deleted = await db.delete(Place.tableName(),where: "name = ?", whereArgs: [name]);
-  Future<int> delete(String tableName,
-      {required String where, required List<dynamic> whereArgs}) async {
-    return _database!.delete(
-      tableName,
-      where: where,
-      whereArgs: whereArgs,
-    );
+  static Future<void> printRowsByColumnValue(
+      {required String table,
+      required String column,
+      required dynamic value}) async {
+    final records =
+        await _database!.query(table, where: '$column = ?', whereArgs: [value]);
+    if (records.isEmpty) {
+      print("$column=$value => in table $table empty");
+    }
+    for (final record in records) {
+      print('$value => $record');
+    }
   }
 }

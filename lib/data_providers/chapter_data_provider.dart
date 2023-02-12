@@ -8,9 +8,9 @@ import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:read_only/pb/reader/service.pbgrpc.dart';
 
 class ChapterDataProviderDefault implements ChapterDataProvider {
-  ChapterDataProviderDefault({required this.grpcClient})
-      : _chapterGRPCClient = ChapterGRPCClient(grpcClient.channel());
-  final GrpcClient grpcClient;
+  ChapterDataProviderDefault()
+      : _chapterGRPCClient = ChapterGRPCClient(GrpcClient().channel());
+
   final ChapterGRPCClient _chapterGRPCClient;
 
   @override

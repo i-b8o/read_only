@@ -2,11 +2,11 @@ import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_client/sqflite_client.dart';
 
 class LocalChapterDataProviderDefault
     implements ChapterServiceLocalChapterDataProvider {
-  LocalChapterDataProviderDefault(this.db);
-  final Database db;
+  LocalChapterDataProviderDefault();
 
   @override
   Future<ReadOnlyChapter?> getChapter(int id) async {
@@ -20,6 +20,11 @@ class LocalChapterDataProviderDefault
   Future<ReadOnlyChapter?> _getChapterById(
       int id, List<ReadOnlyParagraph> paragraphs) async {
     try {
+      final db = SqfliteClient.db;
+      if (db == null) {
+        print("could not connect to a database");
+        return null;
+      }
       final List<Map<String, dynamic>> maps =
           await db.query('chapter', where: 'id = ?', whereArgs: [id]);
 
@@ -42,6 +47,11 @@ class LocalChapterDataProviderDefault
   Future<List<ReadOnlyParagraph>?> _getParagraphsByChapterId(
       int chapterId) async {
     try {
+      final db = SqfliteClient.db;
+      if (db == null) {
+        print("could not connect to a database");
+        return null;
+      }
       final maps = await db
           .query('paragraph', where: 'chapterID = ?', whereArgs: [chapterId]);
       if (maps.isEmpty) {

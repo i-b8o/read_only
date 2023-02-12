@@ -11,28 +11,28 @@ class SubtypeListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<SubtypeListViewModel>();
     final subtypes = model.subtypes;
-    return Scaffold(
-        appBar: PreferredSize(
-          preferredSize:
-              Size.fromHeight(Theme.of(context).appBarTheme.elevation!),
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top,
+    return SafeArea(
+      child: Scaffold(
+          appBar: PreferredSize(
+            preferredSize:
+                Size.fromHeight(Theme.of(context).appBarTheme.elevation!),
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+              ),
+              child: const ReadOnlyAppBar(child: TypeListAppBar()),
             ),
-            child: const ReadOnlyAppBar(child: TypeListAppBar()),
           ),
-        ),
-        drawer: const NavigationDrawer(
-
-        ),
-        body: ListView(
-          children: subtypes
-              .map((e) => TypeCard(
-                    name: e.name,
-                    id: e.id,
-                  ))
-              .toList(),
-        ));
+          drawer: const ReadOnlyNavigationDrawer(),
+          body: ListView(
+            children: subtypes
+                .map((e) => TypeCard(
+                      name: e.name,
+                      id: e.id,
+                    ))
+                .toList(),
+          )),
+    );
   }
 }
 

@@ -6,9 +6,9 @@ import 'package:grpc_client/grpc_client.dart';
 import 'package:read_only/pb/reader/service.pbgrpc.dart';
 
 class TypeDataProviderDefault implements TypeDataProvider {
-  TypeDataProviderDefault({required this.grpcClient})
-      : _typeGRPCClient = TypeGRPCClient(grpcClient.channel());
-  final GrpcClient grpcClient;
+  TypeDataProviderDefault()
+      : _typeGRPCClient = TypeGRPCClient(GrpcClient().channel());
+
   final TypeGRPCClient _typeGRPCClient;
 
   @override
