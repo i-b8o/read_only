@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:my_logger/my_logger.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class TableWithBigPictures extends StatelessWidget {
@@ -22,7 +23,7 @@ class TableWithBigPictures extends StatelessWidget {
     return WebView(
       javascriptMode: JavascriptMode.unrestricted,
       navigationDelegate: (NavigationRequest request) {
-        print(request.url.toString());
+        MyLogger().getLogger().info(request.url.toString());
         return NavigationDecision.prevent;
       },
       gestureRecognizers: gestureRecognizers,

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/chapter_info.dart';
 import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
@@ -34,7 +35,7 @@ class LocalDocDataProviderDefault
   Future<void> updateLastAccess(int chapterID) async {
     final docID = await _getDocIdByChapterId(chapterID);
     if (docID == null) {
-      print(
+      MyLogger().getLogger().info(
           "There is no such doc with the id=$docID (the chapter id=$chapterID)");
       return;
     }
@@ -47,7 +48,7 @@ class LocalDocDataProviderDefault
     try {
       final db = SqfliteClient.db;
       if (db == null) {
-        print("could not connect to a database");
+        MyLogger().getLogger().info("could not connect to a database");
         return null;
       }
 
@@ -64,10 +65,10 @@ class LocalDocDataProviderDefault
           );
         });
       }
-      print("_getReadOnlyChaptersByDocId empty");
+      MyLogger().getLogger().info("_getReadOnlyChaptersByDocId empty");
       return null;
     } catch (e) {
-      print(e);
+      MyLogger().getLogger().warning(e);
       return null;
     }
   }
@@ -78,12 +79,12 @@ class LocalDocDataProviderDefault
 
     try {
       if (chapters == null) {
-        print("chapters == null");
+        MyLogger().getLogger().info("chapters == null");
         return null;
       }
       final db = SqfliteClient.db;
       if (db == null) {
-        print("could not connect to a database");
+        MyLogger().getLogger().info("could not connect to a database");
         return null;
       }
 
@@ -91,17 +92,17 @@ class LocalDocDataProviderDefault
           .query('doc', columns: columns, where: 'id = ?', whereArgs: [id]);
 
       if (maps.isNotEmpty) {
-        print(maps);
+        MyLogger().getLogger().info(maps);
         return ReadOnlyDoc(
           maps.first['color'],
           name: maps.first['name'],
           chapters: chapters,
         );
       }
-      print("_getReadOnlyDocById empty");
+      MyLogger().getLogger().info("_getReadOnlyDocById empty");
       return null;
     } catch (e) {
-      print(e);
+      MyLogger().getLogger().warning(e);
       return null;
     }
   }
@@ -110,13 +111,13 @@ class LocalDocDataProviderDefault
     try {
       final db = SqfliteClient.db;
       if (db == null) {
-        print("could not connect to a database");
-        return null;
+        MyLogger().getLogger().info("could not connect to a database");
+        return;
       }
       final now = DateTime.now().toIso8601String();
       await db.execute("UPDATE doc SET last_access = '$now' WHERE id = $id");
     } catch (e) {
-      print(e);
+      MyLogger().getLogger().warning(e);
     }
   }
 
@@ -124,8 +125,8 @@ class LocalDocDataProviderDefault
     try {
       final db = SqfliteClient.db;
       if (db == null) {
-        print("could not connect to a database");
-        return null;
+        MyLogger().getLogger().info("could not connect to a database");
+        return;
       }
       // Get a list of distinct color values from the "doc" table
       final List<int> colorsList =
@@ -148,14 +149,14 @@ class LocalDocDataProviderDefault
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
-      print(e);
+      MyLogger().getLogger().warning(e);
     }
   }
 
   Future<List<int>?> _fetchDistinctColorsFromDocTable() async {
     final db = SqfliteClient.db;
     if (db == null) {
-      print("could not connect to a database");
+      MyLogger().getLogger().info("could not connect to a database");
       return null;
     }
 
@@ -170,7 +171,7 @@ class LocalDocDataProviderDefault
       List<ReadOnlyChapterInfo> chapterInfos, int docID) async {
     final db = SqfliteClient.db;
     if (db == null) {
-      print("could not connect to a database");
+      MyLogger().getLogger().info("could not connect to a database");
       return;
     }
     await db.transaction((txn) async {
@@ -194,7 +195,7 @@ class LocalDocDataProviderDefault
     try {
       final db = SqfliteClient.db;
       if (db == null) {
-        print("could not connect to a database");
+        MyLogger().getLogger().info("could not connect to a database");
         return null;
       }
       final List<Map<String, dynamic>> maps = await db.query(
@@ -208,7 +209,7 @@ class LocalDocDataProviderDefault
       }
       return null;
     } catch (e) {
-      print(e);
+      MyLogger().getLogger().warning(e);
       return null;
     }
   }

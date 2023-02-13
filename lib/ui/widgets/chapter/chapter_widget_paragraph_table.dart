@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+
 import 'package:provider/provider.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'chapter_model.dart';
 import 'chapter_widget_regular_table.dart';
 import 'chapter_widget_table_with_big_picture.dart';

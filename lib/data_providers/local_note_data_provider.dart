@@ -1,3 +1,4 @@
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/note.dart';
 import 'package:read_only/domain/service/notes_service.dart';
 import 'package:sqflite_client/sqflite_client.dart';
@@ -13,7 +14,7 @@ class LocalNotesDataProviderDefault
     List<Note> notes = [];
     final db = SqfliteClient.db;
     if (db == null) {
-      print("could not connect to a database");
+      MyLogger().getLogger().info("could not connect to a database");
       return null;
     }
     try {
@@ -42,7 +43,9 @@ class LocalNotesDataProviderDefault
         }
       }
     } catch (e) {
-      print('An error occured while fetching notes: $e');
+      MyLogger()
+          .getLogger()
+          .warning('An error occured while fetching notes: $e');
     }
     return notes;
   }

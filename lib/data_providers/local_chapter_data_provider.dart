@@ -1,6 +1,8 @@
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
+import 'package:sqflite/sqlite_api.dart';
 import 'package:sqflite_client/sqflite_client.dart';
 
 class LocalChapterDataProviderDefault
@@ -9,21 +11,21 @@ class LocalChapterDataProviderDefault
 
   @override
   Future<ReadOnlyChapter?> getChapter(int id) async {
-    final paragraphs = await _getParagraphsByChapterId(id);
+    final db = SqfliteClient.db;
+    if (db == null) {
+      MyLogger().getLogger().info("could not connect to a database");
+      return null;
+    }
+    final paragraphs = await _getParagraphsByChapterId(id, db);
     if (paragraphs == null) {
       return null;
     }
-    return await _getChapterById(id, paragraphs);
+    return await _getChapterById(id, paragraphs, db);
   }
 
   Future<ReadOnlyChapter?> _getChapterById(
-      int id, List<ReadOnlyParagraph> paragraphs) async {
+      int id, List<ReadOnlyParagraph> paragraphs, Database db) async {
     try {
-      final db = SqfliteClient.db;
-      if (db == null) {
-        print("could not connect to a database");
-        return null;
-      }
       final List<Map<String, dynamic>> maps =
           await db.query('chapter', where: 'id = ?', whereArgs: [id]);
 
@@ -38,19 +40,14 @@ class LocalChapterDataProviderDefault
       }
       return null;
     } catch (e) {
-      print(e);
+      MyLogger().getLogger().warning("could not connect to a database");
       return null;
     }
   }
 
   Future<List<ReadOnlyParagraph>?> _getParagraphsByChapterId(
-      int chapterId) async {
+      int chapterId, Database db) async {
     try {
-      final db = SqfliteClient.db;
-      if (db == null) {
-        print("could not connect to a database");
-        return null;
-      }
       final maps = await db
           .query('paragraph', where: 'chapterID = ?', whereArgs: [chapterId]);
       if (maps.isEmpty) {
@@ -69,7 +66,7 @@ class LocalChapterDataProviderDefault
               ))
           .toList();
     } catch (e) {
-      print(e);
+      MyLogger().getLogger().warning("could not connect to a database");
       return null;
     }
   }

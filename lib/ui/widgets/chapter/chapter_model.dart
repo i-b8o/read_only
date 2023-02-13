@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/tts_position.dart';
 
@@ -67,7 +68,9 @@ class ChapterViewModel extends ChangeNotifier {
     asyncInit(id);
     if (ttsService.positionEvent() != null) {
       ttsService.positionEvent()!.listen((event) {
-        print("start1: ${event.start}, end: ${event.end}");
+        MyLogger()
+            .getLogger()
+            .info("start1: ${event.start}, end: ${event.end}");
       });
     }
   }
@@ -103,7 +106,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<bool> onTapUrl(BuildContext context, String url) async {
-    print("url: $url");
+    MyLogger().getLogger().info("url: $url");
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.chapterScreen,
       arguments: url,
@@ -150,7 +153,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   void onAppBarTextFormFieldChanged(String text) {
-    print("changed:$text");
+    MyLogger().getLogger().info("changed:$text");
     textEditingController.text = text;
     textEditingController.selection =
         TextSelection.collapsed(offset: textEditingController.text.length);
@@ -158,7 +161,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   void onAppBarTextFormFieldEditingComplete(BuildContext context) {
-    print("completed");
+    MyLogger().getLogger().info("completed");
     final text = textEditingController.text;
     int pageNum = int.tryParse(text) ?? 1;
     if (pageNum > chapterCount) {

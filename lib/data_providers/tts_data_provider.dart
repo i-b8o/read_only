@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/tts_position.dart';
 import 'package:read_only/domain/service/tts_service.dart';
 
@@ -124,7 +125,7 @@ class TtsDataProviderDefault implements TtsDataProvider {
         return TtsPosition(0, 0);
       }
       final offset = _state!.offset;
-      print("offset: $offset");
+      MyLogger().getLogger().info("offset: $offset");
       List<int> values = event.cast<int>();
       final int start = values[0];
       _state!.setStart(start);

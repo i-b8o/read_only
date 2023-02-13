@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:my_logger/my_logger.dart';
 
 class RegularTable extends StatelessWidget {
   const RegularTable({super.key, required this.content});
@@ -29,7 +30,7 @@ class RegularTable extends StatelessWidget {
         return null;
       },
       onTapUrl: (href) async {
-        print("tappeddddddddddddddddddddddddddddd");
+        MyLogger().getLogger().info("tappeddddddddddddddddddddddddddddd");
         return false;
       },
     );

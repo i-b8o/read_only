@@ -15,10 +15,6 @@ class DocDataProviderDefault implements DocDataProvider {
 
   @override
   Future<ReadOnlyDoc> getOne(int id) async {
-    // String? m = GrpcClient.check();
-    // if (m != null) {
-    //   throw GrpcDocDataProviderError(m);
-    // }
     try {
       // Request
       Int64 int64ID = Int64(id);

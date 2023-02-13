@@ -1,3 +1,4 @@
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/chapter_info.dart';
 import 'package:read_only/domain/entity/doc_paragraps.dart';
 import 'package:sqflite/sqflite.dart';
@@ -9,8 +10,8 @@ class LocalEntireDocDataProviderDefault {
   Future<void> _insertParagraphs(List<DocParagraph> paragraphs) async {
     final db = SqfliteClient.db;
     if (db == null) {
-      print("could not connect to a database");
-      return null;
+      MyLogger().getLogger().info("could not connect to a database");
+      return;
     }
     Batch batch = db.batch();
     for (var paragraph in paragraphs) {
@@ -30,8 +31,8 @@ class LocalEntireDocDataProviderDefault {
   Future<void> _insertChapters(List<ReadOnlyChapterInfo> chapters) async {
     final db = SqfliteClient.db;
     if (db == null) {
-      print("could not connect to a database");
-      return null;
+      MyLogger().getLogger().info("could not connect to a database");
+      return;
     }
     Batch batch = db.batch();
     for (var chapter in chapters) {
@@ -67,8 +68,8 @@ class LocalEntireDocDataProviderDefault {
   Future<void> _deleteDoc(int id) async {
     final db = SqfliteClient.db;
     if (db == null) {
-      print("could not connect to a database");
-      return null;
+      MyLogger().getLogger().info("could not connect to a database");
+      return;
     }
     // Begin a transaction
     await db.transaction((txn) async {
@@ -95,7 +96,7 @@ class LocalEntireDocDataProviderDefault {
   Future<List<int>?> _getChapterIDsForDoc(int docID) async {
     final db = SqfliteClient.db;
     if (db == null) {
-      print("could not connect to a database");
+      MyLogger().getLogger().info("could not connect to a database");
       return null;
     }
     List<Map<String, dynamic>> result = await db.query("chapter",
