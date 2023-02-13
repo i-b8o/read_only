@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:read_only/domain/entity/chapter_info.dart';
 import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
@@ -72,7 +74,7 @@ class LocalDocDataProviderDefault
 
   Future<ReadOnlyDoc?> _getReadOnlyDocById(
       int id, List<ReadOnlyChapterInfo>? chapters) async {
-    const columns = ['id', 'name'];
+    const columns = ['id', 'name', 'color'];
 
     try {
       if (chapters == null) {
@@ -90,7 +92,11 @@ class LocalDocDataProviderDefault
 
       if (maps.isNotEmpty) {
         print(maps);
-        return ReadOnlyDoc(name: maps.first['name'], chapters: chapters);
+        return ReadOnlyDoc(
+          maps.first['color'],
+          name: maps.first['name'],
+          chapters: chapters,
+        );
       }
       print("_getReadOnlyDocById empty");
       return null;
@@ -121,10 +127,22 @@ class LocalDocDataProviderDefault
         print("could not connect to a database");
         return null;
       }
+      // Get a list of distinct color values from the "doc" table
+      final List<int> colorsList =
+          await _fetchDistinctColorsFromDocTable() ?? [];
+
+      // Generate a random color for the new record that
+      // does not conflict with existing color values
+      int color = 0;
+      while (colorsList.contains(color)) {
+        color = Random().nextInt(0xFFFFFF + 1);
+      }
+
       await db.insert(
         'doc',
         {
           'id': id,
+          'color': color,
           'name': doc.name,
         },
         conflictAlgorithm: ConflictAlgorithm.replace,
@@ -132,6 +150,20 @@ class LocalDocDataProviderDefault
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<List<int>?> _fetchDistinctColorsFromDocTable() async {
+    final db = SqfliteClient.db;
+    if (db == null) {
+      print("could not connect to a database");
+      return null;
+    }
+
+    final List<Map<String, dynamic>> result = await db.rawQuery(
+      'SELECT DISTINCT color FROM doc',
+    );
+
+    return result.map((row) => row['color'] as int).toList();
   }
 
   Future<void> _insertReadOnlyChapterInfos(

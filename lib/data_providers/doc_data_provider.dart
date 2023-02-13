@@ -29,7 +29,7 @@ class DocDataProviderDefault implements DocDataProvider {
           .map((e) => ReadOnlyChapterInfo(
               id: e.iD.toInt(), name: e.name, orderNum: e.orderNum, num: e.num))
           .toList();
-      return ReadOnlyDoc(name: resp.name, chapters: chapters);
+      return ReadOnlyDoc(null, name: resp.name, chapters: chapters);
     } catch (e) {
       throw PlatformException(code: "get_one_doc_error", details: e);
     }

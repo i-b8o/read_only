@@ -30,7 +30,14 @@ class InitSQL {
       CREATE TABLE doc (
         id INTEGER PRIMARY KEY,
         name TEXT,
+        color INTEGER,
         last_access TIME
+      );
+    ''',
+    '''
+      CREATE TABLE note (
+        id INTEGER PRIMARY KEY,
+        paragraphID INTEGER
       );
     ''',
   ];

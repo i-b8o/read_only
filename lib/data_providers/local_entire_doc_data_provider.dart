@@ -1,14 +1,17 @@
 import 'package:read_only/domain/entity/chapter_info.dart';
 import 'package:read_only/domain/entity/doc_paragraps.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_client/sqflite_client.dart';
 
 class LocalEntireDocDataProviderDefault {
-  LocalEntireDocDataProviderDefault({
-    required this.db,
-  });
-  final Database db;
+  LocalEntireDocDataProviderDefault();
 
   Future<void> _insertParagraphs(List<DocParagraph> paragraphs) async {
+    final db = SqfliteClient.db;
+    if (db == null) {
+      print("could not connect to a database");
+      return null;
+    }
     Batch batch = db.batch();
     for (var paragraph in paragraphs) {
       batch.insert('paragraph', {
@@ -24,8 +27,12 @@ class LocalEntireDocDataProviderDefault {
     await batch.commit(noResult: true);
   }
 
-  Future<void> _insertChapters(
-      List<ReadOnlyChapterInfo> chapters, Database db) async {
+  Future<void> _insertChapters(List<ReadOnlyChapterInfo> chapters) async {
+    final db = SqfliteClient.db;
+    if (db == null) {
+      print("could not connect to a database");
+      return null;
+    }
     Batch batch = db.batch();
     for (var chapter in chapters) {
       batch.insert("ReadOnlyChapter", {
@@ -58,6 +65,11 @@ class LocalEntireDocDataProviderDefault {
   }
 
   Future<void> _deleteDoc(int id) async {
+    final db = SqfliteClient.db;
+    if (db == null) {
+      print("could not connect to a database");
+      return null;
+    }
     // Begin a transaction
     await db.transaction((txn) async {
       // Delete the ReadOnlyDoc with id
@@ -70,14 +82,22 @@ class LocalEntireDocDataProviderDefault {
       await txn.delete('ReadOnlyChapter', where: 'doc_id = ?', whereArgs: [id]);
 
       // Delete all ReadOnlyParagraph for every deleted chapter id
-      final List<int> chapterIds = await _getChapterIDsForDoc(id);
+      final List<int>? chapterIds = await _getChapterIDsForDoc(id);
+      if (chapterIds == null) {
+        return;
+      }
 
       await txn.delete('ReadOnlyParagraph',
           where: 'chapter_id in (${chapterIds.join(', ')})');
     });
   }
 
-  Future<List<int>> _getChapterIDsForDoc(int docID) async {
+  Future<List<int>?> _getChapterIDsForDoc(int docID) async {
+    final db = SqfliteClient.db;
+    if (db == null) {
+      print("could not connect to a database");
+      return null;
+    }
     List<Map<String, dynamic>> result = await db.query("chapter",
         columns: ["id"], where: "docID = ?", whereArgs: [docID]);
 

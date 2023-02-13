@@ -148,7 +148,7 @@ class ParagraphCard extends StatelessWidget {
                   )),
               FocusedMenuItem(
                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                  title: const Text("Заметки"),
+                  title: const Text("Добавить в заметки"),
                   onPressed: () {
                     model.setActiveParagraphIndex(index);
                   },

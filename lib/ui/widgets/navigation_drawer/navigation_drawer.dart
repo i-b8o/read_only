@@ -52,7 +52,7 @@ class NotesMenuItem extends StatelessWidget {
         Navigator.of(context).pop();
         Navigator.pushNamed(
           context,
-          '/notesList',
+          '/notes_screen',
         );
       },
       trailing: const SizedBox(),

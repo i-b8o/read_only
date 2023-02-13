@@ -4,12 +4,14 @@ import 'package:read_only/.configuration/configuration.dart';
 import 'package:read_only/data_providers/chapter_data_provider.dart';
 import 'package:read_only/data_providers/local_chapter_data_provider.dart';
 import 'package:read_only/data_providers/local_doc_data_provider.dart';
+import 'package:read_only/data_providers/local_note_data_provider.dart';
 import 'package:read_only/data_providers/tts_data_provider.dart';
 import 'package:read_only/data_providers/tts_settings_data_provider.dart';
 import 'package:read_only/data_providers/type_data_provider.dart';
 import 'package:read_only/data_providers/subtype_data_provider.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:read_only/domain/service/doc_service.dart';
+import 'package:read_only/domain/service/notes_service.dart';
 import 'package:read_only/domain/service/subtype_service.dart';
 import 'package:read_only/domain/service/tts_service.dart';
 import 'package:read_only/domain/service/type_service.dart';
@@ -22,6 +24,8 @@ import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_widget.dart';
 import 'package:read_only/ui/widgets/doc_list/doc_list_model.dart';
 import 'package:read_only/ui/widgets/doc_list/doc_list_widget.dart';
+import 'package:read_only/ui/widgets/notes/notes_model.dart';
+import 'package:read_only/ui/widgets/notes/notes_widget.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_model.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_widget.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_widget.dart';
@@ -48,12 +52,12 @@ class _DIContainer {
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
 
   // channels for communicating with platform
-  static const ttsMethodChannel = MethodChannel("com.b8o.read_only/tts");
-  static const ttsPositionChannel = EventChannel("com.b8o.read_only/tts_pos");
+  static const _ttsMethodChannel = MethodChannel("com.b8o.read_only/tts");
+  static const _ttsPositionChannel = EventChannel("com.b8o.read_only/tts_pos");
 
   // data providers
-  final ttsDataProvider =
-      TtsDataProviderDefault(ttsMethodChannel, ttsPositionChannel);
+  final _ttsDataProvider =
+      TtsDataProviderDefault(_ttsMethodChannel, _ttsPositionChannel);
 
   TypeDataProvider _makeTypeDataProvider() => TypeDataProviderDefault();
 
@@ -70,11 +74,11 @@ class _DIContainer {
       _makeChapterServiceLocalDocDataProvider() =>
           LocalDocDataProviderDefault();
 
+  LocalNotesDataProviderDefault _notesDataProvider() =>
+      LocalNotesDataProviderDefault();
+
   final TtsSettingsDataProviderDefault _ttsSettingsDataProvider =
       const TtsSettingsDataProviderDefault();
-
-  late final DocService _docService;
-  late final TtsService _ttsService;
 
   _DIContainer() {
     asyncInit();
@@ -82,7 +86,7 @@ class _DIContainer {
         docDataProvider: DocDataProviderDefault(),
         localDocDataProvider: LocalDocDataProviderDefault());
 
-    _ttsService = TtsService(ttsDataProvider);
+    _ttsService = TtsService(_ttsDataProvider);
   }
 
   void asyncInit() async {
@@ -95,6 +99,9 @@ class _DIContainer {
   }
 
   // Services
+  late final DocService _docService;
+  late final TtsService _ttsService;
+
   ReadOnlyTypeService _makeTypeService() =>
       ReadOnlyTypeService(typeDataProvider: _makeTypeDataProvider());
 
@@ -109,6 +116,8 @@ class _DIContainer {
       chapterServiceLocalDocDataProvider:
           _makeChapterServiceLocalDocDataProvider());
 
+  NotesService _makeNotesService() => NotesService(_notesDataProvider());
+
   // ViewModels
   TypeListViewModel _makeTypeListViewModel() =>
       TypeListViewModel(typesProvider: _makeTypeService());
@@ -121,6 +130,8 @@ class _DIContainer {
 
   ChapterListViewModel _makeChapterListViewModel(int id) =>
       ChapterListViewModel(docsProvider: _docService, id: id);
+
+  NotesViewModel _makeNotesViewModel() => NotesViewModel(_makeNotesService());
 
   ChapterViewModel _makeChapterViewModel(String url) {
     // prepairing IDs
@@ -204,15 +215,12 @@ class ScreenFactoryDefault implements ScreenFactory {
     );
   }
 
-  // @override
-  // Widget makeMainScreen() {
-  //   // TODO: implement makeMainScreen
-  //   throw UnimplementedError();
-  // }
-
-  // @override
-  // Widget makeTypesScreen() {
-  //   // TODO: implement makeTypesScreen
-  //   throw UnimplementedError();
-  // }
+  @override
+  Widget makeNotesScreen() {
+    return ChangeNotifierProvider(
+      create: (_) => _diContainer._makeNotesViewModel(),
+      lazy: false,
+      child: const NotesWidget(),
+    );
+  }
 }

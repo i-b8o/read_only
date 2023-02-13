@@ -21,6 +21,20 @@ class SqfliteClient {
     );
   }
 
+  static Future<void> printRecordCount(String tableName, tag) async {
+    if (_database == null) {
+      print("$tag can not connect to the database");
+      return;
+    }
+    int? count = Sqflite.firstIntValue(
+        await _database!.rawQuery("SELECT COUNT(*) FROM $tableName"));
+    if (count == null) {
+      print("$tag could not get table:$tableName");
+      return;
+    }
+    print('the $tableName table has $count records');
+  }
+
   static Future<void> printAllRecordsFromTable(String tableName, tag) async {
     if (_database == null) {
       print("$tag can not connect to the database");

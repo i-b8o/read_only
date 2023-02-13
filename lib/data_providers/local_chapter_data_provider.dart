@@ -1,7 +1,6 @@
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_client/sqflite_client.dart';
 
 class LocalChapterDataProviderDefault
