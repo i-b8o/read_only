@@ -16,9 +16,11 @@ class LocalDocDataProviderDefault
 
   @override
   Future<void> saveOne(ReadOnlyDoc doc, int id) async {
-    await _insertReadOnlyDoc(doc, id);
-
-    await _insertReadOnlyChapterInfos(doc.chapters, id);
+    List<Future> futures = [
+      _insertReadOnlyDoc(doc, id),
+      _insertReadOnlyChapterInfos(doc.chapters, id),
+    ];
+    await Future.wait(futures);
   }
 
   @override

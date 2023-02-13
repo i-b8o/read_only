@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/.configuration/configuration.dart';
 import 'package:read_only/data_providers/chapter_data_provider.dart';
@@ -51,9 +50,6 @@ class _AppFactoryDefault implements AppFactory {
 class _DIContainer {
   ScreenFactory _makeScreenFactory() => ScreenFactoryDefault(this);
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
-
-  // Logger
-  final Logger _logger = Logger('your_logger_name');
 
   // channels for communicating with platform
   static const _ttsMethodChannel = MethodChannel("com.b8o.read_only/tts");

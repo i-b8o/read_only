@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:read_only/domain/entity/chapter_info.dart';
 import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
@@ -40,6 +42,8 @@ class DocService implements ChapterListViewModelService {
       }
       final ReadOnlyDoc resp = await docDataProvider.getOne(id);
       await localDocDataProvider.saveOne(resp, id);
+      // await Isolate.spawn(DataStorage().retrieveData, null);
+
       assign(resp.chapters);
       return resp;
     } on Exception catch (_) {
