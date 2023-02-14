@@ -11,7 +11,7 @@ class ChapterWidgetHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<ChapterViewModel>();
-    final pClass = model.chapter!.paragraphs[0].className;
+    final pClass = model.paragraphs[0].paragraphclass;
     final header = model.chapter!.name;
     return Padding(
       padding: pClass == "align_right"

@@ -1,9 +1,10 @@
-import 'package:read_only/domain/entity/chapter_info.dart';
+import 'package:read_only/domain/entity/chapter.dart';
 
-class ReadOnlyDoc {
+class Doc {
+  final int id;
   final String name;
   final int? color;
-  final List<ReadOnlyChapterInfo> chapters;
+  final List<Chapter>? chapters;
 
-  ReadOnlyDoc(this.color, {required this.name, required this.chapters});
+  Doc({required this.id, required this.name, this.chapters, this.color});
 }

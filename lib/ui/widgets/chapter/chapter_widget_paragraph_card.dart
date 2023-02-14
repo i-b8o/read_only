@@ -61,8 +61,8 @@ class ParagraphCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.read<ChapterViewModel>();
-    final paragraph = model.chapter!.paragraphs[index];
-    final paragraphClass = paragraph.className;
+    final paragraph = model.paragraphs[index];
+    final paragraphClass = paragraph.paragraphclass;
     final content = paragraph.content;
     final isNFT = paragraph.isNFT;
     final isTable = paragraph.isTable;

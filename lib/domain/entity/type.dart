@@ -1,6 +1,6 @@
-class ReadOnlyType {
+class Type {
   final int id;
   final String name;
 
-  ReadOnlyType({required this.id, required this.name});
+  Type({required this.id, required this.name});
 }

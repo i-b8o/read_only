@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/chapter.dart';
+import 'package:read_only/domain/entity/paragraph.dart';
 import 'package:read_only/domain/entity/tts_position.dart';
 
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
 abstract class ChapterViewModelService {
-  Future<ReadOnlyChapter?> getOne(int id);
+  Future<Chapter?> getOne(int id);
 }
 
 abstract class ChapterViewModelTtsService {
@@ -29,6 +30,8 @@ class ChapterViewModel extends ChangeNotifier {
   final int chapterCount;
   final int id;
   final int paragraphID;
+  late final List<Paragraph> _paragraphs;
+  List<Paragraph> get paragraphs => _paragraphs;
   final Map<int, int> chaptersOrderNums;
   SpeakState _speakState = SpeakState.silence;
   SpeakState get speakState => _speakState;
@@ -47,8 +50,8 @@ class ChapterViewModel extends ChangeNotifier {
   final TextEditingController textEditingController;
   int _paragraphOrderNum = 0;
   int get paragraphOrderNum => _paragraphOrderNum;
-  ReadOnlyChapter? _chapter;
-  ReadOnlyChapter? get chapter => _chapter;
+  Chapter? _chapter;
+  Chapter? get chapter => _chapter;
   int _currentPage = 0;
   int get currentPage => _currentPage;
 
@@ -80,14 +83,14 @@ class ChapterViewModel extends ChangeNotifier {
     if (paragraphID == 0) {
       return;
     }
-    if (chapter == null) {
+    if (chapter == null || chapter!.paragraphs == null) {
       return;
     }
-
-    _paragraphOrderNum = chapter!.paragraphs
-        .where((element) => element.id.toInt() == paragraphID)
+    _paragraphs = chapter!.paragraphs!;
+    _paragraphOrderNum = _paragraphs
+        .where((element) => element.paragraphID.toInt() == paragraphID)
         .first
-        .num;
+        .paragraphOrderNum;
   }
 
   Future<void> getOne(int id) async {
@@ -115,22 +118,25 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<void> startSpeakParagraph() async {
-    if (chapter == null || activeParagraphIndex == null) {
+    if (chapter == null ||
+        _paragraphs.isEmpty ||
+        activeParagraphIndex == null) {
       return;
     }
 
     setSpeakState(SpeakState.speaking);
     await ttsService
-        .speakOne(chapter!.paragraphs[activeParagraphIndex!].content);
+        .speakOne(chapter!.paragraphs![activeParagraphIndex!].content);
     setSpeakState(SpeakState.silence);
   }
 
   Future<void> startSpeakChapter() async {
-    if (chapter == null) {
+    if (chapter == null || _paragraphs.isEmpty) {
       return;
     }
+
     final texts =
-        chapter!.paragraphs.map((paragraph) => paragraph.content).toList();
+        chapter!.paragraphs!.map((paragraph) => paragraph.content).toList();
     setSpeakState(SpeakState.speaking);
     await ttsService.speakList(texts);
     setSpeakState(SpeakState.silence);

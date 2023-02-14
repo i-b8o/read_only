@@ -12,6 +12,7 @@ class ChapterListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<ChapterListViewModel>();
     final doc = model.doc;
+    final chapters = model.chapters;
     return SafeArea(
       child: Scaffold(
           appBar: PreferredSize(
@@ -26,9 +27,14 @@ class ChapterListWidget extends StatelessWidget {
           ),
           drawer: const ReadOnlyNavigationDrawer(),
           body: doc == null
-              ? Container()
+              ? Center(
+                  child: Text("Нет такого документа",
+                      style: TextStyle(
+                          color: Theme.of(context).focusColor,
+                          decoration: TextDecoration.none)),
+                )
               : ListView(
-                  children: doc.chapters
+                  children: chapters
                       .map((e) => TypeCard(
                             name: e.name,
                             id: e.id,

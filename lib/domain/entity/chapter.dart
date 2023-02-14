@@ -1,16 +1,19 @@
 import 'package:read_only/domain/entity/paragraph.dart';
 
-class ReadOnlyChapter {
+class Chapter {
   final int id;
   final String name;
   final int orderNum;
   final String num;
-  final List<ReadOnlyParagraph> paragraphs;
+  final int? docID;
+  final List<Paragraph>? paragraphs;
 
-  ReadOnlyChapter(
-      {required this.id,
-      required this.name,
-      required this.orderNum,
-      required this.paragraphs,
-      required this.num});
+  Chapter({
+    required this.id,
+    required this.name,
+    required this.orderNum,
+    required this.num,
+    this.docID,
+    this.paragraphs,
+  });
 }

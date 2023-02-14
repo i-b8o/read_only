@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:read_only/domain/entity/doc_info.dart';
+import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
 abstract class DocListViewModelService {
-  Future<List<ReadOnlyDocInfo>> getDocs(int id);
+  Future<List<Doc>> getDocs(int id);
 }
 
 class DocListViewModel extends ChangeNotifier {
   final DocListViewModelService docsService;
   final int id;
-  var _docs = <ReadOnlyDocInfo>[];
-  List<ReadOnlyDocInfo> get docs => List.unmodifiable(_docs);
+  var _docs = <Doc>[];
+  List<Doc> get docs => List.unmodifiable(_docs);
 
   DocListViewModel({
     required this.docsService,

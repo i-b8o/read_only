@@ -3,15 +3,15 @@ import 'package:read_only/domain/entity/sub_type.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
 abstract class SubtypesListViewModelService {
-  Future<List<ReadOnlySubtype>> getAll(int id);
+  Future<List<Subtype>> getAll(int id);
 }
 
 class SubtypeListViewModel extends ChangeNotifier {
   final SubtypesListViewModelService subtypesService;
   final int id;
 
-  var _subtypes = <ReadOnlySubtype>[];
-  List<ReadOnlySubtype> get subtypes => List.unmodifiable(_subtypes);
+  var _subtypes = <Subtype>[];
+  List<Subtype> get subtypes => List.unmodifiable(_subtypes);
 
   SubtypeListViewModel({
     required this.subtypesService,

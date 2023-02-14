@@ -70,10 +70,6 @@ class _DIContainer {
   LocalChapterDataProviderDefault _makeLocalChapterDataProviderDefault() =>
       LocalChapterDataProviderDefault();
 
-  ChapterServiceLocalDocDataProvider
-      _makeChapterServiceLocalDocDataProvider() =>
-          LocalDocDataProviderDefault();
-
   LocalNotesDataProviderDefault _notesDataProvider() =>
       LocalNotesDataProviderDefault();
 
@@ -84,7 +80,8 @@ class _DIContainer {
     asyncInit();
     _docService = DocService(
         docDataProvider: DocDataProviderDefault(),
-        localDocDataProvider: LocalDocDataProviderDefault());
+        localDocDataProvider: LocalDocDataProviderDefault(),
+        localChapterDataProvider: _makeLocalChapterDataProviderDefault());
 
     _ttsService = TtsService(_ttsDataProvider);
   }
@@ -109,12 +106,11 @@ class _DIContainer {
       SubtypeService(subtypeDataProvider: _makeSubtypeDataProvider());
 
   ChapterService _makeChapterService() => ChapterService(
-      chapterDataProvider: _makeChapterDataProvider(),
-      ttsSettingsDataProvider: _ttsSettingsDataProvider,
-      chapterServiceLocalChapterDataProvider:
-          _makeLocalChapterDataProviderDefault(),
-      chapterServiceLocalDocDataProvider:
-          _makeChapterServiceLocalDocDataProvider());
+        chapterDataProvider: _makeChapterDataProvider(),
+        ttsSettingsDataProvider: _ttsSettingsDataProvider,
+        chapterServiceLocalChapterDataProvider:
+            _makeLocalChapterDataProviderDefault(),
+      );
 
   NotesService _makeNotesService() => NotesService(_notesDataProvider());
 

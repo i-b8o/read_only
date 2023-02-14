@@ -3,13 +3,13 @@ import 'package:read_only/domain/entity/type.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
 abstract class TypesListViewModelService {
-  Future<List<ReadOnlyType>> getAll();
+  Future<List<Type>> getAll();
 }
 
 class TypeListViewModel extends ChangeNotifier {
   final TypesListViewModelService typesProvider;
-  var _types = <ReadOnlyType>[];
-  List<ReadOnlyType> get types => List.unmodifiable(_types);
+  var _types = <Type>[];
+  List<Type> get types => List.unmodifiable(_types);
 
   TypeListViewModel({
     required this.typesProvider,

@@ -11,7 +11,7 @@ class ParagraphNFT extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.read<ChapterViewModel>();
-    final content = model.chapter!.paragraphs[index].content;
+    final content = model.paragraphs[index].content;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(

@@ -1,8 +1,9 @@
 import 'package:fixnum/fixnum.dart';
 
 import 'package:grpc_client/grpc_client.dart';
-import 'package:read_only/domain/entity/chapter.dart';
-import 'package:read_only/domain/entity/paragraph.dart';
+import 'package:read_only/domain/entity/chapter.dart' as domain_chapter;
+import 'package:read_only/domain/entity/paragraph.dart' as domain_paragraph;
+
 import 'package:read_only/domain/service/chapter_service.dart';
 
 import 'package:read_only/pb/reader/service.pbgrpc.dart';
@@ -14,15 +15,16 @@ class ChapterDataProviderDefault implements ChapterDataProvider {
   final ChapterGRPCClient _chapterGRPCClient;
 
   @override
-  Future<ReadOnlyChapter?> getChapter(int chapterId) async {
+  Future<domain_chapter.Chapter?> getChapter(int chapterId) async {
     try {
       final int64ID = Int64(chapterId);
       final request = GetOneChapterRequest(iD: int64ID);
       final response = await _chapterGRPCClient.getOne(request);
       final paragraphs = _mapParagraphs(response.paragraphs);
 
-      return ReadOnlyChapter(
+      return domain_chapter.Chapter(
           id: response.iD.toInt(),
+          docID: response.docID.toInt(),
           name: response.name,
           num: response.num,
           paragraphs: paragraphs,
@@ -32,15 +34,16 @@ class ChapterDataProviderDefault implements ChapterDataProvider {
     }
   }
 
-  List<ReadOnlyParagraph> _mapParagraphs(List<ReaderParagraph> paragraphs) {
+  List<domain_paragraph.Paragraph> _mapParagraphs(
+      List<ReaderParagraph> paragraphs) {
     return paragraphs
-        .map((e) => ReadOnlyParagraph(
-            id: e.iD.toInt(),
-            num: e.num,
+        .map((e) => domain_paragraph.Paragraph(
+            paragraphID: e.iD.toInt(),
+            paragraphOrderNum: e.num,
             hasLinks: e.hasLinks,
             isTable: e.isTable,
             isNFT: e.isNFT,
-            className: e.class_6,
+            paragraphclass: e.class_6,
             content: e.content,
             chapterID: e.chapterID.toInt()))
         .toList();

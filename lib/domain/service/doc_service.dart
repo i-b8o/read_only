@@ -1,29 +1,33 @@
-import 'dart:isolate';
-
-import 'package:read_only/domain/entity/chapter_info.dart';
+import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
 
 abstract class DocDataProvider {
   const DocDataProvider();
-  Future<ReadOnlyDoc> getOne(int id);
+  Future<Doc> getOne(int id);
 }
 
 abstract class DocServiceLocalDocDataProvider {
   const DocServiceLocalDocDataProvider();
-  Future<void> saveOne(ReadOnlyDoc doc, int id);
-  Future<ReadOnlyDoc?> getOne(int id);
+  Future<void> saveDoc(Doc doc, int id);
+  Future<Doc?> getDoc(int id);
+}
+
+abstract class DocServiceLocalChapterDataProvider {
+  Future<void> saveChapters(List<Chapter> chapters);
 }
 
 class DocService implements ChapterListViewModelService {
   final DocDataProvider docDataProvider;
   final DocServiceLocalDocDataProvider localDocDataProvider;
+  final DocServiceLocalChapterDataProvider localChapterDataProvider;
 
   DocService(
-      {required this.docDataProvider, required this.localDocDataProvider});
+      {required this.docDataProvider,
+      required this.localDocDataProvider,
+      required this.localChapterDataProvider});
 
   late int _totalChapters;
-
   // A getter to return the total number of chapters
   int get totalChapters => _totalChapters;
 
@@ -33,25 +37,56 @@ class DocService implements ChapterListViewModelService {
   Map<int, int> get orderNumToChapterIdMap => _orderNumToChapterIdMap;
 
   @override
-  Future<ReadOnlyDoc> getOne(int id) async {
+  // when a user selects a document on the DocList screen - save it (Doc) and all chapters (ReadOnlyChapterInfo).
+  Future<Doc> getOne(int id) async {
     try {
-      final ReadOnlyDoc? doc = await localDocDataProvider.getOne(id);
-      if (doc != null) {
-        assign(doc.chapters);
+      // local database
+      final Doc? doc = await localDocDataProvider.getDoc(id);
+      if (doc != null && doc.chapters != null) {
+        assign(doc.chapters!);
         return doc;
       }
-      final ReadOnlyDoc resp = await docDataProvider.getOne(id);
-      await localDocDataProvider.saveOne(resp, id);
-      // await Isolate.spawn(DataStorage().retrieveData, null);
 
-      assign(resp.chapters);
+      // remote server
+      final Doc resp = await docDataProvider.getOne(id);
+      var futures = [
+        localDocDataProvider.saveDoc(resp, id),
+        localChapterDataProvider.saveChapters(resp.chapters ?? [])
+      ];
+
+      await Future.wait(futures);
+      assign(resp.chapters ?? []);
       return resp;
     } on Exception catch (_) {
       rethrow;
     }
   }
 
-  void assign(List<ReadOnlyChapterInfo> chapters) {
+  // void _backgroundTask(SendPort sendPort) {
+  //   int result = 0;
+  //   final ids = _orderNumToChapterIdMap.values.toList();
+  //   if (ids.isEmpty) {
+  //     sendPort.send(result);
+  //     return;
+  //   }
+  //   for (int i = 0; i < (ids.length - 1); i++) {
+  //     final id = ids[i];
+  //     //
+  //     result += i;
+  //   }
+  //   sendPort.send(result);
+  // }
+
+  // void _launchInBackground() {
+  //   ReceivePort receivePort = ReceivePort();
+  //   Isolate.spawn(_backgroundTask, receivePort.sendPort);
+
+  //   receivePort.listen((data) {
+  //     MyLogger().getLogger().info('Result of the background task: $data');
+  //   });
+  // }
+
+  void assign(List<Chapter> chapters) {
     _totalChapters = chapters.length;
     _orderNumToChapterIdMap = {};
     for (final chapter in chapters) {

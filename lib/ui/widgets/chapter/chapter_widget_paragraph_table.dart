@@ -82,7 +82,7 @@ class ParagraphTable extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.read<ChapterViewModel>();
     final content =
-        model.chapter!.paragraphs[index].content.trim().replaceAll("\n", " ");
+        model.paragraphs[index].content.trim().replaceAll("\n", " ");
     bool hasBase64 = content.contains("data:image/png;base64");
 
     return hasBase64

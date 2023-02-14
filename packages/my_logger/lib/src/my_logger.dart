@@ -8,4 +8,8 @@ class MyLogger {
   final Logger _logger = Logger('MyLogger');
 
   Logger getLogger() => _logger;
+
+  void logError(String errorMessage) {
+    MyLogger().getLogger().severe(errorMessage);
+  }
 }

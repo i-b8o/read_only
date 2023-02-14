@@ -3,7 +3,7 @@ import '../../ui/widgets/type_list/type_list_model.dart';
 
 abstract class TypeDataProvider {
   const TypeDataProvider();
-  Future<List<ReadOnlyType>> getAll();
+  Future<List<Type>> getAll();
 }
 
 class ReadOnlyTypeService implements TypesListViewModelService {
@@ -12,8 +12,8 @@ class ReadOnlyTypeService implements TypesListViewModelService {
   const ReadOnlyTypeService({required this.typeDataProvider});
 
   @override
-  Future<List<ReadOnlyType>> getAll() async {
-    List<ReadOnlyType> resp = await typeDataProvider.getAll();
+  Future<List<Type>> getAll() async {
+    List<Type> resp = await typeDataProvider.getAll();
     return resp;
   }
 }

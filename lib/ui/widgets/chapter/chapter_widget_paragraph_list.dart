@@ -33,6 +33,7 @@ class ParagraphList extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.read<ChapterViewModel>();
     final chapter = model.chapter;
+    final paragraphsLength = model.paragraphs.length;
     WidgetsBinding.instance
         .addPostFrameCallback((_) => scrollToItem(model.paragraphOrderNum - 1));
 
@@ -41,7 +42,7 @@ class ParagraphList extends StatelessWidget {
     }
     return ScrollablePositionedList.builder(
       itemScrollController: itemScrollController,
-      itemCount: chapter.paragraphs.length,
+      itemCount: paragraphsLength,
       itemBuilder: (BuildContext context, int index) {
         if (index == 0) {
           return Column(
@@ -51,7 +52,7 @@ class ParagraphList extends StatelessWidget {
               _buildParagraphCard(index),
             ],
           );
-        } else if ((index == (chapter.paragraphs.length - 1))) {
+        } else if ((index == (paragraphsLength - 1))) {
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

@@ -17,8 +17,8 @@ class SelectableTextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = passedContext.read<ChapterViewModel>();
-    final paragraph = model.chapter!.paragraphs[index];
-    final pClass = paragraph.className;
+    final paragraph = model.paragraphs[index];
+    final pClass = paragraph.paragraphclass;
     final content = paragraph.content;
     final onTapUrl = model.onTapUrl;
     return HtmlWidget(

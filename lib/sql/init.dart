@@ -31,6 +31,7 @@ class InitSQL {
         id INTEGER PRIMARY KEY,
         name TEXT,
         color INTEGER,
+        markToSave INTEGER,
         last_access TIME
       );
     ''',

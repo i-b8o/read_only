@@ -16,9 +16,9 @@ class NotesViewModel extends ChangeNotifier {
   Future<void> asyncInit() async {
     _notes = await notesService.getAll();
     // TODO drop
-    SqfliteClient.printAllRecordsFromTable("doc", "Doc");
-    SqfliteClient.printRecordCount("chapter", "Chapter");
-    SqfliteClient.printRecordCount("paragraph", "Paragraph");
-    SqfliteClient.printAllRecordsFromTable("note", "Note");
+    SqfliteClient.printAllRecordsFromTable(tableName: "doc", tag: "Doc");
+    SqfliteClient.printRecordCount(tableName: "chapter", tag: "Chapter");
+    SqfliteClient.printRecordCount(tableName: "paragraph", tag: "Paragraph");
+    SqfliteClient.printAllRecordsFromTable(tableName: "note", tag: "Note");
   }
 }
