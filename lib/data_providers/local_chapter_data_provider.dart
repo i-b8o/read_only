@@ -38,6 +38,7 @@ class LocalChapterDataProviderDefault
   }
 }
 
+// handling data from a database
 mixin LocalChapterDataProviderDB {
   Future<List<Paragraph>?> getParagraphsByChapterId(int chapterId) async {
     try {

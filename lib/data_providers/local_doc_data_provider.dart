@@ -24,27 +24,85 @@ class LocalDocDataProviderDefault
 
   @override
   Future<Doc?> getDoc(int id) async {
-    final chapters = await _getReadOnlyChaptersByDocId(id);
+    final futures = [
+      // retrieve read-only chapters of a document
+      getReadOnlyChaptersByDocId(id),
+      // update the last access time of the document
+      updateDocLastAccess(id),
+    ];
+    final results = await Future.wait(futures);
+    final chapters = results[0] as List<Chapter>?;
     if (chapters == null) {
       return null;
     }
 
-    return await _getDocById(id, chapters);
+    return await getDocById(id, chapters);
+  }
+
+  Future<List<int>?> getAllChaptersIDs(int docID) async {
+    return await getAllChaptersIDs(docID);
   }
 }
 
+// handling data from a database
 mixin LocalDocDataProviderDB {
+  Future<List<int>?> getAllChaptersIDsByDocID(int id) async {
+    return await SqfliteClient.select(
+        table: 'chapter', where: 'docID = ?', whereArgs: [id]) as List<int>?;
+  }
+
   Future<void> insertDoc(data) async {
     await SqfliteClient.insertOrReplace(table: "doc", data: data);
   }
 
-  Future<List<Chapter>?> _getReadOnlyChaptersByDocId(int docID) async {
+  Future<void> updateDocLastAccess(int id) async {
+    await SqfliteClient.update(
+      table: "doc",
+      data: {'last_access': DateTime.now().millisecondsSinceEpoch},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<Doc?> getDocById(int id, List<Chapter>? chapters) async {
+    const columns = ['id', 'name', 'color'];
+
+    try {
+      if (chapters == null) {
+        MyLogger().getLogger().info("chapters == null");
+        return null;
+      }
+
+      final List<Map<String, dynamic>>? maps = await SqfliteClient.select(
+          table: 'doc', where: 'id = ?', whereArgs: [id]);
+
+      if (maps != null && maps.isNotEmpty) {
+        MyLogger().getLogger().info(maps);
+        return Doc(
+          id: id,
+          color: maps.first['color'],
+          name: maps.first['name'],
+          chapters: chapters,
+        );
+      }
+      MyLogger().getLogger().info("_getDocById empty");
+      return null;
+    } catch (e) {
+      MyLogger().getLogger().warning(e);
+      return null;
+    }
+  }
+
+  Future<List<Chapter>?> getReadOnlyChaptersByDocId(int docID) async {
     const columns = ['id', 'name', 'orderNum', 'num', 'docID'];
     try {
-      final List<Map<String, dynamic>> maps = await db.query('chapter',
-          columns: columns, where: 'docID = ?', whereArgs: [docID]);
+      final List<Map<String, dynamic>>? maps = await SqfliteClient.select(
+          table: 'chapter',
+          columns: columns,
+          where: 'docID = ?',
+          whereArgs: [docID]);
 
-      if (maps.isNotEmpty) {
+      if (maps != null && maps.isNotEmpty) {
         return List.generate(maps.length, (i) {
           return Chapter(
             id: maps[i][columns[0]],
@@ -94,39 +152,7 @@ mixin LocalDocDataProviderDB {
   //   }
   // }
 
-  // Future<Doc?> _getDocById(int id, List<Chapter>? chapters) async {
-  //   const columns = ['id', 'name', 'color'];
-
-  //   try {
-  //     if (chapters == null) {
-  //       MyLogger().getLogger().info("chapters == null");
-  //       return null;
-  //     }
-  //     final db = SqfliteClient.db;
-  //     if (db == null) {
-  //       MyLogger().getLogger().info("could not connect to a database");
-  //       return null;
-  //     }
-
-  //     final List<Map<String, dynamic>> maps = await db
-  //         .query('doc', columns: columns, where: 'id = ?', whereArgs: [id]);
-
-  //     if (maps.isNotEmpty) {
-  //       MyLogger().getLogger().info(maps);
-  //       return Doc(
-  //         id: id,
-  //         color: maps.first['color'],
-  //         name: maps.first['name'],
-  //         chapters: chapters,
-  //       );
-  //     }
-  //     MyLogger().getLogger().info("_getDocById empty");
-  //     return null;
-  //   } catch (e) {
-  //     MyLogger().getLogger().warning(e);
-  //     return null;
-  //   }
-  // }
+  
 
   // Future<void> _insertDoc(Database db, Doc doc, int id) async {
   //   final data = {

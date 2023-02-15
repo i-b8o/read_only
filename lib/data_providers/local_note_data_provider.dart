@@ -4,35 +4,41 @@ import 'package:read_only/domain/service/notes_service.dart';
 import 'package:sqflite_client/sqflite_client.dart';
 
 class LocalNotesDataProviderDefault
+    with LocalNotesDataProviderDB
     implements NotesServiceLocalNotesDataProvider {
   @override
   Future<List<Note>?> getAll() async {
-    return await _getNotes();
+    return await getNotes();
   }
+}
 
-  Future<List<Note>?> _getNotes() async {
+// handling data from a database
+mixin LocalNotesDataProviderDB {
+  Future<List<Note>?> getNotes() async {
     List<Note> notes = [];
-    final db = SqfliteClient.db;
-    if (db == null) {
-      MyLogger().getLogger().info("could not connect to a database");
-      return null;
-    }
     try {
-      final noteParagraphs = await db.query('note');
+      final noteParagraphs = await SqfliteClient.select(
+        table: 'note',
+      );
+      if (noteParagraphs == null) {
+        return null;
+      }
       for (Map<String, dynamic> noteParagraph in noteParagraphs) {
         final paragraphID = noteParagraph['paragraphID'];
-        final paragraph = await db.query('paragraph',
-            where: 'paragraphID = ?', whereArgs: [paragraphID]);
-        if (paragraph.isNotEmpty) {
+        final paragraph = await SqfliteClient.select(
+            table: 'paragraph',
+            where: 'paragraphID = ?',
+            whereArgs: [paragraphID]);
+        if (paragraph != null && paragraph.isNotEmpty) {
           final text = paragraph.first['content'] as String;
           final chapterID = paragraph.first['chapterID'];
-          final chapter = await db
-              .query('chapter', where: 'id = ?', whereArgs: [chapterID]);
-          if (chapter.isNotEmpty) {
+          final chapter = await SqfliteClient.select(
+              table: 'chapter', where: 'id = ?', whereArgs: [chapterID]);
+          if (chapter != null && chapter.isNotEmpty) {
             final docID = chapter.first['docID'];
-            final doc =
-                await db.query('doc', where: 'id = ?', whereArgs: [docID]);
-            if (doc.isNotEmpty) {
+            final doc = await SqfliteClient.select(
+                table: 'doc', where: 'id = ?', whereArgs: [docID]);
+            if (doc != null && doc.isNotEmpty) {
               final name = doc.first['name'] as String;
               final color = doc.first['color'] as int;
               final url = '$chapterID#$paragraphID';

@@ -32,6 +32,7 @@ class InitSQL {
         name TEXT,
         color INTEGER,
         markToSave INTEGER,
+        updated_at TIME,
         last_access TIME
       );
     ''',

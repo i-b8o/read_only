@@ -73,13 +73,14 @@ class SqfliteClient {
 
   static Future<List<Map<String, dynamic>>?> select(
       {required String table,
-      required String where,
-      required List<dynamic> whereArgs}) async {
+      List<String>? columns,
+      String? where,
+      List<dynamic>? whereArgs}) async {
     if (_database == null) {
       return null;
     }
     // Select all records from the table
-    return await _database!.query(table, where: where);
+    return await _database!.query(table, columns: columns, where: where);
   }
 
   static Future<int?> update(
