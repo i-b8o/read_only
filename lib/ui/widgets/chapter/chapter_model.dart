@@ -11,7 +11,8 @@ abstract class ChapterViewModelService {
 }
 
 abstract class ChapterViewModelDocService {
-  int getChapterCount();
+  int totalChapters();
+  Map<int, int> orderNumToChapterIdMap();
 }
 
 abstract class ChapterViewModelTtsService {
@@ -26,18 +27,20 @@ abstract class ChapterViewModelTtsService {
 enum SpeakState { silence, speaking, paused }
 
 class ChapterViewModel extends ChangeNotifier {
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
-
   final ChapterViewModelService chapterService;
   final ChapterViewModelTtsService ttsService;
   final ChapterViewModelDocService docService;
-  final int chapterCount;
-  final int id;
-  final int paragraphID;
-  late final List<Paragraph> _paragraphs;
+  final PageController pageController;
+  final TextEditingController textEditingController;
+  final String url;
+
+  late final Map<int, int> chapterIdOrderNumMap;
+
+  late final int chapterCount;
+  int paragraphID = 0;
+  late final int chapterID;
+  List<Paragraph> _paragraphs = [];
   List<Paragraph> get paragraphs => _paragraphs;
-  final Map<int, int> chaptersOrderNums;
   SpeakState _speakState = SpeakState.silence;
   SpeakState get speakState => _speakState;
   void setSpeakState(SpeakState value) {
@@ -51,8 +54,6 @@ class ChapterViewModel extends ChangeNotifier {
   int? activeParagraphIndex;
   void setActiveParagraphIndex(int index) => activeParagraphIndex = index;
 
-  final PageController pageController;
-  final TextEditingController textEditingController;
   int _paragraphOrderNum = 0;
   int get paragraphOrderNum => _paragraphOrderNum;
   Chapter? _chapter;
@@ -60,9 +61,13 @@ class ChapterViewModel extends ChangeNotifier {
   int _currentPage = 0;
   int get currentPage => _currentPage;
 
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+
   ChapterViewModel(
-    this.id, {
+    this.url, {
     required this.chapterService,
+    required this.docService,
     required this.ttsService,
     required this.pageController,
     required this.textEditingController,
@@ -70,7 +75,7 @@ class ChapterViewModel extends ChangeNotifier {
     pageController.addListener(() {
       _currentPage = pageController.page!.toInt();
     });
-    asyncInit(id);
+    asyncInit();
     if (ttsService.positionEvent() != null) {
       ttsService.positionEvent()!.listen((event) {
         MyLogger()
@@ -80,18 +85,41 @@ class ChapterViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> asyncInit(int id) async {
-    await getOne(id);
-    if (paragraphID == 0) {
-      print("paragraphID == 0");
-      return;
+  Future<void> asyncInit() async {
+    print("asass");
+    // prepairing IDs
+    if (url.contains("#")) {
+      chapterID = int.tryParse(url.split("#")[0]) ?? 0;
+      paragraphID = int.tryParse(url.split("#")[1]) ?? 0;
+    } else {
+      chapterID = int.tryParse(url) ?? 0;
+      paragraphID = 0;
     }
+    // it is necessary to specify init page number for the PageController
+    chapterIdOrderNumMap = docService.orderNumToChapterIdMap();
+    int initPage = 0;
+    // if requested a current doc
+    if (chapterIdOrderNumMap.containsValue(chapterID)) {
+      initPage = chapterIdOrderNumMap.keys
+          .firstWhere((key) => chapterIdOrderNumMap[key] == chapterID);
+    }
+
+    if (pageController.hasClients) pageController.jumpToPage(initPage);
+
+    chapterCount = docService.totalChapters();
+    await getOne(chapterID);
+    // if (paragraphID == 0) {
+    //   print("paragraphID == 0");
+    //   return;
+    // }
     if (chapter == null || chapter!.paragraphs == null) {
-      print(
-          "chapter == null ${chapter == null} ${chapter!.paragraphs == null}");
+      MyLogger()
+          .getLogger()
+          .info("chapter == null || chapter!.paragraphs == null");
       return;
     }
     _paragraphs = chapter!.paragraphs!;
+    print("length: ${_paragraphs.length}");
     _paragraphOrderNum = _paragraphs
         .where((element) => element.paragraphID.toInt() == paragraphID)
         .first
@@ -106,15 +134,15 @@ class ChapterViewModel extends ChangeNotifier {
 
   void onPageChanged() {
     final int index = pageController.page!.toInt();
-
-    getOne(chaptersOrderNums[index + 1] ?? id);
+    final int id = chapterIdOrderNumMap[index + 1] ?? chapterID;
+    getOne(id);
 
     textEditingController.text = '${index + 1}';
     notifyListeners();
   }
 
   Future<bool> onTapUrl(BuildContext context, String url) async {
-    MyLogger().getLogger().info("url: $url");
+    print("url: $url");
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.chapterScreen,
       arguments: url,
@@ -164,7 +192,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   void onAppBarTextFormFieldChanged(String text) {
-    MyLogger().getLogger().info("changed:$text");
+    print("changed:$text");
     textEditingController.text = text;
     textEditingController.selection =
         TextSelection.collapsed(offset: textEditingController.text.length);
@@ -172,7 +200,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   void onAppBarTextFormFieldEditingComplete(BuildContext context) {
-    MyLogger().getLogger().info("completed");
+    print("completed");
     final text = textEditingController.text;
     int pageNum = int.tryParse(text) ?? 1;
     if (pageNum > chapterCount) {

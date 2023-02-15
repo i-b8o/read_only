@@ -130,35 +130,18 @@ class _DIContainer {
   NotesViewModel _makeNotesViewModel() => NotesViewModel(_makeNotesService());
 
   ChapterViewModel _makeChapterViewModel(String url) {
-    // prepairing IDs
-    final int chapterID;
-    final int paragraphID;
-    if (url.contains("#")) {
-      chapterID = int.tryParse(url.split("#")[0]) ?? 0;
-      paragraphID = int.tryParse(url.split("#")[1]) ?? 0;
-    } else {
-      chapterID = int.tryParse(url) ?? 0;
-      paragraphID = 0;
-    }
-    // it is necessary to specify init page number for the PageController
-    final chapterIDOrderNumMap = _docService.orderNumToChapterIdMap;
-    int initPage = 0;
-    // if requested a current doc
-    if (chapterIDOrderNumMap.containsValue(chapterID)) {
-      initPage = chapterIDOrderNumMap.keys.firstWhere(
-          (key) => _docService.orderNumToChapterIdMap[key] == chapterID);
-    }
-
     return ChapterViewModel(
-        chapterCount: _docService.totalChapters,
-        chaptersOrderNums: _docService.orderNumToChapterIdMap,
-        paragraphID: paragraphID
-        pageController: PageController(initialPage: initPage),
-        id: chapterID,
-        textEditingController: TextEditingController(text: '$initPage'),
-        chapterService: _makeChapterService(),
-        ttsService: _ttsService,
-        );
+      url,
+      // chapterCount: _docService.totalChapters,
+      // chaptersOrderNums: _docService.orderNumToChapterIdMap,
+      // paragraphID: paragraphID
+      // id: chapterID,
+      docService: _docService,
+      pageController: PageController(),
+      textEditingController: TextEditingController(),
+      chapterService: _makeChapterService(),
+      ttsService: _ttsService,
+    );
   }
 }
 

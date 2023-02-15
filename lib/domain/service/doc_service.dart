@@ -31,12 +31,12 @@ class DocService
 
   late int _totalChapters;
   // A getter to return the total number of chapters
-  int get totalChapters => _totalChapters;
+  int totalChapters() => _totalChapters;
 
   // A private field to store a map of order numbers to id of chapters
   late Map<int, int> _orderNumToChapterIdMap;
 
-  Map<int, int> get orderNumToChapterIdMap => _orderNumToChapterIdMap;
+  Map<int, int> orderNumToChapterIdMap() => _orderNumToChapterIdMap;
 
   @override
   // when a user selects a document on the DocList screen - save it (Doc) and all chapters (ReadOnlyChapterInfo).
@@ -95,7 +95,4 @@ class DocService
       _orderNumToChapterIdMap[chapter.orderNum] = chapter.id;
     }
   }
-
-  @override
-  Future<Chapter?> getChapterCount() {}
 }
