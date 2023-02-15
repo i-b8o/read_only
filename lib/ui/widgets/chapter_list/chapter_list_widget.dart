@@ -13,6 +13,7 @@ class ChapterListWidget extends StatelessWidget {
     final model = context.watch<ChapterListViewModel>();
     final doc = model.doc;
     final chapters = model.chapters;
+    print("here: ${chapters.length}");
     return SafeArea(
       child: Scaffold(
           appBar: PreferredSize(

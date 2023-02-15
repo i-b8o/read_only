@@ -28,6 +28,9 @@ class ChapterListViewModel extends ChangeNotifier {
 
   Future<void> getOne(int id) async {
     _doc = await docsProvider.getOne(id);
+    if (_doc != null) {
+      _chapters = _doc!.chapters;
+    }
   }
 
   void onTap(BuildContext context, int id) {

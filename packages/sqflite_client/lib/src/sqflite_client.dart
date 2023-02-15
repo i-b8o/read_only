@@ -24,125 +24,173 @@ class SqfliteClient {
   static Future<void> insertListOrReplace(
       {required String table, required List<Map<String, dynamic>> rows}) async {
     if (_database == null) {
-      return null;
+      throw Exception('Database is not open');
     }
-    return _database!.transaction((txn) async {
-      for (final row in rows) {
-        await txn.insert(table, row,
-            conflictAlgorithm: ConflictAlgorithm.replace);
-      }
-    });
+    try {
+      await _database!.transaction((txn) async {
+        for (final row in rows) {
+          await txn.insert(table, row,
+              conflictAlgorithm: ConflictAlgorithm.replace);
+        }
+      });
+    } catch (e) {
+      throw Exception('Insert failed: $e');
+    }
   }
 
   static Future<void> insertListOrIgnore(
       {required String table, required List<Map<String, dynamic>> rows}) async {
     if (_database == null) {
-      return null;
+      throw Exception('Database is not open');
     }
-    return _database!.transaction((txn) async {
-      for (final row in rows) {
-        await txn.insert(table, row,
-            conflictAlgorithm: ConflictAlgorithm.ignore);
-      }
-    });
+    try {
+      await _database!.transaction((txn) async {
+        for (final row in rows) {
+          await txn.insert(table, row,
+              conflictAlgorithm: ConflictAlgorithm.ignore);
+        }
+      });
+    } catch (e) {
+      throw Exception('Insert failed: $e');
+    }
   }
 
   static Future<int?> insertOrReplace(
       {required String table, required Map<String, dynamic> data}) async {
     if (_database == null) {
-      return null;
+      throw Exception('Database is not open');
     }
-    return await _database!.insert(
-      table,
-      data,
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    try {
+      final int id = await _database!.insert(
+        table,
+        data,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      return id;
+    } catch (e) {
+      throw Exception('Insert failed: $e');
+    }
   }
 
-  static Future<int?> insertOrIgnore(
+  static Future<int> insertOrIgnore(
       {required String table, required Map<String, dynamic> data}) async {
     if (_database == null) {
-      return null;
+      throw Exception("Database is not open");
     }
-    return await _database!.insert(
-      table,
-      data,
-      conflictAlgorithm: ConflictAlgorithm.ignore,
-    );
+    try {
+      return await _database!.insert(
+        table,
+        data,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    } catch (e) {
+      throw Exception("Failed to insert data into table $table: $e");
+    }
   }
 
-  static Future<List<Map<String, dynamic>>?> select(
-      {required String table,
-      List<String>? columns,
-      String? where,
-      List<dynamic>? whereArgs}) async {
-    if (_database == null) {
-      return null;
+  static Future<List<Map<String, dynamic>>?> select({
+    required String table,
+    List<String>? columns,
+    String? where,
+    List<dynamic>? whereArgs,
+  }) async {
+    try {
+      if (_database == null) {
+        throw Exception("Database is null");
+      }
+      return await _database!
+          .query(table, columns: columns, where: where, whereArgs: whereArgs);
+    } catch (e) {
+      throw Exception("Could not execute select query: $e");
     }
-    // Select all records from the table
-    return await _database!.query(table, columns: columns, where: where);
   }
 
-  static Future<int?> update(
-      {required String table,
-      required Map<String, dynamic> data,
-      required String where,
-      required List<dynamic> whereArgs}) async {
-    if (_database == null) {
-      return null;
+  static Future<int> update({
+    required String table,
+    required Map<String, dynamic> data,
+    required String where,
+    required List<dynamic> whereArgs,
+  }) async {
+    try {
+      if (_database == null) {
+        throw Exception("Database not initialized.");
+      }
+
+      final result = await _database!
+          .update(table, data, where: where, whereArgs: whereArgs);
+
+      return result;
+    } catch (e) {
+      throw Exception("Failed to update $table table: $e");
     }
-    // Update an existing record in the table
-    return await _database!
-        .update(table, data, where: where, whereArgs: whereArgs);
   }
 
   static Future<int> delete(String table,
       {required String where, required List<dynamic> whereArgs}) async {
-    // Delete a record from the table
-    return await _database!.delete(table, where: where, whereArgs: whereArgs);
+    try {
+      if (_database == null) {
+        throw Exception("Database not initialized.");
+      }
+      return await _database!.delete(table, where: where, whereArgs: whereArgs);
+    } catch (e) {
+      throw Exception('Failed to delete record from table: $table');
+    }
   }
 
   static Future<void> printRecordCount(
       {required String tableName, required String tag}) async {
-    if (_database == null) {
-      print("$tag can not connect to the database");
-      return;
+    try {
+      if (_database == null) {
+        throw Exception("$tag can not connect to the database");
+      }
+      int? count = Sqflite.firstIntValue(
+          await _database!.rawQuery("SELECT COUNT(*) FROM $tableName"));
+      if (count == null) {
+        throw Exception("$tag could not get table:$tableName");
+      }
+      print('the $tableName table has $count records');
+    } catch (e) {
+      throw Exception("Error in $tag: $e");
     }
-    int? count = Sqflite.firstIntValue(
-        await _database!.rawQuery("SELECT COUNT(*) FROM $tableName"));
-    if (count == null) {
-      print("$tag could not get table:$tableName");
-      return;
-    }
-    print('the $tableName table has $count records');
   }
 
   static Future<void> printAllRecordsFromTable(
       {required String tableName, required String tag}) async {
-    if (_database == null) {
-      print("$tag can not connect to the database");
-      return;
-    }
-    final records = await _database!.query(tableName);
-    if (records.isEmpty) {
-      print("$tag => the $tableName table is empty");
-    }
-    for (final record in records) {
-      print('$tag => $record');
+    try {
+      if (_database == null) {
+        throw Exception("$tag can not connect to the database");
+      }
+      final records = await _database!.query(tableName);
+      if (records.isEmpty) {
+        print("$tag => the $tableName table is empty");
+        return;
+      }
+      for (final record in records) {
+        print('$tag => $record');
+      }
+    } catch (e) {
+      throw Exception(
+          "$tag => an error occurred while trying to print records from the $tableName table: $e");
     }
   }
 
-  static Future<void> printRowsByColumnValue(
-      {required String table,
-      required String column,
-      required dynamic value}) async {
-    final records =
-        await _database!.query(table, where: '$column = ?', whereArgs: [value]);
-    if (records.isEmpty) {
-      print("$column=$value => in table $table empty");
-    }
-    for (final record in records) {
-      print('$value => $record');
+  static Future<void> printRowsByColumnValue({
+    required String table,
+    required String column,
+    required dynamic value,
+  }) async {
+    try {
+      final records = await _database!
+          .query(table, where: '$column = ?', whereArgs: [value]);
+      if (records.isEmpty) {
+        print("$column=$value => in table $table empty");
+      } else {
+        for (final record in records) {
+          print('$value => $record');
+        }
+      }
+    } catch (e) {
+      throw Exception('Failed to print rows by column value: $e');
     }
   }
 }

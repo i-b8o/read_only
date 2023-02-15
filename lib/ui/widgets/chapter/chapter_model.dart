@@ -10,6 +10,10 @@ abstract class ChapterViewModelService {
   Future<Chapter?> getOne(int id);
 }
 
+abstract class ChapterViewModelDocService {
+  int getChapterCount();
+}
+
 abstract class ChapterViewModelTtsService {
   Future<bool> speakList(List<String> texts);
   Future<bool> speakOne(String text);
@@ -25,8 +29,9 @@ class ChapterViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  final ChapterViewModelService chapterProvider;
+  final ChapterViewModelService chapterService;
   final ChapterViewModelTtsService ttsService;
+  final ChapterViewModelDocService docService;
   final int chapterCount;
   final int id;
   final int paragraphID;
@@ -55,13 +60,10 @@ class ChapterViewModel extends ChangeNotifier {
   int _currentPage = 0;
   int get currentPage => _currentPage;
 
-  ChapterViewModel({
-    required this.chapterProvider,
+  ChapterViewModel(
+    this.id, {
+    required this.chapterService,
     required this.ttsService,
-    required this.id,
-    required this.paragraphID,
-    required this.chapterCount,
-    required this.chaptersOrderNums,
     required this.pageController,
     required this.textEditingController,
   }) {
@@ -81,9 +83,12 @@ class ChapterViewModel extends ChangeNotifier {
   Future<void> asyncInit(int id) async {
     await getOne(id);
     if (paragraphID == 0) {
+      print("paragraphID == 0");
       return;
     }
     if (chapter == null || chapter!.paragraphs == null) {
+      print(
+          "chapter == null ${chapter == null} ${chapter!.paragraphs == null}");
       return;
     }
     _paragraphs = chapter!.paragraphs!;
@@ -94,7 +99,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<void> getOne(int id) async {
-    _chapter = await chapterProvider.getOne(id);
+    _chapter = await chapterService.getOne(id);
     _errorMessage = chapter == null ? "Этот документ пока недоступен" : null;
     notifyListeners();
   }

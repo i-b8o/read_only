@@ -1,5 +1,6 @@
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/doc.dart';
+import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
 
 abstract class DocDataProvider {
@@ -17,7 +18,8 @@ abstract class DocServiceLocalChapterDataProvider {
   Future<void> saveChapters(List<Chapter> chapters);
 }
 
-class DocService implements ChapterListViewModelService {
+class DocService
+    implements ChapterListViewModelService, ChapterViewModelDocService {
   final DocDataProvider docDataProvider;
   final DocServiceLocalDocDataProvider localDocDataProvider;
   final DocServiceLocalChapterDataProvider localChapterDataProvider;
@@ -93,4 +95,7 @@ class DocService implements ChapterListViewModelService {
       _orderNumToChapterIdMap[chapter.orderNum] = chapter.id;
     }
   }
+
+  @override
+  Future<Chapter?> getChapterCount() {}
 }

@@ -152,12 +152,13 @@ class _DIContainer {
     return ChapterViewModel(
         chapterCount: _docService.totalChapters,
         chaptersOrderNums: _docService.orderNumToChapterIdMap,
+        paragraphID: paragraphID
         pageController: PageController(initialPage: initPage),
-        textEditingController: TextEditingController(text: '$initPage'),
-        chapterProvider: _makeChapterService(),
-        ttsService: _ttsService,
         id: chapterID,
-        paragraphID: paragraphID);
+        textEditingController: TextEditingController(text: '$initPage'),
+        chapterService: _makeChapterService(),
+        ttsService: _ttsService,
+        );
   }
 }
 
