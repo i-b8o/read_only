@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:isolate';
+
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
@@ -10,6 +14,11 @@ abstract class ChapterServiceLocalChapterDataProvider {
   Future<Chapter?> getChapter(int id);
 }
 
+abstract class ChapterServiceLocalDocDataProvider {
+  Future<bool> saved(int id);
+  Future<List<int>?> getAllChaptersIDs(int docID);
+}
+
 abstract class TtsSettingsDataProvider {
   const TtsSettingsDataProvider();
   Future<void> saveVolume(double value);
@@ -20,27 +29,63 @@ abstract class TtsSettingsDataProvider {
 class ChapterService implements ChapterViewModelService {
   final ChapterDataProvider chapterDataProvider;
   final TtsSettingsDataProvider ttsSettingsDataProvider;
-  final ChapterServiceLocalChapterDataProvider
-      chapterServiceLocalChapterDataProvider;
+  final ChapterServiceLocalChapterDataProvider localChapterDataProvider;
+  final ChapterServiceLocalDocDataProvider localDocDataProvider;
 
-  const ChapterService({
-    required this.chapterDataProvider,
-    required this.ttsSettingsDataProvider,
-    required this.chapterServiceLocalChapterDataProvider,
-  });
+  const ChapterService(
+      {required this.chapterDataProvider,
+      required this.ttsSettingsDataProvider,
+      required this.localChapterDataProvider,
+      required this.localDocDataProvider});
 
   @override
   Future<Chapter?> getOne(int id) async {
     // first look in a local database
-    final chapter = await chapterServiceLocalChapterDataProvider.getChapter(id);
-    if (chapter != null) {
-      // when a user selects a chapter on the `ChapterListWidget` - save all paragaraphs for a entire doc
-      // get all chapters ids for
-      return chapter;
+    final saved = await localDocDataProvider.saved(id);
+    Chapter? chapter;
+    if (saved) {
+      chapter = await localChapterDataProvider.getChapter(id);
+      L.info(
+          "Chapter service ${chapter == null} ${chapter!.paragraphs!.length} ");
+      if (chapter != null) {
+        return chapter;
+      }
+    }
+    // then look at a server
+    chapter = await chapterDataProvider.getChapter(id);
+    if (chapter == null) {
+      return null;
     }
 
-    // the `getOne` function was launched not from the `ChapterListWidget` - get from a server
-    return await chapterDataProvider.getChapter(id);
+    // complete with the missing
+    final ids = await localDocDataProvider.getAllChaptersIDs(id);
+    for (final id in ids!) {
+      getChapterInIsolate(id);
+    }
+  }
+
+  Future<Chapter?> getChapterInIsolate(int chapterId) async {
+    final receivePort = ReceivePort();
+    await Isolate.spawn(
+      _getChapterIsolate,
+      _IsolateMessage(receivePort.sendPort, chapterId),
+    );
+    final completer = Completer<Chapter?>();
+    receivePort.listen((data) {
+      if (data is Chapter) {
+        completer.complete(data);
+      } else {
+        completer.complete(null);
+      }
+      receivePort.close();
+    });
+    return completer.future;
+  }
+
+  void _getChapterIsolate(_IsolateMessage message) async {
+    final chapter = await chapterDataProvider.getChapter(message.chapterId);
+    print("chapter: $chapter");
+    message.sendPort.send(chapter);
   }
 
   // void backgroundTask(SendPort sendPort) {
@@ -60,4 +105,11 @@ class ChapterService implements ChapterViewModelService {
   //     print('Result of the background task: $data');
   //   });
   // }
+}
+
+class _IsolateMessage {
+  final SendPort sendPort;
+  final int chapterId;
+
+  _IsolateMessage(this.sendPort, this.chapterId);
 }

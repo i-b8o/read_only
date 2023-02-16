@@ -49,9 +49,7 @@ mixin LocalNotesDataProviderDB {
         }
       }
     } catch (e) {
-      MyLogger()
-          .getLogger()
-          .warning('An error occured while fetching notes: $e');
+      L.warning('An error occured while fetching notes: $e');
     }
     return notes;
   }

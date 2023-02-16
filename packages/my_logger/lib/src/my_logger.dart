@@ -1,15 +1,28 @@
 import 'package:logging/logging.dart';
 
-class MyLogger {
-  static final MyLogger _singleton = MyLogger._internal();
-  factory MyLogger() => _singleton;
-  MyLogger._internal();
+class L {
+  static final Logger _logger = Logger('MyApp');
 
-  final Logger _logger = Logger('MyLogger');
+  static void initialize() {
+    Logger.root.level = Level.ALL;
+    Logger.root.onRecord.listen((record) {
+      print('${record.level.name}: ${record.time}: ${record.message}');
+    });
+  }
 
-  Logger getLogger() => _logger;
+  static void info(dynamic message) {
+    _logger.info(message);
+  }
 
-  void logError(String errorMessage) {
-    MyLogger().getLogger().severe(errorMessage);
+  static void warning(dynamic message) {
+    _logger.warning(message);
+  }
+
+  static void error(dynamic message) {
+    _logger.severe(message);
+  }
+
+  static void debug(dynamic message) {
+    _logger.fine(message);
   }
 }

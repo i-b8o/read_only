@@ -23,7 +23,7 @@ class TableWithBigPictures extends StatelessWidget {
     return WebView(
       javascriptMode: JavascriptMode.unrestricted,
       navigationDelegate: (NavigationRequest request) {
-        MyLogger().getLogger().info(request.url.toString());
+        L.info(request.url.toString());
         return NavigationDecision.prevent;
       },
       gestureRecognizers: gestureRecognizers,

@@ -107,11 +107,11 @@ class TypeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MyLogger().getLogger().info(id);
+    L.info('$id');
     final model = context.read<SubtypeListViewModel>();
     return GestureDetector(
         onTap: () {
-          MyLogger().getLogger().info("here $id");
+          L.info("here $id");
           model.onTap(context, id);
         },
         child: Card(

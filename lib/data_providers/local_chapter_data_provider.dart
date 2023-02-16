@@ -63,7 +63,7 @@ mixin LocalChapterDataProviderDB {
               ))
           .toList();
     } catch (e) {
-      MyLogger().logError(
+      L.error(
           "could not get paragraphs for the chapter with id:$chapterId: $e");
       return null;
     }
@@ -86,7 +86,7 @@ mixin LocalChapterDataProviderDB {
       }
       return null;
     } catch (e) {
-      MyLogger().logError("could not connect to a database: $e");
+      L.info("could not connect to a database: $e");
       return null;
     }
   }

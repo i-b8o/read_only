@@ -78,15 +78,12 @@ class ChapterViewModel extends ChangeNotifier {
     asyncInit();
     if (ttsService.positionEvent() != null) {
       ttsService.positionEvent()!.listen((event) {
-        MyLogger()
-            .getLogger()
-            .info("start1: ${event.start}, end: ${event.end}");
+        L.info("start1: ${event.start}, end: ${event.end}");
       });
     }
   }
 
   Future<void> asyncInit() async {
-    print("asass");
     // prepairing IDs
     if (url.contains("#")) {
       chapterID = int.tryParse(url.split("#")[0]) ?? 0;
@@ -107,19 +104,19 @@ class ChapterViewModel extends ChangeNotifier {
     if (pageController.hasClients) pageController.jumpToPage(initPage);
 
     chapterCount = docService.totalChapters();
+    L.info('chapter ID: $chapterID');
     await getOne(chapterID);
     // if (paragraphID == 0) {
     //   print("paragraphID == 0");
     //   return;
     // }
     if (chapter == null || chapter!.paragraphs == null) {
-      MyLogger()
-          .getLogger()
-          .info("chapter == null || chapter!.paragraphs == null");
+      L.info("chapter == null || chapter!.paragraphs == null");
       return;
     }
+
     _paragraphs = chapter!.paragraphs!;
-    print("length: ${_paragraphs.length}");
+    L.error("${_paragraphs == null} length: ${_paragraphs.length}");
     _paragraphOrderNum = _paragraphs
         .where((element) => element.paragraphID.toInt() == paragraphID)
         .first

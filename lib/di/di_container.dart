@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_logger/my_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/.configuration/configuration.dart';
 import 'package:read_only/data_providers/chapter_data_provider.dart';
@@ -64,8 +65,11 @@ class _DIContainer {
   SubtypeDataProvider _makeSubtypeDataProvider() =>
       SubtypeDataProviderDefault();
 
+
   ChapterDataProvider _makeChapterDataProvider() =>
       ChapterDataProviderDefault();
+
+  LocalDocDataProviderDefault _makeLocalDocDataProviderDefault() => LocalDocDataProviderDefault();
 
   LocalChapterDataProviderDefault _makeLocalChapterDataProviderDefault() =>
       LocalChapterDataProviderDefault();
@@ -78,9 +82,11 @@ class _DIContainer {
 
   _DIContainer() {
     asyncInit();
+    L.initialize();
+
     _docService = DocService(
         docDataProvider: DocDataProviderDefault(),
-        localDocDataProvider: LocalDocDataProviderDefault(),
+        localDocDataProvider: _makeLocalDocDataProviderDefault(),
         localChapterDataProvider: _makeLocalChapterDataProviderDefault());
 
     _ttsService = TtsService(_ttsDataProvider);
@@ -108,8 +114,9 @@ class _DIContainer {
   ChapterService _makeChapterService() => ChapterService(
         chapterDataProvider: _makeChapterDataProvider(),
         ttsSettingsDataProvider: _ttsSettingsDataProvider,
-        chapterServiceLocalChapterDataProvider:
+        localChapterDataProvider:
             _makeLocalChapterDataProviderDefault(),
+    localDocDataProvider: _makeLocalDocDataProviderDefault()
       );
 
   NotesService _makeNotesService() => NotesService(_notesDataProvider());

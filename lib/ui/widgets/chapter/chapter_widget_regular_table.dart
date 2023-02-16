@@ -30,7 +30,7 @@ class RegularTable extends StatelessWidget {
         return null;
       },
       onTapUrl: (href) async {
-        MyLogger().getLogger().info("tappeddddddddddddddddddddddddddddd");
+        L.info("tappeddddddddddddddddddddddddddddd");
         return false;
       },
     );

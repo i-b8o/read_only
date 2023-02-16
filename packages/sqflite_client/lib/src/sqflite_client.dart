@@ -21,6 +21,12 @@ class SqfliteClient {
     );
   }
 
+  static Future<void> deleteDatabaseWithName(String name) async {
+    final path = await getDatabasesPath();
+    final databasePath = '$path/$name.db';
+    await deleteDatabase(databasePath);
+  }
+
   static Future<void> insertListOrReplace(
       {required String table, required List<Map<String, dynamic>> rows}) async {
     if (_database == null) {
