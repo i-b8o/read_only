@@ -5,7 +5,7 @@ class Chapter {
   final String name;
   final int orderNum;
   final String num;
-  final int? docID;
+  final int docID;
   final List<Paragraph>? paragraphs;
 
   Chapter({
@@ -13,7 +13,7 @@ class Chapter {
     required this.name,
     required this.orderNum,
     required this.num,
-    this.docID,
+    required this.docID,
     this.paragraphs,
   });
 }

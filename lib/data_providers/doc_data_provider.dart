@@ -23,7 +23,7 @@ class DocDataProviderDefault implements DocDataProvider {
       // Mapping
       List<domain_chapter.Chapter> chapters = resp.chapters
           .map((e) => domain_chapter.Chapter(
-              id: e.iD.toInt(), name: e.name, orderNum: e.orderNum, num: e.num))
+              id: e.iD.toInt(), name: e.name, orderNum: e.orderNum, num: e.num, docID: id))
           .toList();
       return domain_doc.Doc(id: id, name: resp.name, chapters: chapters);
     } catch (e) {

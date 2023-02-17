@@ -51,65 +51,40 @@ class ChapterService implements ChapterViewModelService {
         return chapter;
       }
     }
-    // then look at a server
-    chapter = await chapterDataProvider.getChapter(id);
-    if (chapter == null) {
+    final chaptersIDs = await localDocDataProvider.getAllChaptersIDs(id);
+    if (chaptersIDs == null) {
       return null;
     }
 
-    // complete with the missing
-    final ids = await localDocDataProvider.getAllChaptersIDs(id);
-    for (final id in ids!) {
-      getChapterInIsolate(id);
-    }
-  }
-
-  Future<Chapter?> getChapterInIsolate(int chapterId) async {
     final receivePort = ReceivePort();
-    await Isolate.spawn(
-      _getChapterIsolate,
-      _IsolateMessage(receivePort.sendPort, chapterId),
-    );
-    final completer = Completer<Chapter?>();
-    receivePort.listen((data) {
-      if (data is Chapter) {
-        completer.complete(data);
-      } else {
-        completer.complete(null);
-      }
-      receivePort.close();
+    final sendPort = receivePort.sendPort;
+    final isolate = await Isolate.spawn(
+        isolateFunction, _IsolateMessage(sendPort, chaptersIDs));
+
+    receivePort.listen((message) {
+      print('main isolate: $message');
+      isolate.kill(priority: Isolate.immediate);
     });
-    return completer.future;
+
+    // then look at a server
+    // chapter = await chapterDataProvider.getChapter(id);
+    // if (chapter == null) {
+    //   return null;
+    // }
+  }
+}
+
+void isolateFunction(_IsolateMessage message) {
+  for (final id in message.messageData) {
+    print('received id: $id');
   }
 
-  void _getChapterIsolate(_IsolateMessage message) async {
-    final chapter = await chapterDataProvider.getChapter(message.chapterId);
-    print("chapter: $chapter");
-    message.sendPort.send(chapter);
-  }
-
-  // void backgroundTask(SendPort sendPort) {
-  //   // Perform a time-consuming task in the background
-  //   int result = 0;
-  //   for (int i = 0; i < _; i++) {
-  //     result += i;
-  //   }
-  //   sendPort.send(result);
-  // }
-
-  // void launchInBackground() {
-  //   ReceivePort receivePort = ReceivePort();
-  //   Isolate.spawn(backgroundTask, receivePort.sendPort);
-
-  //   receivePort.listen((data) {
-  //     print('Result of the background task: $data');
-  //   });
-  // }
+  message.sendPort.send('Hello from the isolate!');
 }
 
 class _IsolateMessage {
   final SendPort sendPort;
-  final int chapterId;
+  final List<int> messageData;
 
-  _IsolateMessage(this.sendPort, this.chapterId);
+  _IsolateMessage(this.sendPort, this.messageData);
 }

@@ -40,7 +40,7 @@ class LocalDocDataProviderDefault
   }
 
   Future<List<int>?> getAllChaptersIDs(int docID) async {
-    return await getAllChaptersIDs(docID);
+    return await getAllChaptersIDsByDocID(docID);
   }
 
   @override
@@ -64,11 +64,12 @@ mixin LocalDocDataProviderDB {
        return res == null ? null : res == 1;
     }
     return null;
-
   }
+
   Future<List<int>?> getAllChaptersIDsByDocID(int id) async {
-    return await SqfliteClient.select(
-        table: 'chapter', where: 'docID = ?', whereArgs: [id]) as List<int>?;
+    final results = await  SqfliteClient.select(
+        table: 'chapter', columns: ['id'], where: 'docID = ?', whereArgs: [id]);
+     return results?.map((result) => result['id'] as int).toList();
   }
 
   Future<void> insertDoc(data) async {

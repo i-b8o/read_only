@@ -139,7 +139,6 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<bool> onTapUrl(BuildContext context, String url) async {
-    print("url: $url");
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.chapterScreen,
       arguments: url,
@@ -189,7 +188,6 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   void onAppBarTextFormFieldChanged(String text) {
-    print("changed:$text");
     textEditingController.text = text;
     textEditingController.selection =
         TextSelection.collapsed(offset: textEditingController.text.length);
@@ -197,7 +195,6 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   void onAppBarTextFormFieldEditingComplete(BuildContext context) {
-    print("completed");
     final text = textEditingController.text;
     int pageNum = int.tryParse(text) ?? 1;
     if (pageNum > chapterCount) {
