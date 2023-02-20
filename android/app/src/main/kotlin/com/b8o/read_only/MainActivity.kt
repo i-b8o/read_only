@@ -6,6 +6,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.EventChannel
 import java.util.*
 import android.os.Build
+import android.os.Bundle
+
 import io.flutter.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -16,14 +18,30 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
     private lateinit var voiceService: VoiceService
     private var  eventSink: EventChannel.EventSink? = null
     private val TTS_CHANNEL = "com.b8o.read_only/tts"
+    private val SQLITE_CHANNEL = "com.b8o.read_only/sqlite"
     private val TTS_POSITION_CHANNEL = "com.b8o.read_only/tts_pos"
     private val TAG_NAME = "MainActivity"
+    val queries = listOf(
+        "CREATE TABLE paragraph (id INTEGER PRIMARY KEY AUTOINCREMENT, paragraphID INTEGER, num INTEGER, hasLinks INTEGER, isTable INTEGER, isNFT INTEGER, className TEXT, content TEXT, chapterID INTEGER, FOREIGN KEY (chapterID) REFERENCES chapter(id));",
+        "CREATE TABLE chapter (id INTEGER PRIMARY KEY, name TEXT, orderNum INTEGER, num TEXT, docID INTEGER, FOREIGN KEY (docID) REFERENCES doc(id));",
+        "CREATE TABLE doc (id INTEGER PRIMARY KEY, name TEXT, color INTEGER, saved INTEGER, updated_at TIME, last_access TIME);",
+        "CREATE TABLE note (id INTEGER PRIMARY KEY, paragraphID INTEGER);"
+    )
 
+    // val sqliteClient = SqliteClient(context, "read_only", 1, queries)
 
+    private lateinit var sqliteClient: SqliteClient
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+//        setContentView(R.layout.activity_main)
+        sqliteClient = SqliteClient(this, "rodb", 1, queries)
+    }
 
     override protected fun onDestroy() {
-        voiceService.onDestroy()
         super.onDestroy()
+        voiceService.onDestroy()
+        sqliteClient.closeDatabase()
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
@@ -42,8 +60,33 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
         var positionEvent = EventChannel(flutterEngine.dartExecutor.binaryMessenger, TTS_POSITION_CHANNEL)
 
         positionEvent.setStreamHandler(this)
-
-
+        
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SQLITE_CHANNEL).setMethodCallHandler { call, result ->
+            when(call.method){
+                "saveDoc" -> {
+                    val values = call.arguments<List<Any>>()
+                    val currentTime = System.currentTimeMillis()
+                    val columns = listOf("id", "name", "color", "last_access")
+                    val newValues = values?.toMutableList()?.apply { add(currentTime) }
+                    val stringList: List<String> = newValues?.map { it?.toString() ?: "" } ?: emptyList()
+                    val nRows = sqliteClient.insert("doc", columns = columns, values = stringList)
+                    result.success(nRows)
+                }
+                "getDocById" -> {
+                    val id = call.arguments<Int>()
+                    val docs = sqliteClient.select("doc", whereStatement = "id = $id", columns = listOf("id", "name", "color"))
+                    result.success(docs)
+                }
+                "getParagraphsByChapterId" -> {
+                    val chapterId = call.arguments as Int
+                    val paragraphs = sqliteClient.select("paragraph", whereStatement = "chapterID = $chapterId", columns = listOf("id", "paragraphID", "num", "hasLinks", "isTable", "isNFT", "className", "content", "chapterID"))
+                    result.success(paragraphs)
+                }
+        
+        
+            }
+            
+        }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, TTS_CHANNEL).setMethodCallHandler { call, result ->
            when(call.method){
 

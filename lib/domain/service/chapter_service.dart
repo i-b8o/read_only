@@ -59,7 +59,11 @@ class ChapterService implements ChapterViewModelService {
     final receivePort = ReceivePort();
     final sendPort = receivePort.sendPort;
     final isolate = await Isolate.spawn(
-        isolateFunction, _IsolateMessage(sendPort, chaptersIDs));
+        isolateFunction,
+        AddDocIsolateMessage(
+          sendPort: sendPort,
+          chaptersIds: chaptersIDs,
+        ));
 
     receivePort.listen((message) {
       print('main isolate: $message');
@@ -74,17 +78,20 @@ class ChapterService implements ChapterViewModelService {
   }
 }
 
-void isolateFunction(_IsolateMessage message) {
-  for (final id in message.messageData) {
+Future<void> isolateFunction(AddDocIsolateMessage message) async {
+  for (final id in message.chaptersIds) {
     print('received id: $id');
   }
 
   message.sendPort.send('Hello from the isolate!');
 }
 
-class _IsolateMessage {
+class AddDocIsolateMessage {
   final SendPort sendPort;
-  final List<int> messageData;
+  final List<int> chaptersIds;
 
-  _IsolateMessage(this.sendPort, this.messageData);
+  AddDocIsolateMessage({
+    required this.sendPort,
+    required this.chaptersIds,
+  });
 }

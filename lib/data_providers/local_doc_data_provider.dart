@@ -1,25 +1,24 @@
+import 'package:flutter/services.dart';
 import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:read_only/domain/service/doc_service.dart';
-import 'package:sqflite_client/sqflite_client.dart';
 
 class LocalDocDataProviderDefault
     with LocalDocDataProviderDB
-    implements DocServiceLocalDocDataProvider, ChapterServiceLocalDocDataProvider {
-  LocalDocDataProviderDefault();
+    implements
+        DocServiceLocalDocDataProvider,
+        ChapterServiceLocalDocDataProvider {
+  LocalDocDataProviderDefault(this._methodChannel);
+  final MethodChannel _methodChannel;
 
   @override
   Future<void> saveDoc(Doc doc, int id) async {
-    final data = {
-      "id": id,
-      'name': doc.name,
-      'color': doc.color,
-      'last_access': DateTime.now().millisecondsSinceEpoch,
-    };
+    final data = [id, doc.name, doc.color];
 
-    await insertDoc(data);
+    final i = await _methodChannel.invokeMethod("saveDoc", data);
+    print("hewre: $i");
   }
 
   @override
@@ -46,43 +45,40 @@ class LocalDocDataProviderDefault
   @override
   Future<bool> saved(int id) async {
     return await savedOrNot(id) ?? false;
-
   }
 }
 
 // handling data from a database
 mixin LocalDocDataProviderDB {
   Future<bool?> savedOrNot(int id) async {
-    final List<Map<String, dynamic>>? rows = await SqfliteClient.select(
-      table: 'doc',
-      columns: ['saved'],
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-    if (rows != null && rows.isNotEmpty) {
-       final res = rows.first['saved'] as int?;
-       return res == null ? null : res == 1;
-    }
+    // final List<Map<String, dynamic>>? rows = await SqfliteClient.select(
+    //   table: 'doc',
+    //   columns: ['saved'],
+    //   where: 'id = ?',
+    //   whereArgs: [id],
+    // );
+    // if (rows != null && rows.isNotEmpty) {
+    //   final res = rows.first['saved'] as int?;
+    //   return res == null ? null : res == 1;
+    // }
     return null;
   }
 
   Future<List<int>?> getAllChaptersIDsByDocID(int id) async {
-    final results = await  SqfliteClient.select(
-        table: 'chapter', columns: ['id'], where: 'docID = ?', whereArgs: [id]);
-     return results?.map((result) => result['id'] as int).toList();
-  }
-
-  Future<void> insertDoc(data) async {
-    await SqfliteClient.insertOrReplace(table: "doc", data: data);
+    return null;
+    // final results = await SqfliteClient.select(
+    //     table: 'chapter', columns: ['id'], where: 'docID = ?', whereArgs: [id]);
+    // return results?.map((result) => result['id'] as int).toList();
   }
 
   Future<void> updateDocLastAccess(int id) async {
-    await SqfliteClient.update(
-      table: "doc",
-      data: {'last_access': DateTime.now().millisecondsSinceEpoch},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return;
+    // await SqfliteClient.update(
+    //   table: "doc",
+    //   data: {'last_access': DateTime.now().millisecondsSinceEpoch},
+    //   where: 'id = ?',
+    //   whereArgs: [id],
+    // );
   }
 
   Future<Doc?> getDocById(int id, List<Chapter>? chapters) async {
@@ -94,19 +90,19 @@ mixin LocalDocDataProviderDB {
         return null;
       }
 
-      final List<Map<String, dynamic>>? maps = await SqfliteClient.select(
-          table: 'doc', where: 'id = ?', whereArgs: [id]);
+      // final List<Map<String, dynamic>>? maps = await SqfliteClient.select(
+      //     table: 'doc', where: 'id = ?', whereArgs: [id]);
 
-      if (maps != null && maps.isNotEmpty) {
-        L.info(maps.toString());
-        return Doc(
-          id: id,
-          color: maps.first['color'],
-          name: maps.first['name'],
-          chapters: chapters,
-        );
-      }
-      L.info("_getDocById empty");
+      // if (maps != null && maps.isNotEmpty) {
+      //   L.info(maps.toString());
+      //   return Doc(
+      //     id: id,
+      //     color: maps.first['color'],
+      //     name: maps.first['name'],
+      //     chapters: chapters,
+      //   );
+      // }
+      // L.info("_getDocById empty");
       return null;
     } catch (e) {
       L.warning('$e');
@@ -117,23 +113,24 @@ mixin LocalDocDataProviderDB {
   Future<List<Chapter>?> getReadOnlyChaptersByDocId(int docID) async {
     const columns = ['id', 'name', 'orderNum', 'num', 'docID'];
     try {
-      final List<Map<String, dynamic>>? maps = await SqfliteClient.select(
-          table: 'chapter',
-          columns: columns,
-          where: 'docID = ?',
-          whereArgs: [docID]);
+      // await _.invokeMethod("speak", text);
+      // final List<Map<String, dynamic>>? maps = await SqfliteClient.select(
+      //     table: 'chapter',
+      //     columns: columns,
+      //     where: 'docID = ?',
+      //     whereArgs: [docID]);
 
-      if (maps != null && maps.isNotEmpty) {
-        return List.generate(maps.length, (i) {
-          return Chapter(
-            id: maps[i][columns[0]],
-            name: maps[i][columns[1]],
-            orderNum: maps[i][columns[2]],
-            num: maps[i][columns[3]],
-            docID: maps[i][4],
-          );
-        });
-      }
+      // if (maps != null && maps.isNotEmpty) {
+      //   return List.generate(maps.length, (i) {
+      //     return Chapter(
+      //       id: maps[i][columns[0]],
+      //       name: maps[i][columns[1]],
+      //       orderNum: maps[i][columns[2]],
+      //       num: maps[i][columns[3]],
+      //       docID: maps[i][4],
+      //     );
+      //   });
+      // }
       L.info("_getReadOnlyChaptersByDocId empty");
       return null;
     } catch (e) {

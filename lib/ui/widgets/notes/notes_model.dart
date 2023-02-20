@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/note.dart';
-import 'package:sqflite_client/sqflite_client.dart';
 
 abstract class NotesViewModelNotesService {
   Future<List<Note>?> getAll();
@@ -16,9 +15,11 @@ class NotesViewModel extends ChangeNotifier {
   Future<void> asyncInit() async {
     _notes = await notesService.getAll();
     // TODO drop
-    SqfliteClient.printAllRecordsFromTable(tableName: "doc", tag: "Doc");
-    SqfliteClient.printAllRecordsFromTable(tableName: "chapter", tag: "Chapter");
-    SqfliteClient.printRecordCount(tableName: "paragraph", tag: "Paragraph");
-    SqfliteClient.printAllRecordsFromTable(tableName: "note", tag: "Note");
+
+    // SqfliteClient.printAllRecordsFromTable(tableName: "doc", tag: "Doc");
+    // SqfliteClient.printAllRecordsFromTable(
+    //     tableName: "chapter", tag: "Chapter");
+    // SqfliteClient.printRecordCount(tableName: "paragraph", tag: "Paragraph");
+    // SqfliteClient.printAllRecordsFromTable(tableName: "note", tag: "Note");
   }
 }

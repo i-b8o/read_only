@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_logger/my_logger.dart';
 import 'package:read_only/sql/init.dart';
-import 'package:sqflite_client/sqflite_client.dart';
 
 // TODO highlighting
 class ReadOnlyNavigationDrawer extends StatelessWidget {
@@ -167,7 +166,7 @@ class FontMenuItem extends StatelessWidget {
               GestureDetector(
                 onTap: () async {
                   // TODO Drop
-                  await SqfliteClient.deleteDatabaseWithName(InitSQL.dbName);
+                  // await SqfliteClient.deleteDatabaseWithName(InitSQL.dbName);
                   L.info("database deleted");
                 },
                 child: Container(

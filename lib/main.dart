@@ -14,6 +14,4 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final app = appFactory.makeApp();
   runApp(app);
-
 }
-

@@ -36,7 +36,6 @@ import 'package:read_only/ui/navigation/main_navigation.dart';
 import 'package:read_only/ui/widgets/app/app.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_model.dart';
 import 'package:shared_preferences_storage/shared_preferences_storage.dart';
-import 'package:sqflite_client/sqflite_client.dart';
 
 AppFactory makeAppFactory() => _AppFactoryDefault();
 
@@ -55,6 +54,7 @@ class _DIContainer {
   // channels for communicating with platform
   static const _ttsMethodChannel = MethodChannel("com.b8o.read_only/tts");
   static const _ttsPositionChannel = EventChannel("com.b8o.read_only/tts_pos");
+  static const _sqfliteChannel = MethodChannel("com.b8o.read_only/sqlite");
 
   // data providers
   final _ttsDataProvider =
@@ -65,11 +65,12 @@ class _DIContainer {
   SubtypeDataProvider _makeSubtypeDataProvider() =>
       SubtypeDataProviderDefault();
 
-
   ChapterDataProvider _makeChapterDataProvider() =>
       ChapterDataProviderDefault();
 
-  LocalDocDataProviderDefault _makeLocalDocDataProviderDefault() => LocalDocDataProviderDefault();
+  LocalDocDataProviderDefault _makeLocalDocDataProviderDefault(
+          _sqfliteChannel) =>
+      LocalDocDataProviderDefault(_sqfliteChannel);
 
   LocalChapterDataProviderDefault _makeLocalChapterDataProviderDefault() =>
       LocalChapterDataProviderDefault();
@@ -86,7 +87,7 @@ class _DIContainer {
 
     _docService = DocService(
         docDataProvider: DocDataProviderDefault(),
-        localDocDataProvider: _makeLocalDocDataProviderDefault(),
+        localDocDataProvider: _makeLocalDocDataProviderDefault(_sqfliteChannel),
         localChapterDataProvider: _makeLocalChapterDataProviderDefault());
 
     _ttsService = TtsService(_ttsDataProvider);
@@ -95,7 +96,7 @@ class _DIContainer {
   void asyncInit() async {
     GrpcClient().init(host: Configuration.host, port: Configuration.port);
     List<Future> futures = [
-      SqfliteClient().init(InitSQL.dbName, initSQL: InitSQL.queries),
+      // SqfliteClient().init(InitSQL.dbName, initSQL: InitSQL.queries),
       SharedPreferencesClient.init(),
     ];
     await Future.wait(futures);
@@ -112,12 +113,10 @@ class _DIContainer {
       SubtypeService(subtypeDataProvider: _makeSubtypeDataProvider());
 
   ChapterService _makeChapterService() => ChapterService(
-        chapterDataProvider: _makeChapterDataProvider(),
-        ttsSettingsDataProvider: _ttsSettingsDataProvider,
-        localChapterDataProvider:
-            _makeLocalChapterDataProviderDefault(),
-    localDocDataProvider: _makeLocalDocDataProviderDefault()
-      );
+      chapterDataProvider: _makeChapterDataProvider(),
+      ttsSettingsDataProvider: _ttsSettingsDataProvider,
+      localChapterDataProvider: _makeLocalChapterDataProviderDefault(),
+      localDocDataProvider: _makeLocalDocDataProviderDefault(_sqfliteChannel));
 
   NotesService _makeNotesService() => NotesService(_notesDataProvider());
 
