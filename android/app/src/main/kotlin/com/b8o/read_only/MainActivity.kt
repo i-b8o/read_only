@@ -72,6 +72,12 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
                     val nRows = sqliteClient.insert("doc", columns = columns, values = stringList)
                     result.success(nRows)
                 }
+                "getChaptersByDocId" -> {
+                    val docId = call.arguments<Int>()
+                    val chapters = sqliteClient.select("chapter", whereStatement = "docID = $docId", columns = listOf("id", "name", "orderNum", "num", "docID"))
+                    result.success(chapters)
+                }
+                
                 "getDocById" -> {
                     val id = call.arguments<Int>()
                     val docs = sqliteClient.select("doc", whereStatement = "id = $id", columns = listOf("id", "name", "color"))
@@ -82,10 +88,13 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
                     val paragraphs = sqliteClient.select("paragraph", whereStatement = "chapterID = $chapterId", columns = listOf("id", "paragraphID", "num", "hasLinks", "isTable", "isNFT", "className", "content", "chapterID"))
                     result.success(paragraphs)
                 }
-        
-        
+                "updateDocLastAccess" -> {
+                    val id = call.arguments<Int>()
+                    val currentTimeMillis = System.currentTimeMillis()
+                    sqliteClient.update("doc", whereStatement = "id = $id", columnName = "last_access", columnValue = currentTimeMillis.toString())
+                    result.success(null)
+                }
             }
-            
         }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, TTS_CHANNEL).setMethodCallHandler { call, result ->
            when(call.method){
