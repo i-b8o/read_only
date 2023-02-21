@@ -16,6 +16,7 @@ abstract class DocServiceLocalDocDataProvider {
 
 abstract class DocServiceLocalChapterDataProvider {
   Future<void> saveChapters(List<Chapter> chapters);
+  Future<List<Chapter>?> getChaptersByDocId(int id);
 }
 
 class DocService
@@ -31,11 +32,13 @@ class DocService
 
   late int _totalChapters;
   // A getter to return the total number of chapters
+  @override
   int totalChapters() => _totalChapters;
 
   // A private field to store a map of order numbers to id of chapters
   late Map<int, int> _orderNumToChapterIdMap;
 
+  @override
   Map<int, int> orderNumToChapterIdMap() => _orderNumToChapterIdMap;
 
   @override
@@ -43,20 +46,28 @@ class DocService
   Future<Doc> getOne(int id) async {
     try {
       // local database
-      final Doc? doc = await localDocDataProvider.getDoc(id);
-      if (doc != null && doc.chapters != null) {
+
+      final futures = [
+        localDocDataProvider.getDoc(id),
+        localChapterDataProvider.getChaptersByDocId(id),
+      ];
+      final results = await Future.wait(futures);
+      final doc = results[0] as Doc?;
+      final chapters = results[0] as List<Chapter>?;
+
+      if (doc != null && chapters != null) {
         assign(doc.chapters!);
         return doc;
       }
 
       // remote server
       final Doc resp = await docDataProvider.getOne(id);
-      var futures = [
+      final fs = [
         localDocDataProvider.saveDoc(resp, id),
         localChapterDataProvider.saveChapters(resp.chapters ?? [])
       ];
 
-      await Future.wait(futures);
+      await Future.wait(fs);
       assign(resp.chapters ?? []);
       return resp;
     } on Exception catch (_) {

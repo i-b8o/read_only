@@ -53,6 +53,9 @@ dependencies:
   grpc_client:
     path: packages/grpc_client
 
+  sqflite_client:
+    path: packages/sqflite_client
+
   shared_preferences_storage:
     path: packages/shared_preferences_storage
 

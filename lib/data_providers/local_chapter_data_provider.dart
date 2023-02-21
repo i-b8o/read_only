@@ -1,11 +1,10 @@
 import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/chapter.dart';
-import 'package:read_only/domain/entity/paragraph.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:read_only/domain/service/doc_service.dart';
+import 'package:sqflite_client/sqflite_client.dart';
 
 class LocalChapterDataProviderDefault
-    with LocalChapterDataProviderDB
     implements
         ChapterServiceLocalChapterDataProvider,
         DocServiceLocalChapterDataProvider {
@@ -13,11 +12,25 @@ class LocalChapterDataProviderDefault
 
   @override
   Future<Chapter?> getChapter(int id) async {
-    final paragraphs = await getParagraphsByChapterId(id);
-    if (paragraphs == null) {
+    try {
+      final List<Map<String, dynamic>>? chapters = await SqfliteClient.select(
+          table: 'chapter', where: 'id = ?', whereArgs: [id]);
+
+      if (chapters != null || chapters!.isNotEmpty) {
+        Map<String, dynamic> chapter = chapters.first;
+        return Chapter(
+          id: chapter['id'],
+          docID: chapter['docID'],
+          name: chapter['name'],
+          num: chapter['num'],
+          orderNum: chapter['orderNum'],
+        );
+      }
+      return null;
+    } catch (e) {
+      L.info("could not connect to a database: $e");
       return null;
     }
-    return await getChapterById(id, paragraphs);
   }
 
   @override
@@ -33,67 +46,33 @@ class LocalChapterDataProviderDefault
       });
     });
 
-    await insertChapters(mapList);
-  }
-}
-
-// handling data from a database
-mixin LocalChapterDataProviderDB {
-  Future<List<Paragraph>?> getParagraphsByChapterId(int chapterId) async {
-    try {
-      return null;
-      // final maps = await SqfliteClient.select(
-      //     table: 'paragraph', where: 'chapterID = ?', whereArgs: [chapterId]);
-      // if (maps == null) {
-      //   return null;
-      // }
-      // if (maps.isEmpty) {
-      //   return [];
-      // }
-      // return maps
-      //     .map((map) => Paragraph(
-      //           paragraphID: map['id'] as int,
-      //           paragraphOrderNum: map['num'] as int,
-      //           hasLinks: map['hasLinks'] == 1,
-      //           isTable: map['isTable'] == 1,
-      //           isNFT: map['isNFT'] == 1,
-      //           paragraphclass: map['className'] as String,
-      //           content: map['content'] as String,
-      //           chapterID: chapterId,
-      //         ))
-      //     .toList();
-    } catch (e) {
-      L.error(
-          "could not get paragraphs for the chapter with id:$chapterId: $e");
-      return null;
-    }
+    await SqfliteClient.insertListOrIgnore(table: 'chapter', rows: mapList);
   }
 
-  Future<Chapter?> getChapterById(int id, List<Paragraph> paragraphs) async {
+  @override
+  Future<List<Chapter>?> getChaptersByDocId(int docID) async {
+    const columns = ['id', 'name', 'orderNum', 'num', 'docID'];
     try {
-      // final List<Map<String, dynamic>>? chapters = await SqfliteClient.select(
-      //     table: 'chapter', where: 'id = ?', whereArgs: [id]);
+      final List<Map<String, dynamic>>? maps = await SqfliteClient.select(
+          table: 'chapter',
+          columns: columns,
+          where: 'docID = ?',
+          whereArgs: [docID]);
 
-      // if (chapters != null || chapters!.isNotEmpty) {
-      //   Map<String, dynamic> chapter = chapters.first;
-      //   return Chapter(
-      //       id: chapter['id'],
-      //       docID: chapter['docID'],
-      //       name: chapter['name'],
-      //       num: chapter['num'],
-      //       orderNum: chapter['orderNum'],
-      //       paragraphs: paragraphs);
-      // }
+      if (maps != null && maps.isNotEmpty) {
+        return List.generate(maps.length, (i) {
+          return Chapter(
+            id: maps[i][columns[0]],
+            name: maps[i][columns[1]],
+            orderNum: maps[i][columns[2]],
+            num: maps[i][columns[3]],
+            docID: maps[i][4],
+          );
+        });
+      }
       return null;
     } catch (e) {
-      L.info("could not connect to a database: $e");
       return null;
     }
-  }
-
-  Future<void> insertChapters(List<Map<String, dynamic>> mapList) async {
-    return;
-    // return await SqfliteClient.insertListOrIgnore(
-    //     table: 'chapter', rows: mapList);
   }
 }
