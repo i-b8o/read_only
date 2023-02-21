@@ -270,3 +270,23 @@ const GetEntireDocResponse$json = const {
 
 /// Descriptor for `GetEntireDocResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getEntireDocResponseDescriptor = $convert.base64Decode('ChRHZXRFbnRpcmVEb2NSZXNwb25zZRJACgpwYXJhZ3JhcGhzGAEgAygLMiAucmVhZGVyLnYxLkdldEVudGlyZURvY1BhcmFncmFwaFIKcGFyYWdyYXBocw==');
+@$core.Deprecated('Use getWithNeighborsRequestDescriptor instead')
+const GetWithNeighborsRequest$json = const {
+  '1': 'GetWithNeighborsRequest',
+  '2': const [
+    const {'1': 'ID', '3': 1, '4': 1, '5': 4, '10': 'ID'},
+  ],
+};
+
+/// Descriptor for `GetWithNeighborsRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List getWithNeighborsRequestDescriptor = $convert.base64Decode('ChdHZXRXaXRoTmVpZ2hib3JzUmVxdWVzdBIOCgJJRBgBIAEoBFICSUQ=');
+@$core.Deprecated('Use getWithNeighborsResponseDescriptor instead')
+const GetWithNeighborsResponse$json = const {
+  '1': 'GetWithNeighborsResponse',
+  '2': const [
+    const {'1': 'Chapters', '3': 1, '4': 3, '5': 11, '6': '.reader.v1.ReaderChapter', '10': 'Chapters'},
+  ],
+};
+
+/// Descriptor for `GetWithNeighborsResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List getWithNeighborsResponseDescriptor = $convert.base64Decode('ChhHZXRXaXRoTmVpZ2hib3JzUmVzcG9uc2USNAoIQ2hhcHRlcnMYASADKAsyGC5yZWFkZXIudjEuUmVhZGVyQ2hhcHRlclIIQ2hhcHRlcnM=');

@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:my_logger/my_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/.configuration/configuration.dart';
-import 'package:read_only/data_providers/chapter_data_provider.dart';
+import 'package:read_only/data_providers/remote_chapter_data_provider.dart';
 import 'package:read_only/data_providers/local_chapter_data_provider.dart';
 import 'package:read_only/data_providers/local_doc_data_provider.dart';
 import 'package:read_only/data_providers/local_note_data_provider.dart';
 import 'package:read_only/data_providers/local_paragraph_data_provider.dart';
+import 'package:read_only/data_providers/remote_paragraph_data_provider.dart';
 import 'package:read_only/data_providers/tts_data_provider.dart';
 import 'package:read_only/data_providers/tts_settings_data_provider.dart';
-import 'package:read_only/data_providers/type_data_provider.dart';
-import 'package:read_only/data_providers/subtype_data_provider.dart';
+import 'package:read_only/data_providers/remote_type_data_provider.dart';
+import 'package:read_only/data_providers/remote_subtype_data_provider.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:read_only/domain/service/doc_service.dart';
 import 'package:read_only/domain/service/notes_service.dart';
@@ -31,7 +32,7 @@ import 'package:read_only/ui/widgets/notes/notes_widget.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_model.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_widget.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_widget.dart';
-import 'package:read_only/data_providers/doc_data_provider.dart';
+import 'package:read_only/data_providers/remote_doc_data_provider.dart';
 import 'package:read_only/main.dart';
 import 'package:read_only/ui/navigation/main_navigation.dart';
 import 'package:read_only/ui/widgets/app/app.dart';
@@ -68,6 +69,8 @@ class _DIContainer {
 
   ChapterDataProvider _makeChapterDataProvider() =>
       ChapterDataProviderDefault();
+  ParagraphDataProvider _makeParagraphDataProvider() =>
+      ParagraphDataProviderDefault();
 
   LocalDocDataProviderDefault _makeLocalDocDataProviderDefault() =>
       LocalDocDataProviderDefault();
@@ -117,9 +120,10 @@ class _DIContainer {
 
   ChapterService _makeChapterService() => ChapterService(
       chapterDataProvider: _makeChapterDataProvider(),
+      paragraphDataProvider: _makeParagraphDataProvider(),
       ttsSettingsDataProvider: _ttsSettingsDataProvider,
       localChapterDataProvider: _makeLocalChapterDataProviderDefault(),
-      localDocDataProvider: _makeLocalDocDataProviderDefault());
+      localParagraphDataProvider: _makeLocalParagraphDataProviderDefault());
 
   NotesService _makeNotesService() => NotesService(_notesDataProvider());
 

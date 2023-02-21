@@ -1,15 +1,12 @@
 import 'package:my_logger/my_logger.dart';
-import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/doc.dart';
-import 'package:read_only/domain/service/chapter_service.dart';
+
 import 'package:read_only/domain/service/doc_service.dart';
 import 'package:sqflite_client/sqflite_client.dart';
 
 class LocalDocDataProviderDefault
     with LocalDocDataProviderDB
-    implements
-        DocServiceLocalDocDataProvider,
-        ChapterServiceLocalDocDataProvider {
+    implements DocServiceLocalDocDataProvider {
   LocalDocDataProviderDefault();
 
   @override
@@ -22,29 +19,10 @@ class LocalDocDataProviderDefault
     await updateDocLastAccess(id);
     return await getDocById(id);
   }
-
-  @override
-  Future<bool> contains(int id) async {
-    return await savedOrNot(id) ?? false;
-  }
 }
 
 // handling data from a database
 mixin LocalDocDataProviderDB {
-  Future<bool?> savedOrNot(int id) async {
-    final List<Map<String, dynamic>>? rows = await SqfliteClient.select(
-      table: 'doc',
-      columns: ['saved'],
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-    if (rows != null && rows.isNotEmpty) {
-      final res = rows.first['saved'] as int?;
-      return res == null ? null : res == 1;
-    }
-    return null;
-  }
-
   Future<void> updateDocLastAccess(int id) async {
     await SqfliteClient.update(
       table: "doc",

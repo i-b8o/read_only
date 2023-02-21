@@ -1,24 +1,26 @@
 import 'dart:async';
-import 'dart:isolate';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
 abstract class ChapterDataProvider {
   const ChapterDataProvider();
-  Future<Chapter?> getChapter(int id);
+  Future<List<Chapter>?> getChapterWithNeighbors(int id);
+}
+
+abstract class ParagraphDataProvider {
+  const ParagraphDataProvider();
+  Future<List<Paragraph>?> getParagraphs(int chapterID);
 }
 
 abstract class ParagraphServiceLocalChapterDataProvider {
-  Future<List<Paragraph>?> getParagraphs(int id);
+  Future<List<Paragraph>?> getParagraphs(int chapterID);
+  Future<void> saveParagraphs(List<Paragraph> paragraphs);
 }
 
 abstract class ChapterServiceLocalChapterDataProvider {
   Future<Chapter?> getChapter(int id);
-}
-
-abstract class ChapterServiceLocalDocDataProvider {
-  Future<bool> contains(int id);
+  Future<void> saveChapters(List<Chapter> chapters);
 }
 
 abstract class TtsSettingsDataProvider {
@@ -30,68 +32,56 @@ abstract class TtsSettingsDataProvider {
 
 class ChapterService implements ChapterViewModelService {
   final ChapterDataProvider chapterDataProvider;
+  final ParagraphDataProvider paragraphDataProvider;
   final TtsSettingsDataProvider ttsSettingsDataProvider;
-  final ParagraphServiceLocalChapterDataProvider
-      paragraphServiceLocalChapterDataProvider;
+  final ParagraphServiceLocalChapterDataProvider localParagraphDataProvider;
   final ChapterServiceLocalChapterDataProvider localChapterDataProvider;
-  final ChapterServiceLocalDocDataProvider localDocDataProvider;
 
-  const ChapterService(
-      {required this.chapterDataProvider,
-      required this.ttsSettingsDataProvider,
-      required this.paragraphServiceLocalChapterDataProvider,
-      required this.localChapterDataProvider,
-      required this.localDocDataProvider});
+  const ChapterService({
+    required this.chapterDataProvider,
+    required this.paragraphDataProvider,
+    required this.ttsSettingsDataProvider,
+    required this.localParagraphDataProvider,
+    required this.localChapterDataProvider,
+  });
 
   @override
   Future<Chapter?> getOne(int id) async {
-    // first look in a local database
-    final saved = await localDocDataProvider.contains(id);
-    Chapter? chapter;
-    if (saved) {
-      chapter = await localChapterDataProvider.getChapter(id);
-      if (chapter == null) {
-        return null;
+    // Try to get the chapter from local storage
+    final ch = await localChapterDataProvider.getChapter(id);
+    if (ch != null) {
+      // If found, try to get its paragraphs from local storage
+      final paragraphs = await localParagraphDataProvider.getParagraphs(ch.id);
+      if (paragraphs != null && paragraphs.isNotEmpty) {
+        // If paragraphs found, return the chapter with paragraphs
+        return ch.copyWith(paragraphs: paragraphs);
       }
     }
-    // TODO chapters
 
-    final receivePort = ReceivePort();
-    final sendPort = receivePort.sendPort;
-    // final isolate = await Isolate.spawn(
-    // isolateFunction,
-    // AddDocIsolateMessage(
-    // sendPort: sendPort,
-    // chaptersIds: chaptersIDs,
-    // ));
+    // If chapter or its paragraphs not found in local storage,
+    // get the chapter with its neighbors from the remote server
+    final chapters = await chapterDataProvider.getChapterWithNeighbors(id);
+    if (chapters == null || chapters.isEmpty) {
+      return null; // Return null if not found on server
+    }
 
-    // receivePort.listen((message) {
-    //   print('main isolate: $message');
-    //   isolate.kill(priority: Isolate.immediate);
-    // });
+    List<Paragraph> paragraphs = [];
+    for (final c in chapters) {
+      final ps = await paragraphDataProvider.getParagraphs(c.id);
+      if (ps == null) {
+        return null;
+      }
+      paragraphs = paragraphs + ps;
+    }
 
-    // then look at a server
-    // chapter = await chapterDataProvider.getChapter(id);
-    // if (chapter == null) {
-    //   return null;
-    // }
+    // Save the chapters and paragraphs to local storage for faster access next time
+    var futures = [
+      localChapterDataProvider.saveChapters(chapters),
+      localParagraphDataProvider.saveParagraphs(paragraphs),
+    ];
+    await Future.wait(futures);
+
+    // Return the chapter with the requested ID from the fetched chapters
+    return chapters.where((c) => c.id == id).first;
   }
-}
-
-Future<void> isolateFunction(AddDocIsolateMessage message) async {
-  for (final id in message.chaptersIds) {
-    print('received id: $id');
-  }
-
-  message.sendPort.send('Hello from the isolate!');
-}
-
-class AddDocIsolateMessage {
-  final SendPort sendPort;
-  final List<int> chaptersIds;
-
-  AddDocIsolateMessage({
-    required this.sendPort,
-    required this.chaptersIds,
-  });
 }

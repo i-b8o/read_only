@@ -16,4 +16,22 @@ class Chapter {
     required this.docID,
     this.paragraphs,
   });
+
+  Chapter copyWith({
+    int? id,
+    String? name,
+    int? orderNum,
+    String? num,
+    int? docID,
+    List<Paragraph>? paragraphs,
+  }) {
+    return Chapter(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      orderNum: orderNum ?? this.orderNum,
+      num: num ?? this.num,
+      docID: docID ?? this.docID,
+      paragraphs: paragraphs ?? this.paragraphs,
+    );
+  }
 }
