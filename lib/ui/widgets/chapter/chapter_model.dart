@@ -121,7 +121,7 @@ class ChapterViewModel extends ChangeNotifier {
       setChapter(chapter);
       if (_chapter != null && _chapter!.paragraphs != null) {
         _paragraphs = chapter.paragraphs!;
-        L.info("Length:${_paragraphs.length}");
+        L.info("Length: ${_paragraphs.length}");
         notifyListeners();
       }
     } catch (e) {
