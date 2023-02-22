@@ -58,6 +58,7 @@ class ChapterService implements ChapterViewModelService {
               await localParagraphDataProvider.getParagraphs(ch.id);
           if (paragraphs != null && paragraphs.isNotEmpty) {
             // If paragraphs found, return the chapter with paragraphs
+            L.info("The chapter was returned from the local storage");
             return ch.copyWith(paragraphs: paragraphs);
           }
         } catch (e) {
@@ -97,6 +98,7 @@ class ChapterService implements ChapterViewModelService {
         await localParagraphDataProvider.saveParagraphs(paragraphs);
         await localChapterDataProvider.saveChapters(chapters);
 
+        L.info("The chapter was returned from the remote server");
         // Return the chapter with the requested ID from the fetched chapters
         return resultChapter;
       } catch (e) {

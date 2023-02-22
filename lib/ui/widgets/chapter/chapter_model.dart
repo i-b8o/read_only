@@ -57,9 +57,6 @@ class ChapterViewModel extends ChangeNotifier {
 
   int chaptersTotal = 0;
 
-  List<Paragraph> _paragraphs = [];
-  List<Paragraph> get paragraphs => _paragraphs;
-
   SpeakState _speakState = SpeakState.silence;
   SpeakState get speakState => _speakState;
   void setSpeakState(SpeakState value) {
@@ -77,14 +74,16 @@ class ChapterViewModel extends ChangeNotifier {
   int get paragraphOrderNum => _paragraphOrderNum;
 
   Chapter? _chapter;
+  Chapter? get chapter => _chapter;
   void setChapter(Chapter? chapter) {
     _chapter = chapter;
     _errorMessage =
         chapter == null ? "This document is currently unavailable" : null;
-    notifyListeners();
   }
 
-  Chapter? get chapter => _chapter;
+  List<Paragraph> _paragraphs = [];
+  List<Paragraph> get paragraphs => _paragraphs;
+
   int _currentPage = 0;
   int get currentPage => _currentPage;
 
@@ -92,24 +91,13 @@ class ChapterViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> asyncInit() async {
+    L.info("asyncInit");
     try {
       L.info(
           " link: ${link.chapterID} ${link.paragraphID} ${pageController.initialPage}");
-      // it is necessary to specify init page number for the PageController
-      // if requested a current doc
-      // int initPage = docService.initPage(chapterID) ?? 0;
-      // L.info("initPage: $initPage");
-      // if (pageController.hasClients) {
-      //   L.info("has ");
-      //   pageController.jumpToPage(initPage);
-      //   L.info("initPage: $initPage ");
-      // } else {
-      //   L.info("has not");
-      // }
-
       chaptersTotal = docService.totalChapters();
       await getOne(link.chapterID);
-      _paragraphs = chapter!.paragraphs!;
+
       if (link.paragraphID == 0) {
         return;
       }
@@ -129,7 +117,13 @@ class ChapterViewModel extends ChangeNotifier {
   Future<void> getOne(int id) async {
     try {
       final chapter = await chapterService.getOne(id);
+      L.error("getOne: ${chapter!.id}");
       setChapter(chapter);
+      if (_chapter != null && _chapter!.paragraphs != null) {
+        _paragraphs = chapter.paragraphs!;
+        L.info("Length: ${_paragraphs.length}");
+        notifyListeners();
+      }
     } catch (e) {
       L.error("Error in getOne: $e");
     }
@@ -138,10 +132,11 @@ class ChapterViewModel extends ChangeNotifier {
   Future<void> onPageChanged() async {
     try {
       final index = pageController.page!.toInt();
-      L.error("Page changed $index");
       final id = docService.chapterIdByOrderNum(index + 1) ?? link.chapterID;
+      L.error("Page changed index: $index id:$id");
       await getOne(id);
       if (chapter != null) {
+        L.error("chapter not null");
         textEditingController.text = '${index + 1}';
         notifyListeners();
       } else {

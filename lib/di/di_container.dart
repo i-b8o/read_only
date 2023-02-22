@@ -147,10 +147,6 @@ class _DIContainer {
     final _initialPage = _docService.initPage(link.chapterID) ?? 0;
     return ChapterViewModel(
       link,
-      // chapterCount: _docService.totalChapters,
-      // chaptersOrderNums: _docService.orderNumToChapterIdMap,
-      // paragraphID: paragraphID
-      // id: chapterID,
       docService: _docService,
       pageController: PageController(initialPage: _initialPage),
       textEditingController:

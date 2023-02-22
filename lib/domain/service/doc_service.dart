@@ -1,3 +1,4 @@
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
@@ -48,7 +49,6 @@ class DocService
   Future<Doc> getOne(int id) async {
     try {
       // local database
-
       final futures = [
         localDocDataProvider.getDoc(id),
         localChapterDataProvider.getChaptersByDocId(id),
@@ -59,6 +59,7 @@ class DocService
 
       if (doc != null && chapters != null) {
         assign(doc.chapters!);
+        L.info("The doc was returned from the local storage");
         return doc;
       }
 
@@ -71,6 +72,7 @@ class DocService
 
       await Future.wait(fs);
       assign(resp.chapters ?? []);
+      L.info("The doc was returned from the remote server");
       return resp;
     } on Exception catch (_) {
       rethrow;
