@@ -111,12 +111,12 @@ class ChapterViewModel extends ChangeNotifier {
     //   return;
     // }
     if (chapter == null || chapter!.paragraphs == null) {
-      L.info("chapter == null || chapter!.paragraphs == null");
+      L.info("chapter null ${chapter == null}");
       return;
     }
 
-    _paragraphs = chapter!.paragraphs!;
     L.error("${_paragraphs == null} length: ${_paragraphs.length}");
+    _paragraphs = chapter!.paragraphs!;
     _paragraphOrderNum = _paragraphs
         .where((element) => element.paragraphID.toInt() == paragraphID)
         .first

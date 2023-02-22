@@ -1,3 +1,4 @@
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:sqflite_client/sqflite_client.dart';
@@ -28,8 +29,25 @@ class LocalParagraphDataProviderDefault
   }
 
   @override
-  Future<void> saveParagraphs(List<Paragraph> paragraphs) {
-    // TODO: implement saveParagraphs
-    throw UnimplementedError();
+  Future<void> saveParagraphs(List<Paragraph> paragraphs) async {
+    final List<Map<String, dynamic>> rows = paragraphs.map((p) {
+      return {
+        'paragraphID': p.paragraphID,
+        'num': p.paragraphOrderNum,
+        'hasLinks': p.hasLinks ? 1 : 0,
+        'isTable': p.isTable ? 1 : 0,
+        'isNFT': p.isNFT ? 1 : 0,
+        'className': p.paragraphclass,
+        'content': p.content,
+        'chapterID': p.chapterID,
+      };
+    }).toList();
+
+    try {
+      await SqfliteClient.insertListOrReplace(table: 'paragraph', rows: rows);
+    } catch (e) {
+      L.error('Insert failed: $e');
+      rethrow;
+    }
   }
 }
