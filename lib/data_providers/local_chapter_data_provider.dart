@@ -35,18 +35,22 @@ class LocalChapterDataProviderDefault
 
   @override
   Future<void> saveChapters(List<Chapter> chapters) async {
-    List<Map<String, dynamic>> mapList = [];
-    chapters.forEach((chapter) {
-      mapList.add({
-        'id': chapter.id,
-        'name': chapter.name,
-        'orderNum': chapter.orderNum,
-        'num': chapter.num,
-        'docID': chapter.docID,
+    try {
+      List<Map<String, dynamic>> mapList = [];
+      chapters.forEach((chapter) {
+        mapList.add({
+          'id': chapter.id,
+          'name': chapter.name,
+          'orderNum': chapter.orderNum,
+          'num': chapter.num,
+          'docID': chapter.docID,
+        });
       });
-    });
 
-    await SqfliteClient.insertListOrIgnore(table: 'chapter', rows: mapList);
+      await SqfliteClient.insertListOrIgnore(table: 'chapter', rows: mapList);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override

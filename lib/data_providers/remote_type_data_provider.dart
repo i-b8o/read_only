@@ -22,7 +22,8 @@ class TypeDataProviderDefault implements TypeDataProvider {
           .toList();
       return types;
     } catch (e) {
-      throw PlatformException(code: "get_all_type_error", details: e);
+      print("An error occurred while getting all types: $e");
+      return []; // Return an empty list if an error occurred
     }
   }
 }

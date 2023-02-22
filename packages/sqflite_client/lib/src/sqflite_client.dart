@@ -2,6 +2,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+class DatabaseException implements Exception {
+  final String message;
+
+  DatabaseException(this.message);
+
+  @override
+  String toString() => "Database Exception: $message";
+}
+
 class SqfliteClient {
   static Database? _database;
   static Database? get db => _database;
@@ -30,7 +39,7 @@ class SqfliteClient {
   static Future<void> insertListOrReplace(
       {required String table, required List<Map<String, dynamic>> rows}) async {
     if (_database == null) {
-      throw Exception('Database is not open');
+      throw DatabaseException('Database is not open');
     }
     try {
       await _database!.transaction((txn) async {
@@ -40,14 +49,14 @@ class SqfliteClient {
         }
       });
     } catch (e) {
-      throw Exception('Insert failed: $e');
+      throw DatabaseException('Insert failed: $e');
     }
   }
 
   static Future<void> insertListOrIgnore(
       {required String table, required List<Map<String, dynamic>> rows}) async {
     if (_database == null) {
-      throw Exception('Database is not open');
+      throw DatabaseException('Database is not open');
     }
     try {
       await _database!.transaction((txn) async {
@@ -57,14 +66,14 @@ class SqfliteClient {
         }
       });
     } catch (e) {
-      throw Exception('Insert failed: $e');
+      throw DatabaseException('Insert failed: $e');
     }
   }
 
   static Future<int?> insertOrReplace(
       {required String table, required Map<String, dynamic> data}) async {
     if (_database == null) {
-      throw Exception('Database is not open');
+      throw DatabaseException('Database is not open');
     }
     try {
       final int id = await _database!.insert(
@@ -74,14 +83,14 @@ class SqfliteClient {
       );
       return id;
     } catch (e) {
-      throw Exception('Insert failed: $e');
+      throw DatabaseException('Insert failed: $e');
     }
   }
 
   static Future<int> insertOrIgnore(
       {required String table, required Map<String, dynamic> data}) async {
     if (_database == null) {
-      throw Exception("Database is not open");
+      throw DatabaseException("Database is not open");
     }
     try {
       return await _database!.insert(
@@ -90,7 +99,7 @@ class SqfliteClient {
         conflictAlgorithm: ConflictAlgorithm.ignore,
       );
     } catch (e) {
-      throw Exception("Failed to insert data into table $table: $e");
+      throw DatabaseException("Failed to insert data into table $table: $e");
     }
   }
 
@@ -102,12 +111,12 @@ class SqfliteClient {
   }) async {
     try {
       if (_database == null) {
-        throw Exception("Database is null");
+        throw DatabaseException("Database is null");
       }
       return await _database!
           .query(table, columns: columns, where: where, whereArgs: whereArgs);
     } catch (e) {
-      throw Exception("Could not execute select query: $e");
+      throw DatabaseException("Could not execute select query: $e");
     }
   }
 
@@ -119,7 +128,7 @@ class SqfliteClient {
   }) async {
     try {
       if (_database == null) {
-        throw Exception("Database not initialized.");
+        throw DatabaseException("Database is null");
       }
 
       final result = await _database!
@@ -127,7 +136,7 @@ class SqfliteClient {
 
       return result;
     } catch (e) {
-      throw Exception("Failed to update $table table: $e");
+      throw DatabaseException("Failed to update $table table: $e");
     }
   }
 
@@ -135,11 +144,11 @@ class SqfliteClient {
       {required String where, required List<dynamic> whereArgs}) async {
     try {
       if (_database == null) {
-        throw Exception("Database not initialized.");
+        throw DatabaseException("Database is null");
       }
       return await _database!.delete(table, where: where, whereArgs: whereArgs);
     } catch (e) {
-      throw Exception('Failed to delete record from table: $table');
+      throw DatabaseException('Failed to delete record from table: $table');
     }
   }
 
@@ -147,16 +156,16 @@ class SqfliteClient {
       {required String tableName, required String tag}) async {
     try {
       if (_database == null) {
-        throw Exception("$tag can not connect to the database");
+        throw DatabaseException("Database is null");
       }
       int? count = Sqflite.firstIntValue(
           await _database!.rawQuery("SELECT COUNT(*) FROM $tableName"));
       if (count == null) {
-        throw Exception("$tag could not get table:$tableName");
+        throw DatabaseException("$tag could not get table:$tableName");
       }
       print('the $tableName table has $count records');
     } catch (e) {
-      throw Exception("Error in $tag: $e");
+      throw DatabaseException("Error in $tag: $e");
     }
   }
 
@@ -164,7 +173,7 @@ class SqfliteClient {
       {required String tableName, required String tag}) async {
     try {
       if (_database == null) {
-        throw Exception("$tag can not connect to the database");
+        throw DatabaseException("Database is null");
       }
       final records = await _database!.query(tableName);
       if (records.isEmpty) {
@@ -175,7 +184,7 @@ class SqfliteClient {
         print('$tag => $record');
       }
     } catch (e) {
-      throw Exception(
+      throw DatabaseException(
           "$tag => an error occurred while trying to print records from the $tableName table: $e");
     }
   }

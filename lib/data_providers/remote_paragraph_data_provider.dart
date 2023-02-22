@@ -14,18 +14,25 @@ class ParagraphDataProviderDefault implements ParagraphDataProvider {
 
   @override
   Future<List<Paragraph>?> getParagraphs(int chapterID) async {
-    final request = GetAllParagraphsByChapterIdRequest()..iD = Int64(chapterID);
-    final response = await _grpcClient.getAll(request);
-    return response.paragraphs
-        .map((e) => domain_paragraph.Paragraph(
-            paragraphID: e.iD.toInt(),
-            chapterID: e.chapterID.toInt(),
-            hasLinks: e.hasLinks,
-            isNFT: e.isNFT,
-            isTable: e.isTable,
-            paragraphOrderNum: e.num,
-            paragraphclass: e.class_6,
-            content: e.content))
-        .toList();
+    try {
+      final request = GetAllParagraphsByChapterIdRequest()
+        ..iD = Int64(chapterID);
+      final response = await _grpcClient.getAll(request);
+      return response.paragraphs
+          .map((e) => domain_paragraph.Paragraph(
+              paragraphID: e.iD.toInt(),
+              chapterID: e.chapterID.toInt(),
+              hasLinks: e.hasLinks,
+              isNFT: e.isNFT,
+              isTable: e.isTable,
+              paragraphOrderNum: e.num,
+              paragraphclass: e.class_6,
+              content: e.content))
+          .toList();
+    } catch (e) {
+      // handle the exception here, for example:
+      print('An error occurred while getting paragraphs: $e');
+      return null;
+    }
   }
 }

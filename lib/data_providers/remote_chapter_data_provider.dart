@@ -2,7 +2,6 @@ import 'package:fixnum/fixnum.dart';
 
 import 'package:grpc_client/grpc_client.dart';
 import 'package:read_only/domain/entity/chapter.dart' as domain_chapter;
-import 'package:read_only/domain/entity/paragraph.dart' as domain_paragraph;
 
 import 'package:read_only/domain/service/chapter_service.dart';
 

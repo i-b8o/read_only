@@ -16,39 +16,62 @@ class LocalDocDataProviderDefault
 
   @override
   Future<Doc?> getDoc(int id) async {
-    await updateDocLastAccess(id);
-    return await getDocById(id);
+    try {
+      await updateDocLastAccess(id);
+      return await getDocById(id);
+    } catch (e) {
+      print('Error getting document: $e');
+      return null;
+    }
   }
 }
 
 // handling data from a database
 mixin LocalDocDataProviderDB {
   Future<void> updateDocLastAccess(int id) async {
-    await SqfliteClient.update(
-      table: "doc",
-      data: {'last_access': DateTime.now().millisecondsSinceEpoch},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    try {
+      await SqfliteClient.update(
+        table: "doc",
+        data: {'last_access': DateTime.now().millisecondsSinceEpoch},
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    } catch (e) {
+      print('Error updating document last access: $e');
+    }
   }
 
   Future<Doc?> getDocById(int id) async {
     const columns = ['id', 'name', 'color'];
     try {
-      final List<Map<String, dynamic>>? maps = await SqfliteClient.select(
-          table: 'doc', where: 'id = ?', whereArgs: [id]);
+      List<Map<String, dynamic>>? maps;
+      try {
+        maps = await SqfliteClient.select(
+          table: 'doc',
+          where: 'id = ?',
+          whereArgs: [id],
+        );
+      } catch (e) {
+        L.warning('Failed to select from the database: $e');
+        return null;
+      }
 
       if (maps != null && maps.isNotEmpty) {
-        return Doc(
-          id: id,
-          color: maps.first['color'],
-          name: maps.first['name'],
-        );
+        try {
+          return Doc(
+            id: id,
+            color: maps.first['color'],
+            name: maps.first['name'],
+          );
+        } catch (e) {
+          L.warning('Failed to create Doc object: $e');
+          return null;
+        }
       }
 
       return null;
     } catch (e) {
-      L.warning('$e');
+      L.warning('Unhandled error: $e');
       return null;
     }
   }

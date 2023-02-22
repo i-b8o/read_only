@@ -48,50 +48,69 @@ class ChapterService implements ChapterViewModelService {
 
   @override
   Future<Chapter?> getOne(int id) async {
-    // Try to get the chapter from local storage
-    final ch = await localChapterDataProvider.getChapter(id);
-    if (ch != null) {
-      L.info('1');
-      // If found, try to get its paragraphs from local storage
-      final paragraphs = await localParagraphDataProvider.getParagraphs(ch.id);
-      if (paragraphs != null && paragraphs.isNotEmpty) {
-        L.info('2');
-        // If paragraphs found, return the chapter with paragraphs
-        return ch.copyWith(paragraphs: paragraphs);
+    try {
+      // Try to get the chapter from local storage
+      final ch = await localChapterDataProvider.getChapter(id);
+      if (ch != null) {
+        L.info('1');
+        try {
+          // If found, try to get its paragraphs from local storage
+          final paragraphs =
+              await localParagraphDataProvider.getParagraphs(ch.id);
+          if (paragraphs != null && paragraphs.isNotEmpty) {
+            L.info('2');
+            // If paragraphs found, return the chapter with paragraphs
+            return ch.copyWith(paragraphs: paragraphs);
+          }
+        } catch (e) {
+          // Handle any exceptions when getting paragraphs from local storage
+          L.error('Error getting paragraphs from local storage: $e');
+        }
       }
-    }
-    L.info('3');
-    // If chapter or its paragraphs not found in local storage,
-    // get the chapter with its neighbors from the remote server
-    final chapters = await chapterDataProvider.getChapterWithNeighbors(id);
-    if (chapters == null || chapters.isEmpty) {
-      L.info('4');
-      return null; // Return null if not found on server
-    }
-    L.info('5');
+      L.info('3');
+      try {
+        // If chapter or its paragraphs not found in local storage,
+        // get the chapter with its neighbors from the remote server
+        final chapters = await chapterDataProvider.getChapterWithNeighbors(id);
+        if (chapters == null || chapters.isEmpty) {
+          L.info('4');
+          return null; // Return null if not found on server
+        }
+        L.info('5');
 
-    List<Paragraph> paragraphs = [];
-    Chapter? resultChapter;
-    for (final c in chapters) {
-      final ps = await paragraphDataProvider.getParagraphs(c.id);
-      if (ps == null) {
-        return null;
+        List<Paragraph> paragraphs = [];
+        Chapter? resultChapter;
+        for (final c in chapters) {
+          try {
+            final ps = await paragraphDataProvider.getParagraphs(c.id);
+            if (ps == null) {
+              return null;
+            }
+            if (c.id == id) {
+              resultChapter = c.copyWith(paragraphs: ps);
+            }
+
+            paragraphs = paragraphs + ps;
+          } catch (e) {
+            // Handle any exceptions when getting paragraphs from server
+            L.error('Error getting paragraphs from server: $e');
+          }
+        }
+        L.info('6');
+        // At first save the paragraphs and then save the chapters to local storage for faster access next time
+        await localParagraphDataProvider.saveParagraphs(paragraphs);
+        await localChapterDataProvider.saveChapters(chapters);
+
+        // Return the chapter with the requested ID from the fetched chapters
+        return resultChapter;
+      } catch (e) {
+        // Handle any exceptions when getting chapters from server
+        L.error('Error getting chapters from server: $e');
       }
-      if (c.id == id) {
-        resultChapter = c.copyWith(paragraphs: ps);
-      }
-
-      paragraphs = paragraphs + ps;
+    } catch (e) {
+      // Handle any exceptions when getting chapter from local storage
+      L.error('Error getting chapter from local storage: $e');
     }
-    L.info('6');
-    // Save the chapters and paragraphs to local storage for faster access next time
-    var futures = [
-      localChapterDataProvider.saveChapters(chapters),
-      localParagraphDataProvider.saveParagraphs(paragraphs),
-    ];
-    await Future.wait(futures);
-
-    // Return the chapter with the requested ID from the fetched chapters
-    return resultChapter;
+    return null;
   }
 }

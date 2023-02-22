@@ -15,37 +15,28 @@ class SubtypeDataProviderDefault implements SubtypeDataProvider {
   final SubGRPCClient _subtypeGRPCClient;
   @override
   Future<List<domain_subtype.Subtype>> getAll(int id) async {
-    // String? m = GrpcClient.check();
-    // if (m != null) {
-    //   throw GrpcSubtypeDataProviderError(m);
-    // }
     try {
-      // Request
       Int64 int64ID = Int64(id);
       GetAllSubtypesRequest req = GetAllSubtypesRequest(iD: int64ID);
       GetAllSubtypesResponse resp = await _subtypeGRPCClient.getAll(req);
-      // Mapping
+
       List<domain_subtype.Subtype> subtypes = resp.subtypes
           .map((e) => domain_subtype.Subtype(id: e.iD.toInt(), name: e.name))
           .toList();
       return subtypes;
     } catch (e) {
-      throw PlatformException(code: "get_all_subtype_error");
+      // Handle the exception here
+      throw Exception('Failed to get all subtypes: $e');
     }
   }
 
   @override
   Future<List<domain_doc.Doc>> getDocs(int id) async {
-    // String? m = GrpcClient.check();
-    // if (m != null) {
-    //   throw GrpcSubtypeDataProviderError(m);
-    // }
     try {
-      // Request
       Int64 int64ID = Int64(id);
       GetDocsRequest req = GetDocsRequest(iD: int64ID);
       GetDocsResponse resp = await _subtypeGRPCClient.getDocs(req);
-      // Mapping
+
       List<domain_doc.Doc> docs = resp.docs
           .map((e) => domain_doc.Doc(
                 name: e.name,
@@ -54,7 +45,8 @@ class SubtypeDataProviderDefault implements SubtypeDataProvider {
           .toList();
       return docs;
     } catch (e) {
-      throw PlatformException(code: "get_docs_error", details: e);
+      print('Error: $e');
+      return [];
     }
   }
 }
