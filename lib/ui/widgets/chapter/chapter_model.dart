@@ -38,6 +38,7 @@ class ChapterViewModel extends ChangeNotifier {
     required this.textEditingController,
   }) {
     pageController.addListener(() {
+      L.info("pageController ${pageController.page}");
       _currentPage = pageController.page!.toInt();
     });
     asyncInit();
@@ -96,6 +97,7 @@ class ChapterViewModel extends ChangeNotifier {
       L.info(
           " link: ${link.chapterID} ${link.paragraphID} ${pageController.initialPage}");
       chaptersTotal = docService.totalChapters();
+      L.info("chaptersTotal: $chaptersTotal");
       await getOne(link.chapterID);
 
       if (link.paragraphID == 0) {
@@ -286,6 +288,7 @@ class ChapterViewModel extends ChangeNotifier {
     if (pageController.page == null) {
       return;
     }
+    L.info("page Num: $pageNum");
     pageController.nextPage(
         duration: const Duration(seconds: 1), curve: Curves.ease);
   }

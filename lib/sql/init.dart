@@ -12,7 +12,8 @@ class InitSQL {
         className TEXT,
         content TEXT,
         chapterID INTEGER,
-        FOREIGN KEY (chapterID) REFERENCES chapter(id)
+        FOREIGN KEY (chapterID) REFERENCES chapter(id),
+        UNIQUE (num, chapterID) ON CONFLICT ABORT
       );
     ''',
     '''

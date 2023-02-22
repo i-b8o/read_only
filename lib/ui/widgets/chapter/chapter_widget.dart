@@ -36,7 +36,7 @@ class ChapterWidget extends StatelessWidget {
           ),
           body: errorMessage == null
               ? PageView.builder(
-                  itemCount: model.chaptersTotal,
+                  itemCount: model.chaptersTotal + 1,
                   controller: model.pageController,
                   onPageChanged: (_) {
                     model.onPageChanged();
