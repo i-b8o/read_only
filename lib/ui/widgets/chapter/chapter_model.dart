@@ -149,10 +149,17 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<bool> onTapUrl(BuildContext context, String url) async {
+    final List<String> parts = url.split("#");
+    final int chapterID = int.tryParse(parts[0]) ?? 0;
+    int? paragraphID;
+    Link link;
+    if (parts.length == 2) {
+      paragraphID = int.tryParse(parts[1]) ?? 0;
+    }
     try {
       Navigator.of(context).pushNamed(
         MainNavigationRouteNames.chapterScreen,
-        arguments: url,
+        arguments: Link(chapterID: chapterID, paragraphID: paragraphID ?? 0),
       );
       return true;
     } catch (e) {
