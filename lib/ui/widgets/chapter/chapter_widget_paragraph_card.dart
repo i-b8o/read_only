@@ -66,6 +66,7 @@ class ParagraphCard extends StatelessWidget {
     final content = paragraph.content;
     final isNFT = paragraph.isNFT;
     final isTable = paragraph.isTable;
+    final onSave = model.onSaveParagraph;
 
     return (isNFT || paragraph.isTable)
         ? buildCard(context, paragraphClass, content, isNFT, isTable)
@@ -97,6 +98,8 @@ class ParagraphCard extends StatelessWidget {
                               actions: [
                                 TextButton(
                                     onPressed: () async {
+                                      await onSave(paragraph.paragraphID,
+                                          controller.text);
                                       Navigator.pop(_);
                                     },
                                     child: const Text('Сохранить')),

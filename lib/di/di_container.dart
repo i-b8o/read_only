@@ -16,6 +16,7 @@ import 'package:read_only/domain/entity/link.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:read_only/domain/service/doc_service.dart';
 import 'package:read_only/domain/service/notes_service.dart';
+import 'package:read_only/domain/service/paragraph_service.dart';
 import 'package:read_only/domain/service/subtype_service.dart';
 import 'package:read_only/domain/service/tts_service.dart';
 import 'package:read_only/domain/service/type_service.dart';
@@ -126,6 +127,8 @@ class _DIContainer {
       localChapterDataProvider: _makeLocalChapterDataProviderDefault(),
       localParagraphDataProvider: _makeLocalParagraphDataProviderDefault());
 
+  ParagraphServiceDefaut get _paragraphService => ParagraphServiceDefaut();
+
   NotesService _makeNotesService() => NotesService(_notesDataProvider());
 
   // ViewModels
@@ -148,6 +151,7 @@ class _DIContainer {
     return ChapterViewModel(
       link,
       docService: _docService,
+      paragraphService: _paragraphService,
       pageController: PageController(initialPage: _initialPage),
       textEditingController:
           TextEditingController(text: _initialPage.toString()),

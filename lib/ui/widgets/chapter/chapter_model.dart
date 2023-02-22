@@ -26,11 +26,16 @@ abstract class ChapterViewModelTtsService {
   Stream<TtsPosition>? positionEvent();
 }
 
+abstract class ChapterViewModelParagraphService {
+  Future<void> saveParagraph(int id, String content);
+}
+
 enum SpeakState { silence, speaking, paused }
 
 class ChapterViewModel extends ChangeNotifier {
   ChapterViewModel(
     this.link, {
+    required this.paragraphService,
     required this.chapterService,
     required this.docService,
     required this.ttsService,
@@ -50,6 +55,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
   final Link link;
 
+  final ChapterViewModelParagraphService paragraphService;
   final ChapterViewModelService chapterService;
   final ChapterViewModelDocService docService;
   final ChapterViewModelTtsService ttsService;
@@ -291,5 +297,9 @@ class ChapterViewModel extends ChangeNotifier {
     L.info("page Num: $pageNum");
     pageController.nextPage(
         duration: const Duration(seconds: 1), curve: Curves.ease);
+  }
+
+  Future<void> onSaveParagraph(int id, String content) async {
+    await paragraphService.saveParagraph(id, content);
   }
 }
