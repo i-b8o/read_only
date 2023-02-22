@@ -9,8 +9,20 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'chapter_widget_app_bar.dart';
 import 'chapter_widget_paragraph_list.dart';
 
-class ChapterWidget extends StatelessWidget {
+class ChapterWidget extends StatefulWidget {
   const ChapterWidget({Key? key}) : super(key: key);
+
+  @override
+  State<ChapterWidget> createState() => _ChapterWidgetState();
+}
+
+class _ChapterWidgetState extends State<ChapterWidget> {
+  @override
+  void dispose() {
+    final model = context.read<ChapterViewModel>();
+    model.pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

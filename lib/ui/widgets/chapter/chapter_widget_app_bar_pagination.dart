@@ -47,8 +47,20 @@ class ChapterWidgetAppBarPagination extends StatelessWidget {
   }
 }
 
-class _TextFormField extends StatelessWidget {
+class _TextFormField extends StatefulWidget {
   const _TextFormField();
+
+  @override
+  State<_TextFormField> createState() => _TextFormFieldState();
+}
+
+class _TextFormFieldState extends State<_TextFormField> {
+  @override
+  void dispose() {
+    final model = context.read<ChapterViewModel>();
+    model.textEditingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
