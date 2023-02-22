@@ -36,10 +36,12 @@ class DocService
   int totalChapters() => _totalChapters;
 
   // A private field to store a map of order numbers to id of chapters
-  late Map<int, int> _orderNumToChapterIdMap;
-
+  late Map<int?, int?> _orderNumToChapterIdMap;
   @override
-  Map<int, int> orderNumToChapterIdMap() => _orderNumToChapterIdMap;
+  int? initPage(int chapterID) => _orderNumToChapterIdMap.keys
+      .firstWhere((element) => element == chapterID, orElse: () => null);
+  // @override
+  // Map<int, int> orderNumToChapterIdMap() => _orderNumToChapterIdMap;
 
   @override
   // when a user selects a document on the DocList screen - save it (Doc) and all chapters (ReadOnlyChapterInfo).
@@ -105,5 +107,11 @@ class DocService
     for (final chapter in chapters) {
       _orderNumToChapterIdMap[chapter.orderNum] = chapter.id;
     }
+  }
+
+  @override
+  int? chapterIdByOrderNum(int orderNum) {
+    // TODO: implement chapterIdByOrderNum
+    return _orderNumToChapterIdMap[orderNum];
   }
 }

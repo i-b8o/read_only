@@ -30,7 +30,6 @@ class RegularTable extends StatelessWidget {
         return null;
       },
       onTapUrl: (href) async {
-        L.info("tappeddddddddddddddddddddddddddddd");
         return false;
       },
     );

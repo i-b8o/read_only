@@ -12,6 +12,7 @@ import 'package:read_only/data_providers/tts_data_provider.dart';
 import 'package:read_only/data_providers/tts_settings_data_provider.dart';
 import 'package:read_only/data_providers/remote_type_data_provider.dart';
 import 'package:read_only/data_providers/remote_subtype_data_provider.dart';
+import 'package:read_only/domain/entity/link.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:read_only/domain/service/doc_service.dart';
 import 'package:read_only/domain/service/notes_service.dart';
@@ -142,16 +143,18 @@ class _DIContainer {
 
   NotesViewModel _makeNotesViewModel() => NotesViewModel(_makeNotesService());
 
-  ChapterViewModel _makeChapterViewModel(String url) {
+  ChapterViewModel _makeChapterViewModel(Link link) {
+    final _initialPage = _docService.initPage(link.chapterID) ?? 0;
     return ChapterViewModel(
-      url,
+      link,
       // chapterCount: _docService.totalChapters,
       // chaptersOrderNums: _docService.orderNumToChapterIdMap,
       // paragraphID: paragraphID
       // id: chapterID,
       docService: _docService,
-      pageController: PageController(),
-      textEditingController: TextEditingController(),
+      pageController: PageController(initialPage: _initialPage),
+      textEditingController:
+          TextEditingController(text: _initialPage.toString()),
       chapterService: _makeChapterService(),
       ttsService: _ttsService,
     );
@@ -200,9 +203,9 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
-  Widget makeChapterScreen(String url) {
+  Widget makeChapterScreen(Link link) {
     return ChangeNotifierProvider(
-      create: (_) => _diContainer._makeChapterViewModel(url),
+      create: (_) => _diContainer._makeChapterViewModel(link),
       lazy: false,
       child: const ChapterWidget(),
     );

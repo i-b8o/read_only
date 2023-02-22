@@ -12,7 +12,7 @@ class ChapterWidgetAppBarPagination extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<ChapterViewModel>();
     final errorMessage = model.errorMessage;
-    final chapterCount = model.chapterCount;
+    final chapterCount = model.chaptersTotal;
     return errorMessage != null
         ? Container()
         : Row(

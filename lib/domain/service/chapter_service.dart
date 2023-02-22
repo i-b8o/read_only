@@ -52,13 +52,11 @@ class ChapterService implements ChapterViewModelService {
       // Try to get the chapter from local storage
       final ch = await localChapterDataProvider.getChapter(id);
       if (ch != null) {
-        L.info('1');
         try {
           // If found, try to get its paragraphs from local storage
           final paragraphs =
               await localParagraphDataProvider.getParagraphs(ch.id);
           if (paragraphs != null && paragraphs.isNotEmpty) {
-            L.info('2');
             // If paragraphs found, return the chapter with paragraphs
             return ch.copyWith(paragraphs: paragraphs);
           }
@@ -67,16 +65,14 @@ class ChapterService implements ChapterViewModelService {
           L.error('Error getting paragraphs from local storage: $e');
         }
       }
-      L.info('3');
+
       try {
         // If chapter or its paragraphs not found in local storage,
         // get the chapter with its neighbors from the remote server
         final chapters = await chapterDataProvider.getChapterWithNeighbors(id);
         if (chapters == null || chapters.isEmpty) {
-          L.info('4');
           return null; // Return null if not found on server
         }
-        L.info('5');
 
         List<Paragraph> paragraphs = [];
         Chapter? resultChapter;
@@ -96,7 +92,7 @@ class ChapterService implements ChapterViewModelService {
             L.error('Error getting paragraphs from server: $e');
           }
         }
-        L.info('6');
+
         // At first save the paragraphs and then save the chapters to local storage for faster access next time
         await localParagraphDataProvider.saveParagraphs(paragraphs);
         await localChapterDataProvider.saveChapters(chapters);

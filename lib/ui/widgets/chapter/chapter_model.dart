@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/chapter.dart';
+import 'package:read_only/domain/entity/link.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
 import 'package:read_only/domain/entity/tts_position.dart';
 
@@ -12,7 +13,8 @@ abstract class ChapterViewModelService {
 
 abstract class ChapterViewModelDocService {
   int totalChapters();
-  Map<int, int> orderNumToChapterIdMap();
+  int? initPage(int chapterID);
+  int? chapterIdByOrderNum(int orderNum);
 }
 
 abstract class ChapterViewModelTtsService {
@@ -27,45 +29,8 @@ abstract class ChapterViewModelTtsService {
 enum SpeakState { silence, speaking, paused }
 
 class ChapterViewModel extends ChangeNotifier {
-  final ChapterViewModelService chapterService;
-  final ChapterViewModelTtsService ttsService;
-  final ChapterViewModelDocService docService;
-  final PageController pageController;
-  final TextEditingController textEditingController;
-  final String url;
-
-  late final Map<int, int> chapterIdOrderNumMap;
-
-  late final int chapterCount;
-  int paragraphID = 0;
-  late final int chapterID;
-  List<Paragraph> _paragraphs = [];
-  List<Paragraph> get paragraphs => _paragraphs;
-  SpeakState _speakState = SpeakState.silence;
-  SpeakState get speakState => _speakState;
-  void setSpeakState(SpeakState value) {
-    if (_speakState == SpeakState.paused && value == SpeakState.silence) {
-      return;
-    }
-    _speakState = value;
-    notifyListeners();
-  }
-
-  int? activeParagraphIndex;
-  void setActiveParagraphIndex(int index) => activeParagraphIndex = index;
-
-  int _paragraphOrderNum = 0;
-  int get paragraphOrderNum => _paragraphOrderNum;
-  Chapter? _chapter;
-  Chapter? get chapter => _chapter;
-  int _currentPage = 0;
-  int get currentPage => _currentPage;
-
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
-
   ChapterViewModel(
-    this.url, {
+    this.link, {
     required this.chapterService,
     required this.docService,
     required this.ttsService,
@@ -82,98 +47,169 @@ class ChapterViewModel extends ChangeNotifier {
       });
     }
   }
+  final Link link;
 
-  Future<void> asyncInit() async {
-    // prepairing IDs
-    if (url.contains("#")) {
-      chapterID = int.tryParse(url.split("#")[0]) ?? 0;
-      paragraphID = int.tryParse(url.split("#")[1]) ?? 0;
-    } else {
-      chapterID = int.tryParse(url) ?? 0;
-      paragraphID = 0;
-    }
-    // it is necessary to specify init page number for the PageController
-    chapterIdOrderNumMap = docService.orderNumToChapterIdMap();
-    int initPage = 0;
-    // if requested a current doc
-    if (chapterIdOrderNumMap.containsValue(chapterID)) {
-      initPage = chapterIdOrderNumMap.keys
-          .firstWhere((key) => chapterIdOrderNumMap[key] == chapterID);
-    }
+  final ChapterViewModelService chapterService;
+  final ChapterViewModelDocService docService;
+  final ChapterViewModelTtsService ttsService;
+  final PageController pageController;
+  final TextEditingController textEditingController;
 
-    if (pageController.hasClients) pageController.jumpToPage(initPage);
+  int chaptersTotal = 0;
 
-    chapterCount = docService.totalChapters();
-    L.info('chapter ID: $chapterID');
-    await getOne(chapterID);
-    // if (paragraphID == 0) {
-    //   print("paragraphID == 0");
-    //   return;
-    // }
-    if (chapter == null || chapter!.paragraphs == null) {
-      L.info("chapter null ${chapter == null}");
+  List<Paragraph> _paragraphs = [];
+  List<Paragraph> get paragraphs => _paragraphs;
+
+  SpeakState _speakState = SpeakState.silence;
+  SpeakState get speakState => _speakState;
+  void setSpeakState(SpeakState value) {
+    if (_speakState == SpeakState.paused && value == SpeakState.silence) {
       return;
     }
+    _speakState = value;
+    notifyListeners();
+  }
 
-    L.error("${_paragraphs == null} length: ${_paragraphs.length}");
-    _paragraphs = chapter!.paragraphs!;
-    _paragraphOrderNum = _paragraphs
-        .where((element) => element.paragraphID.toInt() == paragraphID)
-        .first
-        .paragraphOrderNum;
+  int? activeParagraphIndex;
+  void setActiveParagraphIndex(int index) => activeParagraphIndex = index;
+
+  int _paragraphOrderNum = 0;
+  int get paragraphOrderNum => _paragraphOrderNum;
+
+  Chapter? _chapter;
+  void setChapter(Chapter? chapter) {
+    _chapter = chapter;
+    _errorMessage =
+        chapter == null ? "This document is currently unavailable" : null;
+    notifyListeners();
+  }
+
+  Chapter? get chapter => _chapter;
+  int _currentPage = 0;
+  int get currentPage => _currentPage;
+
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+
+  Future<void> asyncInit() async {
+    try {
+      L.info(
+          " link: ${link.chapterID} ${link.paragraphID} ${pageController.initialPage}");
+      // it is necessary to specify init page number for the PageController
+      // if requested a current doc
+      // int initPage = docService.initPage(chapterID) ?? 0;
+      // L.info("initPage: $initPage");
+      // if (pageController.hasClients) {
+      //   L.info("has ");
+      //   pageController.jumpToPage(initPage);
+      //   L.info("initPage: $initPage ");
+      // } else {
+      //   L.info("has not");
+      // }
+
+      chaptersTotal = docService.totalChapters();
+      await getOne(link.chapterID);
+      _paragraphs = chapter!.paragraphs!;
+      if (link.paragraphID == 0) {
+        return;
+      }
+      if (chapter == null || chapter!.paragraphs == null) {
+        return;
+      }
+
+      _paragraphOrderNum = _paragraphs
+          .where((element) => element.paragraphID.toInt() == link.paragraphID)
+          .first
+          .paragraphOrderNum;
+    } catch (e) {
+      L.error("Error in asyncInit: $e");
+    }
   }
 
   Future<void> getOne(int id) async {
-    _chapter = await chapterService.getOne(id);
-    _errorMessage = chapter == null ? "Этот документ пока недоступен" : null;
-    notifyListeners();
+    try {
+      final chapter = await chapterService.getOne(id);
+      setChapter(chapter);
+    } catch (e) {
+      L.error("Error in getOne: $e");
+    }
   }
 
-  void onPageChanged() {
-    final int index = pageController.page!.toInt();
-    final int id = chapterIdOrderNumMap[index + 1] ?? chapterID;
-    getOne(id);
-
-    textEditingController.text = '${index + 1}';
-    notifyListeners();
+  Future<void> onPageChanged() async {
+    try {
+      final index = pageController.page!.toInt();
+      L.error("Page changed $index");
+      final id = docService.chapterIdByOrderNum(index + 1) ?? link.chapterID;
+      await getOne(id);
+      if (chapter != null) {
+        textEditingController.text = '${index + 1}';
+        notifyListeners();
+      } else {
+        throw Exception('Failed to retrieve chapter');
+      }
+    } catch (e) {
+      L.error('Error in onPageChanged: $e');
+      // Handle the error appropriately, e.g. show a toast or dialog to the user
+    }
   }
 
   Future<bool> onTapUrl(BuildContext context, String url) async {
-    Navigator.of(context).pushNamed(
-      MainNavigationRouteNames.chapterScreen,
-      arguments: url,
-    );
-    return true;
+    try {
+      Navigator.of(context).pushNamed(
+        MainNavigationRouteNames.chapterScreen,
+        arguments: url,
+      );
+      return true;
+    } catch (e) {
+      L.error('Error occurred while navigating to chapter screen: $e');
+      return false;
+    }
   }
 
   Future<void> startSpeakParagraph() async {
-    if (chapter == null ||
-        _paragraphs.isEmpty ||
-        activeParagraphIndex == null) {
-      return;
-    }
+    try {
+      if (chapter == null ||
+          _paragraphs.isEmpty ||
+          activeParagraphIndex == null) {
+        return;
+      }
 
-    setSpeakState(SpeakState.speaking);
-    await ttsService
-        .speakOne(chapter!.paragraphs![activeParagraphIndex!].content);
-    setSpeakState(SpeakState.silence);
+      setSpeakState(SpeakState.speaking);
+      await ttsService
+          .speakOne(chapter!.paragraphs![activeParagraphIndex!].content);
+      setSpeakState(SpeakState.silence);
+    } catch (e) {
+      L.error('Error occurred while speaking: $e');
+    }
   }
 
   Future<void> startSpeakChapter() async {
-    if (chapter == null || _paragraphs.isEmpty) {
-      return;
-    }
+    try {
+      if (chapter == null || _paragraphs.isEmpty) {
+        return;
+      }
 
-    final texts =
-        chapter!.paragraphs!.map((paragraph) => paragraph.content).toList();
-    setSpeakState(SpeakState.speaking);
-    await ttsService.speakList(texts);
-    setSpeakState(SpeakState.silence);
+      final texts =
+          chapter!.paragraphs!.map((paragraph) => paragraph.content).toList();
+      setSpeakState(SpeakState.speaking);
+      await ttsService.speakList(texts);
+      setSpeakState(SpeakState.silence);
+    } catch (e) {
+      L.error('An error occurred while speaking the chapter: $e');
+    }
   }
 
   Future<void> stopSpeak() async {
-    await ttsService.stopSpeak();
-    setSpeakState(SpeakState.silence);
+    try {
+      await ttsService.stopSpeak();
+    } catch (e) {
+      L.error('An error occurred while stop speaking the chapter: $e');
+    }
+    try {
+      setSpeakState(SpeakState.silence);
+    } catch (e) {
+      L.error('An error occurred while stop speaking the chapter: $e');
+    }
   }
 
   Future<void> pauseSpeak() async {
@@ -197,10 +233,10 @@ class ChapterViewModel extends ChangeNotifier {
   void onAppBarTextFormFieldEditingComplete(BuildContext context) {
     final text = textEditingController.text;
     int pageNum = int.tryParse(text) ?? 1;
-    if (pageNum > chapterCount) {
+    if (pageNum > chaptersTotal) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-            '$pageNum-ой страницы не существует, страниц в документе всего $chapterCount!'),
+            '$pageNum-ой страницы не существует, страниц в документе всего $chaptersTotal!'),
       ));
       notifyListeners();
       return;
@@ -220,6 +256,7 @@ class ChapterViewModel extends ChangeNotifier {
 
   void onPrevPressed(BuildContext context) async {
     int? pageNum = int.tryParse(textEditingController.text);
+    L.info("pressed");
     if (pageNum == 1) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Это первая страница!'),
@@ -238,7 +275,7 @@ class ChapterViewModel extends ChangeNotifier {
     if (pageNum == null) {
       return;
     }
-    if (pageNum == chapterCount) {
+    if (pageNum == chaptersTotal) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Это последняя страница!'),
       ));

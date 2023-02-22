@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:read_only/domain/entity/link.dart';
 
 import '../widgets/app/app.dart';
 import 'main_navigation_route_names.dart';
@@ -9,7 +10,7 @@ abstract class ScreenFactory {
   Widget makeSubtypeListScreen(int id);
   Widget makeDocListScreen(int id);
   Widget makeChapterListScreen(int id);
-  Widget makeChapterScreen(String url);
+  Widget makeChapterScreen(Link url);
 }
 
 class MainNavigation implements AppNavigation {
@@ -47,10 +48,10 @@ class MainNavigation implements AppNavigation {
         );
       case MainNavigationRouteNames.chapterScreen:
         final arguments = settings.arguments;
-        final url = arguments is String ? arguments : "0";
+        final link = arguments is Link ? arguments : Link(chapterID: 0);
 
         return MaterialPageRoute(
-          builder: (_) => screenFactory.makeChapterScreen(url),
+          builder: (_) => screenFactory.makeChapterScreen(link),
         );
 
       case MainNavigationRouteNames.notesScreen:
