@@ -55,7 +55,7 @@ class DocService
       ];
       final results = await Future.wait(futures);
       final doc = results[0] as Doc?;
-      final chapters = results[0] as List<Chapter>?;
+      final chapters = results[1] as List<Chapter>?;
 
       if (doc != null && chapters != null) {
         assign(doc.chapters!);
@@ -104,16 +104,19 @@ class DocService
   // }
 
   void assign(List<Chapter> chapters) {
-    _totalChapters = chapters.length;
-    _orderNumToChapterIdMap = {};
-    for (final chapter in chapters) {
-      _orderNumToChapterIdMap[chapter.orderNum] = chapter.id;
+    try {
+      _totalChapters = chapters.length;
+      _orderNumToChapterIdMap = {};
+      for (final chapter in chapters) {
+        _orderNumToChapterIdMap[chapter.orderNum] = chapter.id;
+      }
+    } catch (e) {
+      L.error('Error occurred while assigning chapters: $e');
     }
   }
 
   @override
   int? chapterIdByOrderNum(int orderNum) {
-    // TODO: implement chapterIdByOrderNum
     return _orderNumToChapterIdMap[orderNum];
   }
 }

@@ -6,7 +6,7 @@ import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
 abstract class ChapterDataProvider {
   const ChapterDataProvider();
-  Future<List<Chapter>?> getChapterWithNeighbors(int id);
+  Future<Chapter?> getOne(int chapterId);
 }
 
 abstract class ParagraphDataProvider {
@@ -21,7 +21,7 @@ abstract class ParagraphServiceLocalChapterDataProvider {
 
 abstract class ChapterServiceLocalChapterDataProvider {
   Future<Chapter?> getChapter(int id);
-  Future<void> saveChapters(List<Chapter> chapters);
+  Future<void> saveChapter(Chapter chapter);
 }
 
 abstract class TtsSettingsDataProvider {
@@ -70,37 +70,18 @@ class ChapterService implements ChapterViewModelService {
       try {
         // If chapter or its paragraphs not found in local storage,
         // get the chapter with its neighbors from the remote server
-        final chapters = await chapterDataProvider.getChapterWithNeighbors(id);
-        if (chapters == null || chapters.isEmpty) {
+        final chapter = await chapterDataProvider.getOne(id);
+        if (chapter == null || chapter.paragraphs == null) {
           return null; // Return null if not found on server
         }
 
-        List<Paragraph> paragraphs = [];
-        Chapter? resultChapter;
-        for (final c in chapters) {
-          try {
-            final ps = await paragraphDataProvider.getParagraphs(c.id);
-            if (ps == null) {
-              return null;
-            }
-            if (c.id == id) {
-              resultChapter = c.copyWith(paragraphs: ps);
-            }
-
-            paragraphs = paragraphs + ps;
-          } catch (e) {
-            // Handle any exceptions when getting paragraphs from server
-            L.error('Error getting paragraphs from server: $e');
-          }
-        }
-
         // At first save the paragraphs and then save the chapters to local storage for faster access next time
-        await localParagraphDataProvider.saveParagraphs(paragraphs);
-        await localChapterDataProvider.saveChapters(chapters);
+        await localParagraphDataProvider.saveParagraphs(chapter.paragraphs!);
+        await localChapterDataProvider.saveChapter(chapter);
 
         L.info("The chapter was returned from the remote server");
         // Return the chapter with the requested ID from the fetched chapters
-        return resultChapter;
+        return chapter;
       } catch (e) {
         // Handle any exceptions when getting chapters from server
         L.error('Error getting chapters from server: $e');

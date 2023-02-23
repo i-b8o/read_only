@@ -5,7 +5,7 @@ class Paragraph {
   final bool isTable;
   final bool isNFT;
   final String paragraphclass;
-  final String content;
+  String content;
   final int chapterID;
   Paragraph({
     required this.chapterID,

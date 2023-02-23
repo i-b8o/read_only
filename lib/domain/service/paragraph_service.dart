@@ -1,18 +1,19 @@
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:sqflite_client/sqflite_client.dart';
 
 class ParagraphServiceDefaut implements ChapterViewModelParagraphService {
   @override
-  Future<void> saveParagraph(int id, String content) async {
+  Future<void> saveParagraph(int paragraphID, chapterID, String content) async {
     try {
-      await SqfliteClient.update(
+      final i = await SqfliteClient.update(
         table: 'paragraph',
         data: {'content': content},
-        where: 'id = ?',
-        whereArgs: [id],
+        where: 'paragraphID = ? AND chapterID = ?',
+        whereArgs: [paragraphID, chapterID],
       );
     } catch (e) {
-      throw DatabaseException("Failed to update paragraph: $e");
+      L.error("Failed to update paragraph: $e");
     }
   }
 }

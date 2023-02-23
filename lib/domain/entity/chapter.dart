@@ -16,6 +16,15 @@ class Chapter {
     required this.docID,
     this.paragraphs,
   });
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'orderNum': orderNum,
+      'num': num,
+      'docID': docID,
+    };
+  }
 
   Chapter copyWith({
     int? id,

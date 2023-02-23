@@ -9,25 +9,16 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'chapter_widget_app_bar.dart';
 import 'chapter_widget_paragraph_list.dart';
 
-class ChapterWidget extends StatefulWidget {
-  const ChapterWidget({Key? key}) : super(key: key);
-
-  @override
-  State<ChapterWidget> createState() => _ChapterWidgetState();
-}
-
-class _ChapterWidgetState extends State<ChapterWidget> {
-  @override
-  void dispose() {
-    final model = context.read<ChapterViewModel>();
-    model.pageController.dispose();
-    super.dispose();
-  }
+class ChapterWidget extends StatelessWidget {
+  const ChapterWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<ChapterViewModel>();
-    final errorMessage = model.errorMessage;
+    final _model = context.watch<ChapterViewModel>();
+    final errorMessage = _model.errorMessage;
+    final itemCount = _model.chaptersTotal + 1;
+    final controller = _model.pageController;
+    final onPageChanged = _model.onPageChanged;
     return SafeArea(
       child: Scaffold(
           floatingActionButtonLocation:
@@ -48,10 +39,10 @@ class _ChapterWidgetState extends State<ChapterWidget> {
           ),
           body: errorMessage == null
               ? PageView.builder(
-                  itemCount: model.chaptersTotal + 1,
-                  controller: model.pageController,
+                  itemCount: itemCount,
+                  controller: controller,
                   onPageChanged: (_) {
-                    model.onPageChanged();
+                    onPageChanged();
                   },
                   itemBuilder: (BuildContext context, int index) {
                     return ParagraphList(

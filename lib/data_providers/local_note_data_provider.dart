@@ -4,17 +4,9 @@ import 'package:read_only/domain/service/notes_service.dart';
 import 'package:sqflite_client/sqflite_client.dart';
 
 class LocalNotesDataProviderDefault
-    with LocalNotesDataProviderDB
     implements NotesServiceLocalNotesDataProvider {
   @override
   Future<List<Note>?> getAll() async {
-    return await getNotes();
-  }
-}
-
-// handling data from a database
-mixin LocalNotesDataProviderDB {
-  Future<List<Note>?> getNotes() async {
     List<Note> notes = [];
     try {
       final noteParagraphs = await SqfliteClient.select(
@@ -30,11 +22,13 @@ mixin LocalNotesDataProviderDB {
             where: 'paragraphID = ?',
             whereArgs: [paragraphID]);
         if (paragraph != null && paragraph.isNotEmpty) {
+          L.info("1");
           final text = paragraph.first['content'] as String;
           final chapterID = paragraph.first['chapterID'];
           final chapter = await SqfliteClient.select(
               table: 'chapter', where: 'id = ?', whereArgs: [chapterID]);
           if (chapter != null && chapter.isNotEmpty) {
+            L.info("2");
             final docID = chapter.first['docID'];
             final doc = await SqfliteClient.select(
                 table: 'doc', where: 'id = ?', whereArgs: [docID]);
@@ -42,16 +36,44 @@ mixin LocalNotesDataProviderDB {
               final name = doc.first['name'] as String;
               final color = doc.first['color'] as int;
               final url = '$chapterID#$paragraphID';
-              notes.add(
-                  Note(docName: name, docColor: color, text: text, url: url));
+              L.info("$name -> $color");
+              notes.add(Note(
+                  docName: name,
+                  docColor: color,
+                  text: text,
+                  chapterID: chapterID,
+                  paragraphID: paragraphID));
             }
           }
         }
       }
-      return null;
+      return notes;
     } catch (e) {
-      L.warning('An error occured while fetching notes: $e');
+      rethrow;
     }
-    return notes;
+  }
+
+  @override
+  Future<void> saveNote(int paragraphID, chapterID) async {
+    try {
+      await SqfliteClient.insertOrReplace(
+          table: 'note',
+          data: {'paragraphID': paragraphID, 'chapterID': chapterID});
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> dropNote(int paragraphID, chapterID) async {
+    L.info("dropNote $paragraphID $chapterID");
+    try {
+      final i = await SqfliteClient.delete('note',
+          where: 'paragraphID = ? AND chapterID = ?',
+          whereArgs: [paragraphID, chapterID]);
+      L.info("i = $i");
+    } catch (e) {
+      rethrow;
+    }
   }
 }

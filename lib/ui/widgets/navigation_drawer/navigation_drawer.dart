@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_logger/my_logger.dart';
-import 'package:read_only/sql/init.dart';
 import 'package:sqflite_client/sqflite_client.dart';
 
 // TODO highlighting
@@ -58,10 +57,11 @@ class NotesMenuItem extends StatelessWidget {
           '/notes_screen',
         );
         SqfliteClient.printAllRecordsFromTable(tableName: "doc", tag: "doc");
-        SqfliteClient.printAllRecordsFromTable(
-            tableName: "chapter", tag: "chapter");
-        SqfliteClient.printRecordCount(
-            tableName: "paragraph", tag: "paragraph");
+        // SqfliteClient.printAllRecordsFromTable(
+        //     tableName: "chapter", tag: "chapter");
+        // SqfliteClient.printRecordCount(
+        //     tableName: "paragraph", tag: "paragraph");
+        SqfliteClient.printAllRecordsFromTable(tableName: "note", tag: "note");
       },
       trailing: const SizedBox(),
       leadingIconData: Icons.note_alt_outlined,

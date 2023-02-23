@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/doc.dart';
 
@@ -11,7 +14,16 @@ class LocalDocDataProviderDefault
 
   @override
   Future<void> saveDoc(Doc doc, int id) async {
-    final data = [id, doc.name, doc.color];
+    try {
+      final currentTime = DateTime.now().toString();
+
+      final data = doc.toMap();
+      data['updated_at'] = currentTime;
+      data['color'] = generateRandomColor();
+      await SqfliteClient.insertOrReplace(table: 'doc', data: data);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
@@ -20,8 +32,7 @@ class LocalDocDataProviderDefault
       await updateDocLastAccess(id);
       return await getDocById(id);
     } catch (e) {
-      print('Error getting document: $e');
-      return null;
+      rethrow;
     }
   }
 }
@@ -37,7 +48,7 @@ mixin LocalDocDataProviderDB {
         whereArgs: [id],
       );
     } catch (e) {
-      print('Error updating document last access: $e');
+      rethrow;
     }
   }
 
@@ -64,8 +75,7 @@ mixin LocalDocDataProviderDB {
             name: maps.first['name'],
           );
         } catch (e) {
-          L.warning('Failed to create Doc object: $e');
-          return null;
+          rethrow;
         }
       }
 
@@ -74,5 +84,15 @@ mixin LocalDocDataProviderDB {
       L.warning('Unhandled error: $e');
       return null;
     }
+  }
+
+  int generateRandomColor() {
+    final random = Random();
+    return Color.fromARGB(
+      255,
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+    ).value;
   }
 }

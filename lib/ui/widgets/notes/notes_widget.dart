@@ -12,6 +12,10 @@ class NotesWidget extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
     final model = context.watch<NotesViewModel>();
     final notes = model.notes;
+    final itemCount = notes == null ? 0 : notes!.length;
+    final onTap = model.onTap;
+    final onDrop = model.onDrop;
+
     return Scaffold(
         appBar: PreferredSize(
           preferredSize:
@@ -23,11 +27,18 @@ class NotesWidget extends StatelessWidget {
                 child: Text("У Вас пока нет заметок"),
               )
             : ListView.builder(
-                itemCount: 0,
+                itemCount: itemCount,
                 itemBuilder: (context, index) {
+                  final note = notes[index];
+                  final chapterID = note.chapterID;
+                  final paragraphID = note.paragraphID;
+                  final color = note.docColor;
+                  final text = note.text;
+                  final docName = note.docName;
                   return GestureDetector(
                     onTap: () async {
                       // Navigator.popAndPushNamed(context, '/chapter',);
+                      onTap(context, chapterID, paragraphID);
                     },
                     child: Card(
                       elevation: 0,
@@ -51,7 +62,7 @@ class NotesWidget extends StatelessWidget {
                                       children: [
                                         Icon(
                                           Icons.bookmark,
-                                          // color: _bookMark.link.color,
+                                          color: Color(color),
                                           size: MediaQuery.of(context)
                                                   .size
                                                   .width *
@@ -66,8 +77,7 @@ class NotesWidget extends StatelessWidget {
                                                   .width *
                                               0.65,
                                           child: Text(
-                                            'Any text',
-                                            // '${_bookMark.regulationAbbriviation}. ${_bookMark.chapterName}',
+                                            docName,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                                 fontSize: width * 0.045,
@@ -91,7 +101,7 @@ class NotesWidget extends StatelessWidget {
                                         SizedBox(
                                           width: width * 0.65,
                                           child: Text(
-                                            "Any text",
+                                            text,
                                             // _bookMark.link.text,
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 2,
@@ -109,7 +119,8 @@ class NotesWidget extends StatelessWidget {
                                   ],
                                 ),
                                 GestureDetector(
-                                  onTap: () async => null,
+                                  onTap: () async =>
+                                      onDrop(paragraphID, chapterID),
                                   child: Icon(
                                     Icons.close,
                                     color: Theme.of(context)

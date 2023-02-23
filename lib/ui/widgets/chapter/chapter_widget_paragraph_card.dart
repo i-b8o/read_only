@@ -67,6 +67,8 @@ class ParagraphCard extends StatelessWidget {
     final isNFT = paragraph.isNFT;
     final isTable = paragraph.isTable;
     final onSave = model.onSaveParagraph;
+    final setActiveParagraph = model.setActiveParagraphIndex;
+    final saveNote = model.onSaveNote;
 
     return (isNFT || paragraph.isTable)
         ? buildCard(context, paragraphClass, content, isNFT, isTable)
@@ -76,7 +78,7 @@ class ParagraphCard extends StatelessWidget {
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 title: const Text("Редактировать"),
                 onPressed: () async {
-                  model.setActiveParagraphIndex(index);
+                  setActiveParagraph(index);
                   TextEditingController controller = TextEditingController();
                   controller.text = parseHtmlString(content);
                   showDialog(
@@ -98,8 +100,9 @@ class ParagraphCard extends StatelessWidget {
                               actions: [
                                 TextButton(
                                     onPressed: () async {
+                                      paragraph.content = controller.text;
                                       await onSave(paragraph.paragraphID,
-                                          controller.text);
+                                          paragraph.chapterID, controller.text);
                                       Navigator.pop(_);
                                     },
                                     child: const Text('Сохранить')),
@@ -132,8 +135,7 @@ class ParagraphCard extends StatelessWidget {
                   title: const Text("Прослушать"),
                   onPressed: () async {
                     BuildContext parentContext = context;
-
-                    model.setActiveParagraphIndex(index);
+                    setActiveParagraph(index);
                     showModalBottomSheet(
                         isDismissible: false,
                         backgroundColor: Colors.transparent,
@@ -153,7 +155,8 @@ class ParagraphCard extends StatelessWidget {
                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   title: const Text("Добавить в заметки"),
                   onPressed: () {
-                    model.setActiveParagraphIndex(index);
+                    setActiveParagraph(index);
+                    saveNote();
                   },
                   trailingIcon: Icon(
                     Icons.note_alt_outlined,

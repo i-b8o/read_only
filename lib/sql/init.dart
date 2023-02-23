@@ -39,6 +39,7 @@ class InitSQL {
     '''
       CREATE TABLE note (
         id INTEGER PRIMARY KEY,
+        chapterID INTEGER,
         paragraphID INTEGER
       );
     ''',

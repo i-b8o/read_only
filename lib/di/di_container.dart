@@ -56,6 +56,10 @@ class _DIContainer {
   ScreenFactory _makeScreenFactory() => ScreenFactoryDefault(this);
   AppNavigation _makeAppNavigation() => MainNavigation(_makeScreenFactory());
 
+  // Controllers
+  PageController? _chapterWidgetPageController;
+  TextEditingController? _chapterWidgetTextEditingController;
+
   // channels for communicating with platform
   static const _ttsMethodChannel = MethodChannel("com.b8o.read_only/tts");
   static const _ttsPositionChannel = EventChannel("com.b8o.read_only/tts_pos");
@@ -82,6 +86,9 @@ class _DIContainer {
 
   LocalParagraphDataProviderDefault _makeLocalParagraphDataProviderDefault() =>
       LocalParagraphDataProviderDefault();
+
+  LocalNotesDataProviderDefault _makeLocalNotesDataProviderDefault() =>
+      LocalNotesDataProviderDefault();
 
   LocalNotesDataProviderDefault _notesDataProvider() =>
       LocalNotesDataProviderDefault();
@@ -148,15 +155,25 @@ class _DIContainer {
 
   ChapterViewModel _makeChapterViewModel(Link link) {
     final _initialPage = _docService.initPage(link.chapterID) ?? 0;
+    if (_chapterWidgetPageController != null) {
+      _chapterWidgetPageController!.dispose();
+    }
+    if (_chapterWidgetTextEditingController != null) {
+      _chapterWidgetTextEditingController!.dispose();
+    }
+
+    _chapterWidgetPageController = PageController(initialPage: _initialPage);
+    _chapterWidgetTextEditingController =
+        TextEditingController(text: _initialPage.toString());
     return ChapterViewModel(
       link,
       docService: _docService,
       paragraphService: _paragraphService,
-      pageController: PageController(initialPage: _initialPage),
-      textEditingController:
-          TextEditingController(text: _initialPage.toString()),
+      pageController: _chapterWidgetPageController!,
+      textEditingController: _chapterWidgetTextEditingController!,
       chapterService: _makeChapterService(),
       ttsService: _ttsService,
+      noteService: _makeNotesService(),
     );
   }
 }

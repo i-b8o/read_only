@@ -199,12 +199,6 @@ class ChapterGRPCClient extends $grpc.Client {
           ($0.GetOneChapterRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) =>
               $0.GetOneChapterResponse.fromBuffer(value));
-  static final _$getWithNeighbors = $grpc.ClientMethod<
-          $0.GetWithNeighborsRequest, $0.GetWithNeighborsResponse>(
-      '/reader.v1.ChapterGRPC/GetWithNeighbors',
-      ($0.GetWithNeighborsRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) =>
-          $0.GetWithNeighborsResponse.fromBuffer(value));
   static final _$getAll = $grpc.ClientMethod<$0.GetAllChaptersByDocIdRequest,
           $0.GetAllChaptersByDocIdResponse>(
       '/reader.v1.ChapterGRPC/GetAll',
@@ -221,12 +215,6 @@ class ChapterGRPCClient extends $grpc.Client {
       $0.GetOneChapterRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$getOne, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.GetWithNeighborsResponse> getWithNeighbors(
-      $0.GetWithNeighborsRequest request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$getWithNeighbors, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.GetAllChaptersByDocIdResponse> getAll(
@@ -249,15 +237,6 @@ abstract class ChapterGRPCServiceBase extends $grpc.Service {
             ($core.List<$core.int> value) =>
                 $0.GetOneChapterRequest.fromBuffer(value),
             ($0.GetOneChapterResponse value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.GetWithNeighborsRequest,
-            $0.GetWithNeighborsResponse>(
-        'GetWithNeighbors',
-        getWithNeighbors_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) =>
-            $0.GetWithNeighborsRequest.fromBuffer(value),
-        ($0.GetWithNeighborsResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.GetAllChaptersByDocIdRequest,
             $0.GetAllChaptersByDocIdResponse>(
         'GetAll',
@@ -274,12 +253,6 @@ abstract class ChapterGRPCServiceBase extends $grpc.Service {
     return getOne(call, await request);
   }
 
-  $async.Future<$0.GetWithNeighborsResponse> getWithNeighbors_Pre(
-      $grpc.ServiceCall call,
-      $async.Future<$0.GetWithNeighborsRequest> request) async {
-    return getWithNeighbors(call, await request);
-  }
-
   $async.Future<$0.GetAllChaptersByDocIdResponse> getAll_Pre(
       $grpc.ServiceCall call,
       $async.Future<$0.GetAllChaptersByDocIdRequest> request) async {
@@ -288,8 +261,6 @@ abstract class ChapterGRPCServiceBase extends $grpc.Service {
 
   $async.Future<$0.GetOneChapterResponse> getOne(
       $grpc.ServiceCall call, $0.GetOneChapterRequest request);
-  $async.Future<$0.GetWithNeighborsResponse> getWithNeighbors(
-      $grpc.ServiceCall call, $0.GetWithNeighborsRequest request);
   $async.Future<$0.GetAllChaptersByDocIdResponse> getAll(
       $grpc.ServiceCall call, $0.GetAllChaptersByDocIdRequest request);
 }

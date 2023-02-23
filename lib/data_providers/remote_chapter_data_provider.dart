@@ -2,6 +2,7 @@ import 'package:fixnum/fixnum.dart';
 
 import 'package:grpc_client/grpc_client.dart';
 import 'package:read_only/domain/entity/chapter.dart' as domain_chapter;
+import 'package:read_only/domain/entity/paragraph.dart' as domain_paragraph;
 
 import 'package:read_only/domain/service/chapter_service.dart';
 
@@ -14,24 +15,29 @@ class ChapterDataProviderDefault implements ChapterDataProvider {
   final ChapterGRPCClient _chapterGRPCClient;
 
   @override
-  Future<List<domain_chapter.Chapter>?> getChapterWithNeighbors(
-      int chapterId) async {
+  Future<domain_chapter.Chapter?> getOne(int chapterId) async {
     try {
       final int64ID = Int64(chapterId);
-      final request = GetWithNeighborsRequest(iD: int64ID);
-      final response = await _chapterGRPCClient.getWithNeighbors(request);
+      final request = GetOneChapterRequest(iD: int64ID);
+      final response = await _chapterGRPCClient.getOne(request);
 
-      List<domain_chapter.Chapter> chapters = [];
-      for (final c in response.chapters) {
-        chapters.add(domain_chapter.Chapter(
-            id: c.iD.toInt(),
-            docID: c.docID.toInt(),
-            name: c.name,
-            num: c.num,
-            orderNum: c.orderNum));
-      }
-
-      return chapters;
+      return domain_chapter.Chapter(
+          id: response.iD.toInt(),
+          docID: response.docID.toInt(),
+          name: response.name,
+          num: response.num,
+          orderNum: response.orderNum,
+          paragraphs: response.paragraphs
+              .map((e) => domain_paragraph.Paragraph(
+                  paragraphID: e.iD.toInt(),
+                  paragraphOrderNum: e.num,
+                  chapterID: chapterId,
+                  hasLinks: e.hasLinks,
+                  isNFT: e.isNFT,
+                  isTable: e.isTable,
+                  paragraphclass: e.class_6,
+                  content: e.content))
+              .toList());
     } catch (e) {
       return null;
     }

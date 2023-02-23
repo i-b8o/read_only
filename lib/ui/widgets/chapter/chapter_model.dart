@@ -27,7 +27,11 @@ abstract class ChapterViewModelTtsService {
 }
 
 abstract class ChapterViewModelParagraphService {
-  Future<void> saveParagraph(int id, String content);
+  Future<void> saveParagraph(int paragraphID, chapterID, String content);
+}
+
+abstract class ChapterViewModelNoteService {
+  Future<void> saveNote(int paragraphID, chapterID);
 }
 
 enum SpeakState { silence, speaking, paused }
@@ -39,11 +43,11 @@ class ChapterViewModel extends ChangeNotifier {
     required this.chapterService,
     required this.docService,
     required this.ttsService,
+    required this.noteService,
     required this.pageController,
     required this.textEditingController,
   }) {
     pageController.addListener(() {
-      L.info("pageController ${pageController.page}");
       _currentPage = pageController.page!.toInt();
     });
     asyncInit();
@@ -59,6 +63,7 @@ class ChapterViewModel extends ChangeNotifier {
   final ChapterViewModelService chapterService;
   final ChapterViewModelDocService docService;
   final ChapterViewModelTtsService ttsService;
+  final ChapterViewModelNoteService noteService;
   final PageController pageController;
   final TextEditingController textEditingController;
 
@@ -74,8 +79,8 @@ class ChapterViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  int? activeParagraphIndex;
-  void setActiveParagraphIndex(int index) => activeParagraphIndex = index;
+  int? _activeParagraphIndex;
+  void setActiveParagraphIndex(int index) => _activeParagraphIndex = index;
 
   int _paragraphOrderNum = 0;
   int get paragraphOrderNum => _paragraphOrderNum;
@@ -180,13 +185,13 @@ class ChapterViewModel extends ChangeNotifier {
     try {
       if (chapter == null ||
           _paragraphs.isEmpty ||
-          activeParagraphIndex == null) {
+          _activeParagraphIndex == null) {
         return;
       }
 
       setSpeakState(SpeakState.speaking);
       await ttsService
-          .speakOne(chapter!.paragraphs![activeParagraphIndex!].content);
+          .speakOne(chapter!.paragraphs![_activeParagraphIndex!].content);
       setSpeakState(SpeakState.silence);
     } catch (e) {
       L.error('Error occurred while speaking: $e');
@@ -299,7 +304,15 @@ class ChapterViewModel extends ChangeNotifier {
         duration: const Duration(seconds: 1), curve: Curves.ease);
   }
 
-  Future<void> onSaveParagraph(int id, String content) async {
-    await paragraphService.saveParagraph(id, content);
+  Future<void> onSaveParagraph(
+      int paragraphID, chapterID, String content) async {
+    await paragraphService.saveParagraph(paragraphID, chapterID, content);
+  }
+
+  Future<void> onSaveNote() async {
+    final paragraphID =
+        chapter!.paragraphs![_activeParagraphIndex!].paragraphID;
+    final chapterID = chapter!.paragraphs![_activeParagraphIndex!].chapterID;
+    await noteService.saveNote(paragraphID, chapterID);
   }
 }

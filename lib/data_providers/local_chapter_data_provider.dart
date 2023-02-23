@@ -18,6 +18,7 @@ class LocalChapterDataProviderDefault
 
       if (chapters != null || chapters!.isNotEmpty) {
         Map<String, dynamic> chapter = chapters.first;
+        L.info("ID: $id ${chapter}");
         return Chapter(
           id: chapter['id'],
           docID: chapter['docID'],
@@ -48,6 +49,16 @@ class LocalChapterDataProviderDefault
       });
 
       await SqfliteClient.insertListOrIgnore(table: 'chapter', rows: mapList);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> saveChapter(Chapter chapter) async {
+    try {
+      final data = chapter.toMap();
+      await SqfliteClient.insertOrReplace(table: 'chapter', data: data);
     } catch (e) {
       rethrow;
     }
