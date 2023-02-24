@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 
 abstract class DocListViewModelService {
   Future<List<Doc>> getDocs(int id);
@@ -8,14 +9,15 @@ abstract class DocListViewModelService {
 
 class DocListViewModel extends ChangeNotifier {
   final DocListViewModelService docsService;
+  final NavigationDrawerViewModel drawerViewModel;
   final int id;
   var _docs = <Doc>[];
   List<Doc> get docs => List.unmodifiable(_docs);
 
-  DocListViewModel({
-    required this.docsService,
-    required this.id,
-  }) {
+  DocListViewModel(
+      {required this.docsService,
+      required this.id,
+      required this.drawerViewModel}) {
     asyncInit(id);
   }
   Future<void> asyncInit(int id) async {

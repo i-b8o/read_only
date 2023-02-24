@@ -13,6 +13,7 @@ class ChapterListWidget extends StatelessWidget {
     final model = context.watch<ChapterListViewModel>();
     final doc = model.doc;
     final chapters = model.chapters;
+    final drawerViewModel = model.drawerViewModel;
     return SafeArea(
       child: Scaffold(
           appBar: PreferredSize(
@@ -25,7 +26,7 @@ class ChapterListWidget extends StatelessWidget {
               child: const ReadOnlyAppBar(child: TypeListAppBar()),
             ),
           ),
-          drawer: const ReadOnlyNavigationDrawer(),
+          drawer: ReadOnlyNavigationDrawer(model: drawerViewModel),
           body: doc == null
               ? Center(
                   child: Text("Нет такого документа",

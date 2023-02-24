@@ -12,6 +12,7 @@ class DocListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<DocListViewModel>();
     final docs = model.docs;
+    final drawerViewModel = model.drawerViewModel;
     return SafeArea(
       child: Scaffold(
           appBar: PreferredSize(
@@ -24,7 +25,7 @@ class DocListWidget extends StatelessWidget {
               child: const ReadOnlyAppBar(child: TypeListAppBar()),
             ),
           ),
-          drawer: const ReadOnlyNavigationDrawer(),
+          drawer: ReadOnlyNavigationDrawer(model: drawerViewModel),
           body: ListView(
             children: docs
                 .map((e) => TypeCard(

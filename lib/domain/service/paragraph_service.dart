@@ -2,7 +2,7 @@ import 'package:my_logger/my_logger.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:sqflite_client/sqflite_client.dart';
 
-class ParagraphServiceDefaut implements ChapterViewModelParagraphService {
+class ParagraphServiceDefault implements ChapterViewModelParagraphService {
   @override
   Future<void> saveParagraph(int paragraphID, chapterID, String content) async {
     try {

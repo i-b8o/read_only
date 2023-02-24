@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/sub_type.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 
 abstract class SubtypesListViewModelService {
   Future<List<Subtype>> getAll(int id);
@@ -8,15 +9,16 @@ abstract class SubtypesListViewModelService {
 
 class SubtypeListViewModel extends ChangeNotifier {
   final SubtypesListViewModelService subtypesService;
+  final NavigationDrawerViewModel drawerViewModel;
   final int id;
 
   var _subtypes = <Subtype>[];
   List<Subtype> get subtypes => List.unmodifiable(_subtypes);
 
-  SubtypeListViewModel({
-    required this.subtypesService,
-    required this.id,
-  }) {
+  SubtypeListViewModel(
+      {required this.subtypesService,
+      required this.id,
+      required this.drawerViewModel}) {
     asyncInit(id);
   }
   Future<void> asyncInit(int id) async {

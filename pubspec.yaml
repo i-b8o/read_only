@@ -40,6 +40,7 @@ dependencies:
   flutter_html: ^2.2.1
   flutter_tts: ^3.5.0
   webview_flutter: ^2.0.4
+  rolling_switch: ^0.0.2
 
   # sentry_flutter: ^6.18.2
 

@@ -11,6 +11,7 @@ class TypeListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<TypeListViewModel>();
     final types = model.types;
+    final drawerViewModel = model.drawerViewModel;
     return SafeArea(
       child: Scaffold(
           appBar: PreferredSize(
@@ -23,7 +24,7 @@ class TypeListWidget extends StatelessWidget {
               child: const ReadOnlyAppBar(child: TypeListAppBar()),
             ),
           ),
-          drawer: const ReadOnlyNavigationDrawer(),
+          drawer: ReadOnlyNavigationDrawer(model: drawerViewModel),
           body: types.isEmpty
               ? const Center(
                   child: CircularProgressIndicator(

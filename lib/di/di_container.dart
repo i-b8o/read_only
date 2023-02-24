@@ -8,11 +8,13 @@ import 'package:read_only/data_providers/local_doc_data_provider.dart';
 import 'package:read_only/data_providers/local_note_data_provider.dart';
 import 'package:read_only/data_providers/local_paragraph_data_provider.dart';
 import 'package:read_only/data_providers/remote_paragraph_data_provider.dart';
+import 'package:read_only/data_providers/settings_data_provider.dart';
 import 'package:read_only/data_providers/tts_data_provider.dart';
 import 'package:read_only/data_providers/tts_settings_data_provider.dart';
 import 'package:read_only/data_providers/remote_type_data_provider.dart';
 import 'package:read_only/data_providers/remote_subtype_data_provider.dart';
 import 'package:read_only/domain/entity/link.dart';
+import 'package:read_only/domain/service/app_settings_service.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
 import 'package:read_only/domain/service/doc_service.dart';
 import 'package:read_only/domain/service/notes_service.dart';
@@ -23,12 +25,15 @@ import 'package:read_only/domain/service/type_service.dart';
 import 'package:grpc_client/grpc_client.dart';
 import 'package:flutter/services.dart';
 import 'package:read_only/sql/init.dart';
+import 'package:read_only/ui/widgets/app/app_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_widget.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_widget.dart';
 import 'package:read_only/ui/widgets/doc_list/doc_list_model.dart';
 import 'package:read_only/ui/widgets/doc_list/doc_list_widget.dart';
+
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 import 'package:read_only/ui/widgets/notes/notes_model.dart';
 import 'package:read_only/ui/widgets/notes/notes_widget.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_model.dart';
@@ -49,7 +54,13 @@ class _AppFactoryDefault implements AppFactory {
 
   _AppFactoryDefault();
   @override
-  Widget makeApp() => App(navigation: _diContainer._makeAppNavigation());
+  Widget makeApp() => ChangeNotifierProvider(
+        create: (_) => _diContainer._makeAppViewModel(),
+        lazy: false,
+        child: App(
+          navigation: _diContainer._makeAppNavigation(),
+        ),
+      );
 }
 
 class _DIContainer {
@@ -87,14 +98,14 @@ class _DIContainer {
   LocalParagraphDataProviderDefault _makeLocalParagraphDataProviderDefault() =>
       LocalParagraphDataProviderDefault();
 
-  LocalNotesDataProviderDefault _makeLocalNotesDataProviderDefault() =>
-      LocalNotesDataProviderDefault();
-
   LocalNotesDataProviderDefault _notesDataProvider() =>
       LocalNotesDataProviderDefault();
 
   final TtsSettingsDataProviderDefault _ttsSettingsDataProvider =
       const TtsSettingsDataProviderDefault();
+
+  final SettingsDataProviderDefault _settingsDataProvider =
+      const SettingsDataProviderDefault();
 
   _DIContainer() {
     asyncInit();
@@ -106,6 +117,7 @@ class _DIContainer {
         localChapterDataProvider: _makeLocalChapterDataProviderDefault());
 
     _ttsService = TtsService(_ttsDataProvider);
+    _appSettingsService = AppSettingsService(_settingsDataProvider);
   }
 
   void asyncInit() async {
@@ -120,6 +132,7 @@ class _DIContainer {
   // Services
   late final DocService _docService;
   late final TtsService _ttsService;
+  late final AppSettingsService _appSettingsService;
 
   ReadOnlyTypeService _makeTypeService() =>
       ReadOnlyTypeService(typeDataProvider: _makeTypeDataProvider());
@@ -134,22 +147,35 @@ class _DIContainer {
       localChapterDataProvider: _makeLocalChapterDataProviderDefault(),
       localParagraphDataProvider: _makeLocalParagraphDataProviderDefault());
 
-  ParagraphServiceDefaut get _paragraphService => ParagraphServiceDefaut();
+  ParagraphServiceDefault get _paragraphService => ParagraphServiceDefault();
 
   NotesService _makeNotesService() => NotesService(_notesDataProvider());
 
   // ViewModels
-  TypeListViewModel _makeTypeListViewModel() =>
-      TypeListViewModel(typesProvider: _makeTypeService());
+  AppViewModel _makeAppViewModel() => AppViewModel(_appSettingsService);
+  NavigationDrawerViewModel _makeDrawerViewModel() =>
+      NavigationDrawerViewModel(_appSettingsService);
+
+  TypeListViewModel _makeTypeListViewModel() => TypeListViewModel(
+      typesProvider: _makeTypeService(),
+      drawerViewModel: _makeDrawerViewModel());
 
   SubtypeListViewModel _makeSubtypeListViewModel(int id) =>
-      SubtypeListViewModel(subtypesService: _makeSubtypeService(), id: id);
+      SubtypeListViewModel(
+          subtypesService: _makeSubtypeService(),
+          id: id,
+          drawerViewModel: _makeDrawerViewModel());
 
-  DocListViewModel _makeDocListViewModel(int id) =>
-      DocListViewModel(docsService: _makeSubtypeService(), id: id);
+  DocListViewModel _makeDocListViewModel(int id) => DocListViewModel(
+      docsService: _makeSubtypeService(),
+      id: id,
+      drawerViewModel: _makeDrawerViewModel());
 
   ChapterListViewModel _makeChapterListViewModel(int id) =>
-      ChapterListViewModel(docsProvider: _docService, id: id);
+      ChapterListViewModel(
+          docsProvider: _docService,
+          id: id,
+          drawerViewModel: _makeDrawerViewModel());
 
   NotesViewModel _makeNotesViewModel() => NotesViewModel(_makeNotesService());
 
