@@ -5,7 +5,7 @@ import 'package:read_only/ui/widgets/app/app_model.dart';
 import 'package:read_only/ui/widgets/navigation_drawer/menu_item.dart';
 
 import 'font_size_slider.dart';
-import 'font_weight_slider copy.dart';
+import 'font_weight_slider.dart';
 import 'menu_sub_item.dart';
 
 class FontMenuItem extends StatelessWidget {

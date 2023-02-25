@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_logger/my_logger.dart';
+import 'package:read_only/constants/constants.dart';
 
 import 'package:read_only/domain/entity/app_settings.dart';
 
@@ -84,6 +85,19 @@ class AppViewModel extends ChangeNotifier {
     _appSettings = _appSettings!.copyWith(fontWeight: convertRange(value));
 
     await appSettingsService.setFontWeight(convertRange(value));
+
+    notifyListeners();
+  }
+
+  Future<void> fontReset() async {
+    var futures = [
+      appSettingsService.setFontWeight(Constants.fontWeightDefaultValue),
+      appSettingsService.setFontSize(Constants.fontSizeDefaultValue)
+    ];
+    await Future.wait(futures);
+    _appSettings = _appSettings!.copyWith(
+        fontWeight: Constants.fontWeightDefaultValue,
+        fontSize: Constants.fontSizeDefaultValue);
     notifyListeners();
   }
 
@@ -97,7 +111,7 @@ class AppViewModel extends ChangeNotifier {
       throw ArgumentError('Value must be between 0.0 and 1.0');
     }
 
-    return (value * 8).floor();
+    return (value / 1.25).floor();
   }
 
   double integerToDouble(int value) {

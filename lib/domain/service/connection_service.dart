@@ -27,7 +27,7 @@ class ConnectionStatusService {
     _connectivity.onConnectivityChanged.listen(_updateInternetConnectionStatus);
     _grpcChannel.onConnectionStateChanged.listen(_updateGrpcServerStatus);
   }
-  void _updateGrpcServerStatus(ConnectionState state) {
+  Future<void> _updateGrpcServerStatus(ConnectionState state) async {
     L.info("grpc $state");
     switch (state) {
       case ConnectionState.connecting:
@@ -40,6 +40,7 @@ class ConnectionStatusService {
       case ConnectionState.ready:
       case ConnectionState.idle:
         _status = AppConnectionStatus.serverIsFine;
+
         break;
     }
     _connectionStatusController.add(_status);
