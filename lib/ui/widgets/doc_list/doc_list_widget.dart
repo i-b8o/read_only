@@ -12,7 +12,7 @@ class DocListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<DocListViewModel>();
     final docs = model.docs;
-    final drawerViewModel = model.drawerViewModel;
+
     return SafeArea(
       child: Scaffold(
           appBar: PreferredSize(
@@ -25,10 +25,8 @@ class DocListWidget extends StatelessWidget {
               child: const ReadOnlyAppBar(child: TypeListAppBar()),
             ),
           ),
-          drawer: ChangeNotifierProvider(
-            create: (_) => drawerViewModel,
-            lazy: false,
-            child: const ReadOnlyNavigationDrawer(),
+          drawer: Builder(
+            builder: (context) => const ReadOnlyNavigationDrawer(),
           ),
           body: ListView(
             children: docs

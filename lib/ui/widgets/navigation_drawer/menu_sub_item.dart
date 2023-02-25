@@ -8,7 +8,7 @@ class MenuSubItem extends StatelessWidget {
     required this.alertDialog,
   }) : super(key: key);
   final String leading;
-  final double value;
+  final String value;
   final AlertDialog alertDialog;
 
   @override
@@ -38,7 +38,7 @@ class MenuSubItem extends StatelessWidget {
               ),
             ),
             Text(
-              '${(value * 100).round()}%',
+              value,
               style: TextStyle(
                 color: Theme.of(context)
                     .navigationRailTheme

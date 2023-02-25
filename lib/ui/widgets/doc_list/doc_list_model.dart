@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
-import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 
 abstract class DocListViewModelService {
   Future<List<Doc>> getDocs(int id);

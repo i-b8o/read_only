@@ -1,29 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:my_logger/my_logger.dart';
 import 'package:provider/provider.dart';
+import 'package:read_only/ui/widgets/app/app_model.dart';
 
-import 'navigation_drawer_model.dart';
-
-class FontSlider extends StatelessWidget {
-  FontSlider({
+class FontWeightSlider extends StatelessWidget {
+  const FontWeightSlider({
     Key? key,
-    required this.title,
-    required this.color,
-    required this.onChangeEnd,
-    required this.onChanged,
-    required this.value,
   }) : super(key: key);
-  final String title;
-  final Color color;
-  final double value;
-
-  final void Function(double)? onChangeEnd;
-  final void Function(double)? onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<NavigationDrawerViewModel>();
-    L.info("Here value: $value ");
+    final model = context.watch<AppViewModel>();
+    final value = model.getFontWeightDouble();
+    final onFontWeightChanged = model.onFontWeightChanged;
+    final onFontWeightChangeEnd = model.onFontWeightChangeEnd;
     return SizedBox(
       height: MediaQuery.of(context).size.width * 0.3,
       child: Row(
@@ -49,11 +38,11 @@ class FontSlider extends StatelessWidget {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.5,
                   child: Slider(
-                    divisions: 7,
-                    activeColor: color,
+                    divisions: 10,
+                    activeColor: const Color(0xFF5aa9f7),
                     inactiveColor: const Color(0xFFedecf1),
-                    onChanged: (double value) => onChanged!(value),
-                    onChangeEnd: (double value) => onChangeEnd!(value),
+                    onChanged: (double value) => onFontWeightChanged(value),
+                    onChangeEnd: (double value) => onFontWeightChangeEnd(value),
                     value: value,
                   ),
                 ),

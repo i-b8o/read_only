@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
+import 'package:read_only/ui/widgets/app/app_model.dart';
 import 'package:rolling_switch/rolling_switch.dart';
 
 import 'font_menu_item.dart';
@@ -15,7 +15,7 @@ class ReadOnlyNavigationDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<NavigationDrawerViewModel>();
+    final model = context.watch<AppViewModel>();
     if (model.appSettings == null) {
       return Container();
     }

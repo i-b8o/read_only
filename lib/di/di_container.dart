@@ -33,9 +33,6 @@ import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_widget.dart';
 import 'package:read_only/ui/widgets/doc_list/doc_list_model.dart';
 import 'package:read_only/ui/widgets/doc_list/doc_list_widget.dart';
-
-import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
-import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_widget.dart';
 import 'package:read_only/ui/widgets/notes/notes_model.dart';
 import 'package:read_only/ui/widgets/notes/notes_widget.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_model.dart';
@@ -120,7 +117,7 @@ class _DIContainer {
         localChapterDataProvider: _makeLocalChapterDataProviderDefault());
 
     _ttsService = TtsService(_ttsDataProvider);
-    _appSettingsService = AppSettingsService(_settingsDataProvider);
+    _appSettingsService = AppSettingsServiceDefault(_settingsDataProvider);
     _connectionService = ConnectionStatusService();
   }
 
@@ -135,7 +132,7 @@ class _DIContainer {
   // Services
   late final DocService _docService;
   late final TtsService _ttsService;
-  late final AppSettingsService _appSettingsService;
+  late final AppSettingsServiceDefault _appSettingsService;
   late final ConnectionStatusService _connectionService;
 
   ReadOnlyTypeService _makeTypeService() =>
@@ -157,8 +154,8 @@ class _DIContainer {
 
   // ViewModels
   AppViewModel _makeAppViewModel() => AppViewModel(_appSettingsService);
-  NavigationDrawerViewModel _makeDrawerViewModel() =>
-      NavigationDrawerViewModel(_appSettingsService);
+  // NavigationDrawerViewModel _makeDrawerViewModel() =>
+  //     NavigationDrawerViewModel(_appSettingsService);
 
   TypeListViewModel _makeTypeListViewModel() => TypeListViewModel(
       typesProvider: _makeTypeService(), connectionService: _connectionService);
@@ -176,9 +173,9 @@ class _DIContainer {
 
   ChapterListViewModel _makeChapterListViewModel(int id) =>
       ChapterListViewModel(
-          docsProvider: _docService,
-          id: id,
-          drawerViewModel: _makeDrawerViewModel());
+        docsProvider: _docService,
+        id: id,
+      );
 
   NotesViewModel _makeNotesViewModel() => NotesViewModel(_makeNotesService());
 
@@ -263,14 +260,6 @@ class ScreenFactoryDefault implements ScreenFactory {
       create: (_) => _diContainer._makeNotesViewModel(),
       lazy: false,
       child: const NotesWidget(),
-    );
-  }
-
-  Widget makeDrawer() {
-    return ChangeNotifierProvider(
-      create: (_) => _diContainer._makeDrawerViewModel(),
-      lazy: false,
-      child: const ReadOnlyNavigationDrawer(),
     );
   }
 }

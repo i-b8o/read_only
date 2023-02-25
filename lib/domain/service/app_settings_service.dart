@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:my_logger/my_logger.dart';
 import 'package:read_only/constants/constants.dart';
 import 'package:read_only/domain/entity/app_settings.dart';
-import 'package:read_only/ui/widgets/app/app.dart';
-import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
+
+import 'package:read_only/ui/widgets/app/app_model.dart';
 
 abstract class AppSettingsServiceDataProvider {
   const AppSettingsServiceDataProvider();
@@ -13,15 +13,14 @@ abstract class AppSettingsServiceDataProvider {
   Future<void> setSpeechRate(double speechRate);
   Future<void> setPitch(double pitch);
   Future<void> setVolume(double volume);
-  Future<void> setFontWeight(double fontWeight);
+  Future<void> setFontWeight(int fontWeight);
   Future<void> setFontSize(double fontSize);
   Future<void> setVoice(String voice);
   AppSettings getAppSettings();
 }
 
-class AppSettingsService
-    implements NavigationDrawerViewModelAppSettingsService, AppService {
-  AppSettingsService(this.appSettingsdataProvider);
+class AppSettingsServiceDefault implements AppSettingService {
+  AppSettingsServiceDefault(this.appSettingsdataProvider);
   final AppSettingsServiceDataProvider appSettingsdataProvider;
   final StreamController<bool> _controller = StreamController<bool>.broadcast();
 
@@ -65,7 +64,7 @@ class AppSettingsService
   }
 
   @override
-  Future<void> setFontWeight(double fontWeight) async {
+  Future<void> setFontWeight(int fontWeight) async {
     try {
       await appSettingsdataProvider.setFontWeight(fontWeight);
     } catch (exception) {

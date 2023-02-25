@@ -18,7 +18,7 @@ class NotesViewModel extends ChangeNotifier {
   }
   Future<void> asyncInit() async {
     _notes = await notesService.getAll();
-    L.info("here: ${_notes!.first}");
+
     notifyListeners();
   }
 

@@ -47,9 +47,9 @@ class SettingsDataProviderDefault implements AppSettingsServiceDataProvider {
   }
 
   @override
-  Future<void> setFontWeight(double fontWeight) async {
+  Future<void> setFontWeight(int fontWeight) async {
     try {
-      await SharedPreferencesClient.write<double>(
+      await SharedPreferencesClient.write<int>(
           key: Constants.fontWeightKey, value: fontWeight);
     } catch (e) {
       rethrow;

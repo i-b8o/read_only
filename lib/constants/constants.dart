@@ -8,9 +8,9 @@ class Constants {
   static const String volumeKey = "volume";
   static const double volumeDefaultValue = 0.5;
   static const String fontWeightKey = "fontWeight";
-  static const int fontWeightDefaultValue = 400;
+  static const int fontWeightDefaultValue = 5;
   static const String fontSizeKey = "font_size";
-  static const double fontSizeDefaultValue = 16.0;
+  static const double fontSizeDefaultValue = 0.21;
   static const String voiceKey = "voice";
   static const String voiceDefaultValue = "ru-RU";
 }

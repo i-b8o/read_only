@@ -23,7 +23,7 @@ class SoundMenuItem extends StatelessWidget {
             child: Column(
               children: [
                 MenuSubItem(
-                  value: 1,
+                  value: "1",
                   leading: 'Громкость',
                   alertDialog: AlertDialog(
                     backgroundColor:
@@ -41,7 +41,7 @@ class SoundMenuItem extends StatelessWidget {
                 ),
                 MenuSubItem(
                   leading: 'Скорость',
-                  value: 1,
+                  value: "1",
                   alertDialog: AlertDialog(
                     backgroundColor:
                         Theme.of(context).navigationRailTheme.backgroundColor,
@@ -60,7 +60,7 @@ class SoundMenuItem extends StatelessWidget {
                 ),
                 MenuSubItem(
                   leading: 'Высота',
-                  value: 1,
+                  value: "1",
                   alertDialog: AlertDialog(
                     backgroundColor:
                         Theme.of(context).navigationRailTheme.backgroundColor,

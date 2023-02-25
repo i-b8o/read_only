@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:read_only/domain/entity/type.dart';
 import 'package:read_only/domain/service/connection_service.dart';
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
-import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 
 abstract class TypesListViewModelService {
   Future<List<Type>> getAll();
@@ -26,16 +25,19 @@ class TypeListViewModel extends ChangeNotifier {
   void onConnectionStatus(AppConnectionStatus status) {
     switch (status) {
       case AppConnectionStatus.serverIsFine:
+        _errorMessage = null;
         break;
       case AppConnectionStatus.serverIsNotAccessible:
         _errorMessage = 'gRPC server is not accessible';
         break;
       case AppConnectionStatus.internetConnected:
+        // _errorMessage = null;
         break;
       case AppConnectionStatus.internetDisconnected:
         _errorMessage = 'Internet disconnected';
         break;
     }
+    notifyListeners();
   }
 
   Future<void> asyncInit() async {

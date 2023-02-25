@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
 import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_widget.dart';
+
 import 'package:read_only/ui/widgets/type_list/type_list_model.dart';
 
 class TypeListWidget extends StatelessWidget {
@@ -25,12 +26,14 @@ class TypeListWidget extends StatelessWidget {
               child: const ReadOnlyAppBar(child: TypeListAppBar()),
             ),
           ),
-          drawer: ,
+          drawer: Builder(
+            builder: (context) => const ReadOnlyNavigationDrawer(),
+          ),
           body: errorMessage != null
               ? Center(
                   child: Text(
                     errorMessage,
-                    style: TextStyle(color: Colors.red),
+                    style: const TextStyle(color: Colors.red),
                   ),
                 )
               : types.isEmpty

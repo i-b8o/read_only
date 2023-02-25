@@ -30,7 +30,6 @@ class ConnectionStatusService {
   void _updateGrpcServerStatus(ConnectionState state) {
     L.info("grpc $state");
     switch (state) {
-      case ConnectionState.idle:
       case ConnectionState.connecting:
       case ConnectionState.transientFailure:
       case ConnectionState.shutdown:
@@ -39,6 +38,7 @@ class ConnectionStatusService {
         }
         break;
       case ConnectionState.ready:
+      case ConnectionState.idle:
         _status = AppConnectionStatus.serverIsFine;
         break;
     }
