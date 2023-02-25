@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_logger/my_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
-import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_widget.dart';
 import 'subtype_list_model.dart';
 
 class SubtypeListWidget extends StatelessWidget {
@@ -25,7 +25,11 @@ class SubtypeListWidget extends StatelessWidget {
               child: const ReadOnlyAppBar(child: TypeListAppBar()),
             ),
           ),
-          drawer: ReadOnlyNavigationDrawer(model: drawerViewModel),
+          drawer: ChangeNotifierProvider(
+            create: (_) => drawerViewModel,
+            lazy: false,
+            child: const ReadOnlyNavigationDrawer(),
+          ),
           body: ListView(
             children: subtypes
                 .map((e) => TypeCard(

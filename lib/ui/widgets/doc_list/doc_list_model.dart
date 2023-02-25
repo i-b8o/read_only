@@ -9,15 +9,15 @@ abstract class DocListViewModelService {
 
 class DocListViewModel extends ChangeNotifier {
   final DocListViewModelService docsService;
-  final NavigationDrawerViewModel drawerViewModel;
+
   final int id;
   var _docs = <Doc>[];
   List<Doc> get docs => List.unmodifiable(_docs);
 
-  DocListViewModel(
-      {required this.docsService,
-      required this.id,
-      required this.drawerViewModel}) {
+  DocListViewModel({
+    required this.docsService,
+    required this.id,
+  }) {
     asyncInit(id);
   }
   Future<void> asyncInit(int id) async {

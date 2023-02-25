@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
-import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_widget.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_model.dart';
 
 class TypeListWidget extends StatelessWidget {
@@ -11,7 +11,8 @@ class TypeListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<TypeListViewModel>();
     final types = model.types;
-    final drawerViewModel = model.drawerViewModel;
+    final errorMessage = model.errorMessage;
+
     return SafeArea(
       child: Scaffold(
           appBar: PreferredSize(
@@ -24,21 +25,28 @@ class TypeListWidget extends StatelessWidget {
               child: const ReadOnlyAppBar(child: TypeListAppBar()),
             ),
           ),
-          drawer: ReadOnlyNavigationDrawer(model: drawerViewModel),
-          body: types.isEmpty
-              ? const Center(
-                  child: CircularProgressIndicator(
-                  // TODO get color value from theme
-                  color: Colors.black,
-                ))
-              : ListView(
-                  children: types
-                      .map((e) => TypeCard(
-                            name: e.name,
-                            id: e.id,
-                          ))
-                      .toList(),
-                )),
+          drawer: ,
+          body: errorMessage != null
+              ? Center(
+                  child: Text(
+                    errorMessage,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                )
+              : types.isEmpty
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                      // TODO get color value from theme
+                      color: Colors.black,
+                    ))
+                  : ListView(
+                      children: types
+                          .map((e) => TypeCard(
+                                name: e.name,
+                                id: e.id,
+                              ))
+                          .toList(),
+                    )),
     );
   }
 }
@@ -49,7 +57,7 @@ class TypeListAppBar extends StatelessWidget {
   }) : super(key: key);
 
   Widget _buildChild() {
-    return const InitAppBAr();
+    return const InitAppBar();
   }
 
   @override
@@ -58,8 +66,8 @@ class TypeListAppBar extends StatelessWidget {
   }
 }
 
-class InitAppBAr extends StatelessWidget {
-  const InitAppBAr({
+class InitAppBar extends StatelessWidget {
+  const InitAppBar({
     Key? key,
   }) : super(key: key);
 

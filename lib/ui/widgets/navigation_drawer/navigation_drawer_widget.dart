@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 import 'package:rolling_switch/rolling_switch.dart';
 
@@ -8,11 +9,13 @@ import 'sound_menu_item.dart';
 
 // TODO highlighting
 class ReadOnlyNavigationDrawer extends StatelessWidget {
-  const ReadOnlyNavigationDrawer({Key? key, required this.model})
-      : super(key: key);
-  final NavigationDrawerViewModel model;
+  const ReadOnlyNavigationDrawer({
+    Key? key,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    final model = context.watch<NavigationDrawerViewModel>();
     if (model.appSettings == null) {
       return Container();
     }
@@ -57,7 +60,7 @@ class ReadOnlyNavigationDrawer extends StatelessWidget {
                                 child: RollingSwitch.widget(
                                   initialState: rollingSwitchInitState,
                                   onChanged: (bool state) {
-                                    model.setIsDarkModeOn();
+                                    model.onDarkModeStateChanged();
                                   },
                                   rollingInfoRight: RollingWidgetInfo(
                                       icon: Container(

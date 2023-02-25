@@ -9,7 +9,7 @@ class VoiceItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String>? _voices = ["aaa", "bbb", "ccc"];
+    List<String> _voices = ["aaa", "bbb", "ccc"];
     return GestureDetector(
       onTap: () async {
         showDialog(

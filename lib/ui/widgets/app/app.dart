@@ -24,7 +24,6 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _model = context.watch<AppViewModel>();
-    L.info("AAAAAA: ${_model.isDarkModeOn}");
     return MaterialApp(
       theme: _model.isDarkModeOn ? ReadOnlyTheme.dark : ReadOnlyTheme.light,
       darkTheme: ReadOnlyTheme.dark,

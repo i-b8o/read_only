@@ -16,6 +16,7 @@ import 'package:read_only/data_providers/remote_subtype_data_provider.dart';
 import 'package:read_only/domain/entity/link.dart';
 import 'package:read_only/domain/service/app_settings_service.dart';
 import 'package:read_only/domain/service/chapter_service.dart';
+import 'package:read_only/domain/service/connection_service.dart';
 import 'package:read_only/domain/service/doc_service.dart';
 import 'package:read_only/domain/service/notes_service.dart';
 import 'package:read_only/domain/service/paragraph_service.dart';
@@ -34,6 +35,7 @@ import 'package:read_only/ui/widgets/doc_list/doc_list_model.dart';
 import 'package:read_only/ui/widgets/doc_list/doc_list_widget.dart';
 
 import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_widget.dart';
 import 'package:read_only/ui/widgets/notes/notes_model.dart';
 import 'package:read_only/ui/widgets/notes/notes_widget.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_model.dart';
@@ -108,6 +110,7 @@ class _DIContainer {
       const SettingsDataProviderDefault();
 
   _DIContainer() {
+    GrpcClient().init(host: Configuration.host, port: Configuration.port);
     asyncInit();
     L.initialize();
 
@@ -118,10 +121,10 @@ class _DIContainer {
 
     _ttsService = TtsService(_ttsDataProvider);
     _appSettingsService = AppSettingsService(_settingsDataProvider);
+    _connectionService = ConnectionStatusService();
   }
 
   void asyncInit() async {
-    GrpcClient().init(host: Configuration.host, port: Configuration.port);
     List<Future> futures = [
       SqfliteClient().init(InitSQL.dbName, initSQL: InitSQL.queries),
       SharedPreferencesClient.init(),
@@ -133,6 +136,7 @@ class _DIContainer {
   late final DocService _docService;
   late final TtsService _ttsService;
   late final AppSettingsService _appSettingsService;
+  late final ConnectionStatusService _connectionService;
 
   ReadOnlyTypeService _makeTypeService() =>
       ReadOnlyTypeService(typeDataProvider: _makeTypeDataProvider());
@@ -157,19 +161,18 @@ class _DIContainer {
       NavigationDrawerViewModel(_appSettingsService);
 
   TypeListViewModel _makeTypeListViewModel() => TypeListViewModel(
-      typesProvider: _makeTypeService(),
-      drawerViewModel: _makeDrawerViewModel());
+      typesProvider: _makeTypeService(), connectionService: _connectionService);
 
   SubtypeListViewModel _makeSubtypeListViewModel(int id) =>
       SubtypeListViewModel(
-          subtypesService: _makeSubtypeService(),
-          id: id,
-          drawerViewModel: _makeDrawerViewModel());
+        subtypesService: _makeSubtypeService(),
+        id: id,
+      );
 
   DocListViewModel _makeDocListViewModel(int id) => DocListViewModel(
-      docsService: _makeSubtypeService(),
-      id: id,
-      drawerViewModel: _makeDrawerViewModel());
+        docsService: _makeSubtypeService(),
+        id: id,
+      );
 
   ChapterListViewModel _makeChapterListViewModel(int id) =>
       ChapterListViewModel(
@@ -260,6 +263,14 @@ class ScreenFactoryDefault implements ScreenFactory {
       create: (_) => _diContainer._makeNotesViewModel(),
       lazy: false,
       child: const NotesWidget(),
+    );
+  }
+
+  Widget makeDrawer() {
+    return ChangeNotifierProvider(
+      create: (_) => _diContainer._makeDrawerViewModel(),
+      lazy: false,
+      child: const ReadOnlyNavigationDrawer(),
     );
   }
 }

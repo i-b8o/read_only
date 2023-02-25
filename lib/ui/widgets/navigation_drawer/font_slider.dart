@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:my_logger/my_logger.dart';
+import 'package:provider/provider.dart';
+
+import 'navigation_drawer_model.dart';
 
 class FontSlider extends StatelessWidget {
-  const FontSlider({
+  FontSlider({
     Key? key,
     required this.title,
     required this.color,
     required this.onChangeEnd,
     required this.onChanged,
-    required this.text,
     required this.value,
   }) : super(key: key);
   final String title;
-  final String text;
   final Color color;
   final double value;
 
@@ -20,6 +22,8 @@ class FontSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.watch<NavigationDrawerViewModel>();
+    L.info("Here value: $value ");
     return SizedBox(
       height: MediaQuery.of(context).size.width * 0.3,
       child: Row(
@@ -48,8 +52,8 @@ class FontSlider extends StatelessWidget {
                     divisions: 7,
                     activeColor: color,
                     inactiveColor: const Color(0xFFedecf1),
-                    onChanged: onChanged,
-                    onChangeEnd: onChangeEnd,
+                    onChanged: (double value) => onChanged!(value),
+                    onChangeEnd: (double value) => onChangeEnd!(value),
                     value: value,
                   ),
                 ),

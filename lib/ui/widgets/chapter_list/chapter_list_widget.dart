@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
-import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_widget.dart';
 
 import 'chapter_list_model.dart';
 
@@ -26,7 +26,11 @@ class ChapterListWidget extends StatelessWidget {
               child: const ReadOnlyAppBar(child: TypeListAppBar()),
             ),
           ),
-          drawer: ReadOnlyNavigationDrawer(model: drawerViewModel),
+          drawer: ChangeNotifierProvider(
+            create: (_) => drawerViewModel,
+            lazy: false,
+            child: const ReadOnlyNavigationDrawer(),
+          ),
           body: doc == null
               ? Center(
                   child: Text("Нет такого документа",
