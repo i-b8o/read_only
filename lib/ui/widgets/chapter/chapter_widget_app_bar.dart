@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'chapter_model.dart';
 import 'chapter_widget_app_bar_pagination.dart';
 
 class ChapterWidgetAppBar extends StatelessWidget {
@@ -9,11 +11,16 @@ class ChapterWidgetAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<ChapterViewModel>();
+    final stopSpeak = model.stopSpeak;
+    final resumeSpeak = model.resumeSpeak;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
           onPressed: () {
+            resumeSpeak();
+            stopSpeak();
             Navigator.of(context).pop();
           },
           icon: Icon(

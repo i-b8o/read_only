@@ -26,7 +26,7 @@ import 'package:read_only/domain/service/type_service.dart';
 import 'package:grpc_client/grpc_client.dart';
 import 'package:flutter/services.dart';
 import 'package:read_only/sql/init.dart';
-import 'package:read_only/ui/widgets/app/app_model.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_widget.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
@@ -154,8 +154,10 @@ class _DIContainer {
   NotesService _makeNotesService() => NotesService(_notesDataProvider());
 
   // ViewModels
-  AppViewModel _makeAppViewModel() => AppViewModel(
-      appSettingsService: _appSettingsService, ttsSettingService: _ttsService);
+  DrawerViewModel _makeAppViewModel() => DrawerViewModel(
+        appSettingsService: _appSettingsService,
+        ttsSettingService: _ttsService,
+      );
   // NavigationDrawerViewModel _makeDrawerViewModel() =>
   //     NavigationDrawerViewModel(_appSettingsService);
 

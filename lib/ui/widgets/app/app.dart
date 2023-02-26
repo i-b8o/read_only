@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_logger/my_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/theme/theme.dart';
-import 'package:read_only/ui/widgets/app/app_model.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 
 import '../../navigation/main_navigation_route_names.dart';
 
@@ -23,7 +23,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<AppViewModel>();
+    final model = context.watch<DrawerViewModel>();
     return MaterialApp(
       theme: model.isDarkModeOn ? ReadOnlyTheme.dark : ReadOnlyTheme.light,
       darkTheme: ReadOnlyTheme.dark,

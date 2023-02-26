@@ -1,6 +1,7 @@
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/tts_position.dart';
 import 'package:read_only/library/text/text.dart';
-import 'package:read_only/ui/widgets/app/app_model.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
 abstract class TtsDataProvider {
@@ -14,10 +15,14 @@ abstract class TtsDataProvider {
 
 abstract class TtsSettingsDataProvider {
   Future<bool> setVolume(double value);
+  Future<bool> setRate(double value);
+  Future<bool> setPitch(double value);
+  Future<List<String>?> getVoices();
+  Future<bool> setVoice(String voice);
 }
 
 class TtsService
-    implements ChapterViewModelTtsService, AppViewModelTtsSettingService {
+    implements ChapterViewModelTtsService, DrawerViewModelTtsSettingService {
   final TtsDataProvider ttsDataProvider;
   final TtsSettingsDataProvider ttsSettingsDataProvider;
   List<String>? currentTexts;
@@ -56,9 +61,11 @@ class TtsService
 
   @override
   Future<bool> speakOne(String text) async {
+    L.info("message");
     if (text.isEmpty) {
       return false;
     }
+    L.info("message1 $text");
     return await _speak([text], multiple: false);
   }
 
@@ -130,7 +137,17 @@ class TtsService
   // Future<bool> setPitch(double pitch) async =>
   //     await ttsChannel.invokeMethod('setPitch', pitch) as bool;
 
-  // @override
-  // Future<bool> setSpeechRate(double rate) async =>
-  //     await ttsChannel.invokeMethod('setSpeechRate', rate) as bool;
+  @override
+  Future<bool> setRate(double volume) async =>
+      await ttsSettingsDataProvider.setRate(volume);
+
+  @override
+  Future<bool> setPitch(double volume) async =>
+      await ttsSettingsDataProvider.setPitch(volume);
+  @override
+  Future<List<String>?> getVoices() async =>
+      await ttsSettingsDataProvider.getVoices();
+
+  Future<bool> setVoice(String voice) async =>
+      await ttsSettingsDataProvider.setVoice(voice);
 }

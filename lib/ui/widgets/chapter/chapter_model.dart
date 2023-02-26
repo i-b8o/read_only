@@ -203,11 +203,14 @@ class ChapterViewModel extends ChangeNotifier {
           _activeParagraphIndex == null) {
         return;
       }
+      L.info("start speak1");
 
       setSpeakState(SpeakState.speaking);
       await ttsService
           .speakOne(chapter!.paragraphs![_activeParagraphIndex!].content);
       setSpeakState(SpeakState.silence);
+      L.info(
+          "start speak ${chapter!.paragraphs![_activeParagraphIndex!].content} $_speakState");
     } catch (e) {
       L.error('Error occurred while speaking: $e');
     }

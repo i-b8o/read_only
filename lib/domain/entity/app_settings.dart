@@ -6,7 +6,7 @@ class AppSettings {
   final int fontWeight;
   final double fontSize;
   final String voice;
-
+  List<String>? voices;
   AppSettings(
       {required this.darkModeOn,
       required this.speechRate,
@@ -14,17 +14,18 @@ class AppSettings {
       required this.volume,
       required this.fontWeight,
       required this.fontSize,
-      required this.voice});
+      required this.voice,
+      this.voices});
 
-  AppSettings copyWith({
-    bool? darkModeOn,
-    double? speechRate,
-    double? pitch,
-    double? volume,
-    int? fontWeight,
-    double? fontSize,
-    String? voice,
-  }) {
+  AppSettings copyWith(
+      {bool? darkModeOn,
+      double? speechRate,
+      double? pitch,
+      double? volume,
+      int? fontWeight,
+      double? fontSize,
+      String? voice,
+      List<String>? voices}) {
     return AppSettings(
       darkModeOn: darkModeOn ?? this.darkModeOn,
       speechRate: speechRate ?? this.speechRate,
@@ -33,6 +34,7 @@ class AppSettings {
       fontWeight: fontWeight ?? this.fontWeight,
       fontSize: fontSize ?? this.fontSize,
       voice: voice ?? this.voice,
+      voices: voices ?? this.voices,
     );
   }
 }

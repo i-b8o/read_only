@@ -73,12 +73,13 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
                }
                "setVoice" -> {
                    val name: String? = call.arguments()
+                   Log.d(TAG_NAME, "setVoice: " + name)
                    result.success(voiceService.setVoice(name))
                }
 //               TODO doesn't work
                "setVolume" -> {
                    var value : String = call.arguments.toString()
-
+                   Log.d(TAG_NAME, "setVolume: " + value)
                    try {
                        val newVolume: Float = value.toFloat()
                         result.success(voiceService.setVolume(newVolume))
@@ -89,6 +90,7 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
                 }
                "setPitch" -> {
                     var value : String = call.arguments.toString()
+                    Log.d(TAG_NAME, "setPitch: " + value)
                     try {
                         val newPitch: Float = value.toFloat()
                         voiceService.setPitch(newPitch)
@@ -98,8 +100,9 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
                         result.success(false)
                     }
                }
-               "setSpeechRate" -> {
+               "setRate" -> {
                    var value : String = call.arguments.toString()
+                   Log.d(TAG_NAME, "setRate: " + value)
                    try {
                        val newSpeechRate: Float = value.toFloat()
                        result.success(voiceService.setSpeechRate(newSpeechRate))

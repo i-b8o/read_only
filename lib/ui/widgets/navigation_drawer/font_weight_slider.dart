@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:read_only/ui/widgets/app/app_model.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 
 class FontWeightSlider extends StatelessWidget {
   const FontWeightSlider({
@@ -10,7 +10,7 @@ class FontWeightSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final model = context.watch<AppViewModel>();
+    final model = context.watch<DrawerViewModel>();
     final value = model.getFontWeightDouble();
     final onFontWeightChangeEnd = model.onFontWeightChangeEnd;
     final weights = [

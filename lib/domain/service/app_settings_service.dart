@@ -4,7 +4,7 @@ import 'package:my_logger/my_logger.dart';
 import 'package:read_only/constants/constants.dart';
 import 'package:read_only/domain/entity/app_settings.dart';
 
-import 'package:read_only/ui/widgets/app/app_model.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
 abstract class AppSettingsServiceDataProvider {

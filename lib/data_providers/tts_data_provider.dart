@@ -68,6 +68,7 @@ class TtsDataProviderDefault implements TtsDataProvider {
   }
 
   Future<bool> _speak() async {
+    L.info("_+speak");
     for (;;) {
       if (_state == null) {
         return false;

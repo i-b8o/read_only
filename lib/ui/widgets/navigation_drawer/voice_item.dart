@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:my_logger/my_logger.dart';
+import 'package:provider/provider.dart';
 
+import 'navigation_drawer_model.dart';
 import 'voice_btn.dart';
 
 class VoiceItem extends StatelessWidget {
@@ -9,13 +12,21 @@ class VoiceItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> _voices = ["aaa", "bbb", "ccc"];
+    final model = context.watch<DrawerViewModel>();
+    final voices = model.appSettings!.voices;
+    final onVoiceChanged = model.onVoiceChanged;
+    if (voices == null) {
+      Row(
+        children: const [Text("Нет")],
+      );
+    }
+    // List<String> _voices = ["aaa", "bbb", "ccc"];
     return GestureDetector(
       onTap: () async {
         showDialog(
             context: context,
             builder: (context) {
-              List<DropdownMenuItem<String>> _items = _voices
+              List<DropdownMenuItem<String>> items = voices
                   .map((v) => DropdownMenuItem(
                         value: v,
                         child: Text(v),
@@ -31,14 +42,18 @@ class VoiceItem extends StatelessWidget {
                       color: Color(0xFF5ec8ad),
                     ),
                     DropdownButton(
-                      items: _items,
-                      value: "state.voice",
+                      items: items,
+                      value: voices[0],
                       style: Theme.of(context)
                           .navigationRailTheme
                           .unselectedLabelTextStyle,
                       dropdownColor:
                           Theme.of(context).navigationRailTheme.backgroundColor,
-                      onChanged: (String? value) {},
+                      onChanged: (Object? value) {
+                        if (value != null) {
+                          onVoiceChanged(value);
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -61,7 +76,7 @@ class VoiceItem extends StatelessWidget {
                     .color,
               ),
             ),
-            const Text("state.voice"),
+            Text(voices![0]),
           ],
         ),
       ),

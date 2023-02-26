@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_logger/my_logger.dart';
 import 'package:provider/provider.dart';
-import 'package:read_only/ui/widgets/app/app_model.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 import 'package:read_only/ui/widgets/navigation_drawer/menu_item.dart';
 
 import 'font_size_slider.dart';
@@ -13,10 +13,10 @@ class FontMenuItem extends StatelessWidget {
   final int index;
   @override
   Widget build(BuildContext context) {
-    final appModel = context.watch<AppViewModel>();
-    int pxValue = appModel.getFontSizeInPx().round();
-    int fwValue = appModel.getFontWeight();
-    final onReset = appModel.fontReset;
+    final model = context.watch<DrawerViewModel>();
+    int pxValue = model.getFontSizeInPx().round();
+    int fwValue = model.getFontWeight();
+    final onReset = model.fontReset;
 
     return NavDrawerMenuItem(
       leadingIconData: Icons.font_download_outlined,
@@ -32,7 +32,7 @@ class FontMenuItem extends StatelessWidget {
             padding: const EdgeInsets.only(left: 8.0),
             child: SingleChildScrollView(
                 child: Column(children: [
-              Consumer<AppViewModel>(builder: (context, model, child) {
+              Consumer<DrawerViewModel>(builder: (context, model, child) {
                 return MenuSubItem(
                   leading: 'Размер',
                   value: "$pxValue px",

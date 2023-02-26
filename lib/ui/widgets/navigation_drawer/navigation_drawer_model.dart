@@ -3,6 +3,7 @@ import 'package:my_logger/my_logger.dart';
 import 'package:read_only/constants/constants.dart';
 
 import 'package:read_only/domain/entity/app_settings.dart';
+import 'package:read_only/domain/entity/tts_position.dart';
 
 abstract class AppSettingService {
   Future<void> setDarkMode(bool darkModeOn);
@@ -11,17 +12,31 @@ abstract class AppSettingService {
   AppSettings getAppSettings();
 }
 
-abstract class AppViewModelTtsSettingService {
+abstract class DrawerViewModelTtsSettingService {
   Future<bool> setVolume(double volume);
+  Future<bool> setRate(double volume);
+  Future<bool> setPitch(double value);
+  Stream<TtsPosition>? positionEvent();
+  Future<List<String>?> getVoices();
+  Future<bool> setVoice(String voice);
+  Future<bool> speakList(List<String> texts);
+  Future<bool> stopSpeak();
 }
 
-class AppViewModel extends ChangeNotifier {
-  AppViewModel(
-      {required this.appSettingsService, required this.ttsSettingService}) {
+class DrawerViewModel extends ChangeNotifier {
+  DrawerViewModel({
+    required this.appSettingsService,
+    required this.ttsSettingService,
+  }) {
     _appSettings = appSettingsService.getAppSettings();
+    if (ttsSettingService.positionEvent() != null) {
+      ttsSettingService.positionEvent()!.listen((event) {});
+    }
+    final voices = ttsSettingService.getVoices();
+    L.info("Voices $voices");
   }
   final AppSettingService appSettingsService;
-  final AppViewModelTtsSettingService ttsSettingService;
+  final DrawerViewModelTtsSettingService ttsSettingService;
 
   bool isDarkModeOn = false;
   late AppSettings? _appSettings;
@@ -114,18 +129,62 @@ class AppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> onRateChangeEnd(double value) async {
+    L.info("Rate change end with: $value");
+    await ttsSettingService.setRate(value);
+    _appSettings = _appSettings!.copyWith(speechRate: value);
+    notifyListeners();
+  }
+
+  Future<void> onRateChanged(double value) async {
+    L.info("Rate changed with: $value");
+
+    _appSettings = _appSettings!.copyWith(speechRate: value);
+    notifyListeners();
+  }
+
+  Future<void> onPitchChangeEnd(double value) async {
+    L.info("Pitch change end with: $value");
+    await ttsSettingService.setPitch(value);
+    _appSettings = _appSettings!.copyWith(pitch: value);
+    notifyListeners();
+  }
+
+  Future<void> onPitchChanged(double value) async {
+    L.info("Pitch changed with: $value");
+
+    _appSettings = _appSettings!.copyWith(pitch: value);
+    notifyListeners();
+  }
+
+  Future<void> onVoiceChanged(Object voice) async {
+    L.info("voice changed with: $voice");
+    final voiceStr = voice.toString();
+    await ttsSettingService.setVoice(voiceStr);
+    _appSettings = _appSettings!.copyWith(voice: voiceStr);
+    notifyListeners();
+  }
+
+  Future<void> getVoices() async {
+    final voices = await ttsSettingService.getVoices();
+    _appSettings = _appSettings!.copyWith(voices: voices);
+    L.info(voices);
+    notifyListeners();
+  }
+
   double mapFontSize(double value) {
-    // min = 7px max=40px
+    // TODO in Constant: min = 7px max=40px
     return value * 33.0 + 7.0;
   }
 
-  // int convertRange(double value) {
-  //   if (value < 0.0 || value > 1.0) {
-  //     throw ArgumentError('Value must be between 0.0 and 1.0');
-  //   }
-
-  //   return (value / 1.25).floor();
-  // }
+  Future<void> startSpeak() async {
+    L.info("start speak ");
+    try {
+      await ttsSettingService.speakList(Constants.anyText);
+    } catch (e) {
+      L.error('An error occurred while speaking any text: $e');
+    }
+  }
 
   double integerToDouble(int value) {
     return value / 10.0;

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/sound_rate_slider.dart';
+import 'package:read_only/ui/widgets/navigation_drawer/sound_volume_slider.dart';
 
-import '../app/app_model.dart';
+import 'navigation_drawer_model.dart';
 import 'menu_item.dart';
 import 'menu_sub_item.dart';
+import 'sound_pitch_slider.dart';
 import 'sound_slider.dart';
 import 'voice_item.dart';
 
@@ -12,14 +15,18 @@ class SoundMenuItem extends StatelessWidget {
   final int index;
   @override
   Widget build(BuildContext context) {
-    final appModel = context.watch<AppViewModel>();
-    final volumValue = appModel.appSettings!.volume;
-    final onVolumeChangeEnd = appModel.onVolumeChangeEnd;
+    final model = context.watch<DrawerViewModel>();
+    final volumValue = model.appSettings!.volume;
+    final volumValueStr = (volumValue * 100).toStringAsFixed(0);
+    final rateValue = model.appSettings!.speechRate;
+    final rateValueStr = (rateValue * 100).toStringAsFixed(0);
+    final pitchValue = model.appSettings!.pitch;
+    final pitchValueStr = (pitchValue * 100).toStringAsFixed(0);
+    final onExpanded = model.getVoices;
     return NavDrawerMenuItem(
       leadingIconData: Icons.volume_up_outlined,
       title: 'Звук',
-      // index: index,
-      onExpansionChanged: (bool) {},
+      onExpansionChanged: (bool) => onExpanded(),
       children: [
         Padding(
           padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
@@ -28,56 +35,30 @@ class SoundMenuItem extends StatelessWidget {
             child: Column(
               children: [
                 MenuSubItem(
-                  value: "1",
+                  value: volumValueStr,
                   leading: 'Громкость',
                   alertDialog: AlertDialog(
                     backgroundColor:
                         Theme.of(context).navigationRailTheme.backgroundColor,
-                    content: SoundSlider(
-                      title: 'Громкость',
-                      text: '%',
-                      color: const Color(0xFF552cf6),
-                      value: volumValue,
-                      onIconTap: () {},
-                      onChanged: (double value) async {},
-                      onChangeEnd: (value) => onVolumeChangeEnd(value),
-                    ),
+                    content: const SoundVolumeSlider(),
                   ),
                 ),
                 MenuSubItem(
                   leading: 'Скорость',
-                  value: "1",
+                  value: rateValueStr,
                   alertDialog: AlertDialog(
                     backgroundColor:
                         Theme.of(context).navigationRailTheme.backgroundColor,
-                    content: SoundSlider(
-                      title: 'Скорость',
-                      text: '%',
-                      // icon: Icons.volume_up_outlined,
-
-                      color: const Color(0xFF475df9),
-                      value: 1,
-                      onIconTap: () {},
-                      onChanged: (double value) async {},
-                      onChangeEnd: (value) {},
-                    ),
+                    content: const SoundRateSlider(),
                   ),
                 ),
                 MenuSubItem(
                   leading: 'Высота',
-                  value: "1",
+                  value: pitchValueStr,
                   alertDialog: AlertDialog(
                     backgroundColor:
                         Theme.of(context).navigationRailTheme.backgroundColor,
-                    content: SoundSlider(
-                      title: 'Высота',
-                      text: '%',
-                      color: const Color(0xFF5aa9f7),
-                      value: 1,
-                      onIconTap: () {},
-                      onChanged: (double value) {},
-                      onChangeEnd: (value) {},
-                    ),
+                    content: const SoundPitchSlider(),
                   ),
                 ),
                 const VoiceItem()
