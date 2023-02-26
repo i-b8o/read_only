@@ -80,6 +80,7 @@ class TtsDataProviderDefault implements TtsDataProvider {
 
       await _methodChannel.invokeMethod("speak", text);
       _state?.setOffset(text.length);
+      L.info("text: $text");
     }
   }
 

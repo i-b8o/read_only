@@ -11,11 +11,17 @@ abstract class AppSettingService {
   AppSettings getAppSettings();
 }
 
+abstract class AppViewModelTtsSettingService {
+  Future<bool> setVolume(double volume);
+}
+
 class AppViewModel extends ChangeNotifier {
-  AppViewModel(this.appSettingsService) {
+  AppViewModel(
+      {required this.appSettingsService, required this.ttsSettingService}) {
     _appSettings = appSettingsService.getAppSettings();
   }
   final AppSettingService appSettingsService;
+  final AppViewModelTtsSettingService ttsSettingService;
 
   bool isDarkModeOn = false;
   late AppSettings? _appSettings;
@@ -91,6 +97,20 @@ class AppViewModel extends ChangeNotifier {
         fontWeight: Constants.fontWeightDefaultValue,
         fontSize: Constants.fontSizeDefaultValue);
     L.info("asd:${_appSettings!.fontWeight}");
+    notifyListeners();
+  }
+
+  Future<void> onVolumeChangeEnd(double value) async {
+    L.info("Valume change end with: $value");
+    await ttsSettingService.setVolume(value);
+    _appSettings = _appSettings!.copyWith(volume: value);
+    notifyListeners();
+  }
+
+  Future<void> onVolumeChanged(double value) async {
+    L.info("Valume changed with: $value");
+
+    _appSettings = _appSettings!.copyWith(volume: value);
     notifyListeners();
   }
 

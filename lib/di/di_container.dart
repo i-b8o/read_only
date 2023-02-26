@@ -101,7 +101,7 @@ class _DIContainer {
       LocalNotesDataProviderDefault();
 
   final TtsSettingsDataProviderDefault _ttsSettingsDataProvider =
-      const TtsSettingsDataProviderDefault();
+      const TtsSettingsDataProviderDefault(_ttsMethodChannel);
 
   final SettingsDataProviderDefault _settingsDataProvider =
       const SettingsDataProviderDefault();
@@ -116,7 +116,9 @@ class _DIContainer {
         localDocDataProvider: _makeLocalDocDataProviderDefault(),
         localChapterDataProvider: _makeLocalChapterDataProviderDefault());
 
-    _ttsService = TtsService(_ttsDataProvider);
+    _ttsService = TtsService(
+        ttsDataProvider: _ttsDataProvider,
+        ttsSettingsDataProvider: _ttsSettingsDataProvider);
     _appSettingsService = AppSettingsServiceDefault(_settingsDataProvider);
     _connectionService = ConnectionStatusService();
   }
@@ -144,7 +146,6 @@ class _DIContainer {
   ChapterService _makeChapterService() => ChapterService(
       chapterDataProvider: _makeChapterDataProvider(),
       paragraphDataProvider: _makeParagraphDataProvider(),
-      ttsSettingsDataProvider: _ttsSettingsDataProvider,
       localChapterDataProvider: _makeLocalChapterDataProviderDefault(),
       localParagraphDataProvider: _makeLocalParagraphDataProviderDefault());
 
@@ -153,7 +154,8 @@ class _DIContainer {
   NotesService _makeNotesService() => NotesService(_notesDataProvider());
 
   // ViewModels
-  AppViewModel _makeAppViewModel() => AppViewModel(_appSettingsService);
+  AppViewModel _makeAppViewModel() => AppViewModel(
+      appSettingsService: _appSettingsService, ttsSettingService: _ttsService);
   // NavigationDrawerViewModel _makeDrawerViewModel() =>
   //     NavigationDrawerViewModel(_appSettingsService);
 

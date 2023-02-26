@@ -14,11 +14,11 @@ class ChapterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _model = context.watch<ChapterViewModel>();
-    final errorMessage = _model.errorMessage;
-    final itemCount = _model.chaptersTotal + 1;
-    final controller = _model.pageController;
-    final onPageChanged = _model.onPageChanged;
+    final model = context.watch<ChapterViewModel>();
+    final errorMessage = model.errorMessage;
+    final itemCount = model.chaptersTotal + 1;
+    final controller = model.pageController;
+    final onPageChanged = model.onPageChanged;
     return SafeArea(
       child: Scaffold(
           floatingActionButtonLocation:

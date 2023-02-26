@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../app/app_model.dart';
 import 'menu_item.dart';
 import 'menu_sub_item.dart';
 import 'sound_slider.dart';
@@ -10,6 +12,9 @@ class SoundMenuItem extends StatelessWidget {
   final int index;
   @override
   Widget build(BuildContext context) {
+    final appModel = context.watch<AppViewModel>();
+    final volumValue = appModel.appSettings!.volume;
+    final onVolumeChangeEnd = appModel.onVolumeChangeEnd;
     return NavDrawerMenuItem(
       leadingIconData: Icons.volume_up_outlined,
       title: 'Звук',
@@ -32,10 +37,10 @@ class SoundMenuItem extends StatelessWidget {
                       title: 'Громкость',
                       text: '%',
                       color: const Color(0xFF552cf6),
-                      value: 1,
+                      value: volumValue,
                       onIconTap: () {},
                       onChanged: (double value) async {},
-                      onChangeEnd: (value) {},
+                      onChangeEnd: (value) => onVolumeChangeEnd(value),
                     ),
                   ),
                 ),

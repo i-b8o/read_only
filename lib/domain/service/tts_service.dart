@@ -1,5 +1,6 @@
 import 'package:read_only/domain/entity/tts_position.dart';
 import 'package:read_only/library/text/text.dart';
+import 'package:read_only/ui/widgets/app/app_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
 abstract class TtsDataProvider {
@@ -11,13 +12,20 @@ abstract class TtsDataProvider {
   Stream<TtsPosition>? positionStream();
 }
 
-class TtsService implements ChapterViewModelTtsService {
+abstract class TtsSettingsDataProvider {
+  Future<bool> setVolume(double value);
+}
+
+class TtsService
+    implements ChapterViewModelTtsService, AppViewModelTtsSettingService {
   final TtsDataProvider ttsDataProvider;
+  final TtsSettingsDataProvider ttsSettingsDataProvider;
   List<String>? currentTexts;
   int currentParagraphIndex = 0;
   bool paused = false;
   bool stoped = false;
-  TtsService(this.ttsDataProvider);
+  TtsService(
+      {required this.ttsDataProvider, required this.ttsSettingsDataProvider});
 
   Future<bool> _speak(List<String> texts, {bool multiple = true}) async {
     stoped = false;
@@ -115,9 +123,9 @@ class TtsService implements ChapterViewModelTtsService {
   // Future<bool> setVoice(String voice) async =>
   //     await ttsChannel.invokeMethod('setVoice', voice) as bool;
 
-  // @override
-  // Future<bool> setVolume(double volume) async =>
-  //     await ttsChannel.invokeMethod('setVolume', volume) as bool;
+  @override
+  Future<bool> setVolume(double volume) async =>
+      await ttsSettingsDataProvider.setVolume(volume);
 
   // Future<bool> setPitch(double pitch) async =>
   //     await ttsChannel.invokeMethod('setPitch', pitch) as bool;

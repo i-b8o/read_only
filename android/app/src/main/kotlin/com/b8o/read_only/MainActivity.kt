@@ -18,32 +18,20 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
     private lateinit var voiceService: VoiceService
     private var  eventSink: EventChannel.EventSink? = null
     private val TTS_CHANNEL = "com.b8o.read_only/tts"
-    // private val SQLITE_CHANNEL = "com.b8o.read_only/sqlite"
     private val TTS_POSITION_CHANNEL = "com.b8o.read_only/tts_pos"
     private val TAG_NAME = "MainActivity"
-    // val queries = listOf(
-    //     "CREATE TABLE paragraph (id INTEGER PRIMARY KEY AUTOINCREMENT, paragraphID INTEGER, num INTEGER, hasLinks INTEGER, isTable INTEGER, isNFT INTEGER, className TEXT, content TEXT, chapterID INTEGER, FOREIGN KEY (chapterID) REFERENCES chapter(id));",
-    //     "CREATE TABLE chapter (id INTEGER PRIMARY KEY, name TEXT, orderNum INTEGER, num TEXT, docID INTEGER, FOREIGN KEY (docID) REFERENCES doc(id));",
-    //     "CREATE TABLE doc (id INTEGER PRIMARY KEY, name TEXT, color INTEGER, saved INTEGER, updated_at TIME, last_access TIME);",
-    //     "CREATE TABLE note (id INTEGER PRIMARY KEY, paragraphID INTEGER);"
-    // )
+    
 
-    // val sqliteClient = SqliteClient(context, "read_only", 1, queries)
-
-    private lateinit var sqliteClient: SqliteClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
-        // sqliteClient = SqliteClient(this, "rodb", 1, queries)
     }
-
+    
     override protected fun onDestroy() {
         super.onDestroy()
         voiceService.onDestroy()
-        // sqliteClient.closeDatabase()
     }
-
+    
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
         eventSink = events
         voiceService = VoiceService(this, eventSink)
@@ -93,8 +81,7 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
 
                    try {
                        val newVolume: Float = value.toFloat()
-                       voiceService.setVolume(newVolume)
-                       result.success(true)
+                        result.success(voiceService.setVolume(newVolume))
                    } catch (e: NumberFormatException) {
                        Log.e(TAG_NAME, "toFloat: " + e.message)
                        result.success(false)

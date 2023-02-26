@@ -23,9 +23,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _model = context.watch<AppViewModel>();
+    final model = context.watch<AppViewModel>();
     return MaterialApp(
-      theme: _model.isDarkModeOn ? ReadOnlyTheme.dark : ReadOnlyTheme.light,
+      theme: model.isDarkModeOn ? ReadOnlyTheme.dark : ReadOnlyTheme.light,
       darkTheme: ReadOnlyTheme.dark,
       initialRoute: MainNavigationRouteNames.typeListScreen,
       onGenerateRoute: navigation.onGenerateRoute,

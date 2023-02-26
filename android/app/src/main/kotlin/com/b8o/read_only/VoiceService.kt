@@ -153,10 +153,17 @@ class VoiceService(context:Context, sink:EventChannel.EventSink?): TextToSpeech.
         return if (newValue > 1.0f) 1.0f else value
     }
 
-    fun setVolume(volume: Float) {
-        val newVolume = cutOff(volume)
-        bundle!!.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, newVolume)
+    fun setVolume(volume: Float): Boolean {
+        if (volume in (0.0f..1.0f)) {
+            bundle!!.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, volume)
+        return true
+        } else {
+        Log.d("tag", "Invalid volume $volume value - Range is from 0.0 to 1.0")
+        return false
+        }
     }
+
+
 
     fun setPitch(pitch: Float) {
         val newPitch = cutOff(pitch)*1.5f+0.5f

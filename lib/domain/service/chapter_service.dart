@@ -24,24 +24,15 @@ abstract class ChapterServiceLocalChapterDataProvider {
   Future<void> saveChapter(Chapter chapter);
 }
 
-abstract class TtsSettingsDataProvider {
-  const TtsSettingsDataProvider();
-  Future<void> saveVolume(double value);
-  Future<void> saveVoice(String value);
-  Future<String?> readCurrentLanguage();
-}
-
 class ChapterService implements ChapterViewModelService {
   final ChapterDataProvider chapterDataProvider;
   final ParagraphDataProvider paragraphDataProvider;
-  final TtsSettingsDataProvider ttsSettingsDataProvider;
   final ParagraphServiceLocalChapterDataProvider localParagraphDataProvider;
   final ChapterServiceLocalChapterDataProvider localChapterDataProvider;
 
   const ChapterService({
     required this.chapterDataProvider,
     required this.paragraphDataProvider,
-    required this.ttsSettingsDataProvider,
     required this.localParagraphDataProvider,
     required this.localChapterDataProvider,
   });

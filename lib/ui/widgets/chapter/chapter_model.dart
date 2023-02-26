@@ -57,11 +57,11 @@ class ChapterViewModel extends ChangeNotifier {
       _currentPage = pageController.page!.toInt();
     });
     asyncInit();
-    // if (ttsService.positionEvent() != null) {
-    //   ttsService.positionEvent()!.listen((event) {
-    //     L.info("start1: ${event.start}, end: ${event.end}");
-    //   });
-    // }
+    if (ttsService.positionEvent() != null) {
+      ttsService.positionEvent()!.listen((event) {
+        L.info("start1: ${event.start}, end: ${event.end}");
+      });
+    }
   }
   final Link link;
 
@@ -214,6 +214,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<void> startSpeakChapter() async {
+    L.info("start speak chapter");
     try {
       if (chapter == null || _paragraphs.isEmpty) {
         return;
@@ -230,6 +231,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<void> stopSpeak() async {
+    L.info("stop speak");
     try {
       await ttsService.stopSpeak();
     } catch (e) {
@@ -243,11 +245,13 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<void> pauseSpeak() async {
+    L.info("pause speak");
     await ttsService.pauseSpeak();
     setSpeakState(SpeakState.paused);
   }
 
   Future<void> resumeSpeak() async {
+    L.info("resume speak");
     setSpeakState(SpeakState.speaking);
     await ttsService.resumeSpeak();
     setSpeakState(SpeakState.silence);
