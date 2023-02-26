@@ -12,7 +12,7 @@ class NotesWidget extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
     final model = context.watch<NotesViewModel>();
     final notes = model.notes;
-    final itemCount = notes == null ? 0 : notes!.length;
+    final itemCount = notes == null ? 0 : notes.length;
     final onTap = model.onTap;
     final onDrop = model.onDrop;
 

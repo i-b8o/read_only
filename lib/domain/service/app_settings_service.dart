@@ -5,6 +5,7 @@ import 'package:read_only/constants/constants.dart';
 import 'package:read_only/domain/entity/app_settings.dart';
 
 import 'package:read_only/ui/widgets/app/app_model.dart';
+import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 
 abstract class AppSettingsServiceDataProvider {
   const AppSettingsServiceDataProvider();
@@ -17,9 +18,12 @@ abstract class AppSettingsServiceDataProvider {
   Future<void> setFontSize(double fontSize);
   Future<void> setVoice(String voice);
   AppSettings getAppSettings();
+  double getFontSize();
+  int getFontWeight();
 }
 
-class AppSettingsServiceDefault implements AppSettingService {
+class AppSettingsServiceDefault
+    implements AppSettingService, ChapterAppSettingService {
   AppSettingsServiceDefault(this.appSettingsdataProvider);
   final AppSettingsServiceDataProvider appSettingsdataProvider;
   final StreamController<bool> _controller = StreamController<bool>.broadcast();
@@ -111,5 +115,26 @@ class AppSettingsServiceDefault implements AppSettingService {
   @override
   bool isDarkModeOn() {
     return appSettingsdataProvider.getDarkMode();
+  }
+
+  @override
+  double getFontSizeInPx() {
+    try {
+      final value = appSettingsdataProvider.getFontSize();
+      return value * 33.0 + 7.0;
+    } catch (e) {
+      L.error('Error getting font size: $e');
+      return Constants.fontSizeDefaultValue;
+    }
+  }
+
+  @override
+  int getFontWeight() {
+    try {
+      return appSettingsdataProvider.getFontWeight();
+    } catch (e) {
+      L.error('Error getting font weight: $e');
+      return Constants.fontWeightDefaultValue;
+    }
   }
 }

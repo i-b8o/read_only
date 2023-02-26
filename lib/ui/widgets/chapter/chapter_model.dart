@@ -7,6 +7,11 @@ import 'package:read_only/domain/entity/tts_position.dart';
 
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
 
+abstract class ChapterAppSettingService {
+  double getFontSizeInPx();
+  int getFontWeight();
+}
+
 abstract class ChapterViewModelService {
   Future<Chapter?> getOne(int id);
 }
@@ -39,6 +44,7 @@ enum SpeakState { silence, speaking, paused }
 class ChapterViewModel extends ChangeNotifier {
   ChapterViewModel(
     this.link, {
+    required this.appSettingsService,
     required this.paragraphService,
     required this.chapterService,
     required this.docService,
@@ -59,6 +65,7 @@ class ChapterViewModel extends ChangeNotifier {
   }
   final Link link;
 
+  final ChapterAppSettingService appSettingsService;
   final ChapterViewModelParagraphService paragraphService;
   final ChapterViewModelService chapterService;
   final ChapterViewModelDocService docService;
@@ -159,6 +166,14 @@ class ChapterViewModel extends ChangeNotifier {
       L.error('Error in onPageChanged: $e');
       // Handle the error appropriately, e.g. show a toast or dialog to the user
     }
+  }
+
+  double getFontSizeInPx() {
+    return appSettingsService.getFontSizeInPx();
+  }
+
+  int getFontWeight() {
+    return appSettingsService.getFontWeight();
   }
 
   Future<bool> onTapUrl(BuildContext context, String url) async {

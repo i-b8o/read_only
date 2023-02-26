@@ -53,7 +53,9 @@ class FontMenuItem extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () async {},
+                onTap: () async {
+                  await onReset();
+                },
                 child: Container(
                   color: Theme.of(context).navigationRailTheme.backgroundColor,
                   width: double.infinity,

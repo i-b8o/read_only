@@ -10,25 +10,23 @@ class FontWeightSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final buttonWidth = (screenWidth * 0.9) / 14;
-
     final model = context.watch<AppViewModel>();
     final value = model.getFontWeightDouble();
-    final onFontWeightChanged = model.onFontWeightChanged;
     final onFontWeightChangeEnd = model.onFontWeightChangeEnd;
-
+    final weights = [
+      'W200',
+      'W400',
+      'W600',
+      'W800',
+    ];
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.9, // 90% of screen width
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          'W200',
-          'W400',
-          'W600',
-          'W800',
-        ]
+        children: weights
             .map((fontWeight) => GestureDetector(
-                  onTap: () => print(fontWeight),
+                  onTap: () => onFontWeightChangeEnd(
+                      (weights.indexOf(fontWeight) + 1) * 2),
                   child: Container(
                     decoration: const BoxDecoration(
                         color: Color(0xFF5aa9f7),

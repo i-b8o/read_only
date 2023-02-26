@@ -17,7 +17,6 @@ class ReadOnlyTheme {
             fontSize: 18.0),
         selectedLabelTextStyle: TextStyle(color: Color(0xFFe98c14)),
       ),
-      fontFamily: 'Yandex',
       focusColor: Colors.blueGrey[900],
       appBarTheme: const AppBarTheme(
         elevation: 74,
@@ -41,16 +40,18 @@ class ReadOnlyTheme {
       scaffoldBackgroundColor: Colors.white,
       bottomAppBarColor: const Color(0XFFf7f6fb),
       shadowColor: const Color(0xFFe7e7e7),
-      textTheme: const TextTheme(
-          headline1: TextStyle(
+      textTheme: TextTheme(
+          headline1: const TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 17.0),
-          headline2:
-              TextStyle(color: Colors.black, backgroundColor: Colors.white),
-          bodyText1: TextStyle(
+          headline2: const TextStyle(
+              fontFamily: 'Yandex',
+              color: Colors.black,
+              backgroundColor: Colors.white),
+          bodyText1: const TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
-          bodyText2: TextStyle(color: Colors.black, fontSize: 15)),
+          bodyText2: const TextStyle(color: Colors.black, fontSize: 15)),
       iconTheme: const IconThemeData(size: 20, color: Color(0XFF447FEB)),
     );
   }
@@ -87,16 +88,17 @@ class ReadOnlyTheme {
       ),
       drawerTheme: const DrawerThemeData(backgroundColor: Color(0xFF25292a)),
       scaffoldBackgroundColor: const Color(0xFF0b0b0b),
-      textTheme: const TextTheme(
-          headline1: TextStyle(
+      textTheme: TextTheme(
+          headline1: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 17.0),
-          headline2: TextStyle(
+          headline2: const TextStyle(
               color: Color(0xFFfdfdfd), backgroundColor: Color(0xFF272727)),
-          bodyText1: TextStyle(
+          bodyText1: const TextStyle(
             color: Color(0xFF999da5),
             fontWeight: FontWeight.w600,
           ),
-          bodyText2: TextStyle(
+          bodyText2: const TextStyle(
+            fontFamily: 'Yandex',
             color: Color(0xFF999da5),
             fontSize: 15,
           )),

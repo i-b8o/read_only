@@ -71,20 +71,12 @@ class AppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onFontWeightChanged(double value) {
-    L.info("onFontWeightChanged: $value ${convertRange(value)}");
-
-    if (_appSettings == null) return;
-    _appSettings = _appSettings!.copyWith(fontWeight: convertRange(value));
-    notifyListeners();
-  }
-
-  Future<void> onFontWeightChangeEnd(double value) async {
+  Future<void> onFontWeightChangeEnd(int value) async {
     L.info("onFontWeightChangeEnd: $value");
     if (_appSettings == null) return;
-    _appSettings = _appSettings!.copyWith(fontWeight: convertRange(value));
+    _appSettings = _appSettings!.copyWith(fontWeight: value);
 
-    await appSettingsService.setFontWeight(convertRange(value));
+    await appSettingsService.setFontWeight(value);
 
     notifyListeners();
   }
@@ -98,6 +90,7 @@ class AppViewModel extends ChangeNotifier {
     _appSettings = _appSettings!.copyWith(
         fontWeight: Constants.fontWeightDefaultValue,
         fontSize: Constants.fontSizeDefaultValue);
+    L.info("asd:${_appSettings!.fontWeight}");
     notifyListeners();
   }
 
@@ -106,13 +99,13 @@ class AppViewModel extends ChangeNotifier {
     return value * 33.0 + 7.0;
   }
 
-  int convertRange(double value) {
-    if (value < 0.0 || value > 1.0) {
-      throw ArgumentError('Value must be between 0.0 and 1.0');
-    }
+  // int convertRange(double value) {
+  //   if (value < 0.0 || value > 1.0) {
+  //     throw ArgumentError('Value must be between 0.0 and 1.0');
+  //   }
 
-    return (value / 1.25).floor();
-  }
+  //   return (value / 1.25).floor();
+  // }
 
   double integerToDouble(int value) {
     return value / 10.0;

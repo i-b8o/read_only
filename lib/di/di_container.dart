@@ -193,6 +193,7 @@ class _DIContainer {
         TextEditingController(text: _initialPage.toString());
     return ChapterViewModel(
       link,
+      appSettingsService: _appSettingsService,
       docService: _docService,
       paragraphService: _paragraphService,
       pageController: _chapterWidgetPageController!,

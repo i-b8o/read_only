@@ -109,4 +109,16 @@ class SettingsDataProviderDefault implements AppSettingsServiceDataProvider {
     return SharedPreferencesClient.readBool(key: Constants.darkModeKey) ??
         Constants.darkModeDefaultValue;
   }
+
+  @override
+  double getFontSize() {
+    return SharedPreferencesClient.readDouble(key: Constants.fontSizeKey) ??
+        Constants.fontSizeDefaultValue;
+  }
+
+  @override
+  int getFontWeight() {
+    return SharedPreferencesClient.readInt(key: Constants.fontWeightKey) ??
+        Constants.fontWeightDefaultValue;
+  }
 }
