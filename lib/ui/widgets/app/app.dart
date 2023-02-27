@@ -24,8 +24,17 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<DrawerViewModel>();
+    final settings = model.appSettings;
+    if (settings == null) {
+      return const MaterialApp(
+          home: Center(
+        child: Text("Что-то пошло не так"),
+      ));
+    }
     return MaterialApp(
-      theme: model.isDarkModeOn ? ReadOnlyTheme.dark : ReadOnlyTheme.light,
+      theme: model.appSettings!.darkModeOn
+          ? ReadOnlyTheme.dark
+          : ReadOnlyTheme.light,
       darkTheme: ReadOnlyTheme.dark,
       initialRoute: MainNavigationRouteNames.typeListScreen,
       onGenerateRoute: navigation.onGenerateRoute,
