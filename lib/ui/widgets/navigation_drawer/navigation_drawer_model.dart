@@ -3,6 +3,7 @@ import 'package:my_logger/my_logger.dart';
 import 'package:read_only/constants/constants.dart';
 
 import 'package:read_only/domain/entity/app_settings.dart';
+import 'package:read_only/domain/entity/speak_state.dart';
 import 'package:read_only/domain/entity/tts_position.dart';
 
 abstract class AppSettingService {
@@ -37,6 +38,16 @@ class DrawerViewModel extends ChangeNotifier {
   }
   final AppSettingService appSettingsService;
   final DrawerViewModelTtsSettingService ttsSettingService;
+
+  SpeakState _speakState = SpeakState.silence;
+  SpeakState get speakState => _speakState;
+  void setSpeakState(SpeakState value) {
+    if (_speakState == SpeakState.paused && value == SpeakState.silence) {
+      return;
+    }
+    _speakState = value;
+    notifyListeners();
+  }
 
   bool isDarkModeOn = false;
   late AppSettings? _appSettings;
@@ -180,9 +191,21 @@ class DrawerViewModel extends ChangeNotifier {
   Future<void> startSpeak() async {
     L.info("start speak ");
     try {
+      setSpeakState(SpeakState.speaking);
       await ttsSettingService.speakList(Constants.anyText);
+      setSpeakState(SpeakState.silence);
     } catch (e) {
       L.error('An error occurred while speaking any text: $e');
+    }
+  }
+
+  Future<void> stopSpeak() async {
+    L.info("stop speak");
+    try {
+      await ttsSettingService.stopSpeak();
+      setSpeakState(SpeakState.silence);
+    } catch (e) {
+      L.error('An error occurred while stop speaking the chapter: $e');
     }
   }
 

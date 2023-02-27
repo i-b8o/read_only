@@ -16,12 +16,14 @@ class SoundPitchSlider extends StatelessWidget {
     final pitchValueStr = (pitchValue * 100).toStringAsFixed(0);
     final onPitchChangeEnd = model.onPitchChangeEnd;
     final onPitchChanged = model.onPitchChanged;
+    final stopSpeak = model.stopSpeak;
     return SizedBox(
       height: MediaQuery.of(context).size.width * 0.2,
       child: Row(
         children: [
-          const VoiceBtn(
-            color: Color(0xFF475df9),
+          VoiceBtn(
+            color: const Color(0xFF475df9),
+            stopSpeak: stopSpeak,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_logger/my_logger.dart';
 import 'package:provider/provider.dart';
 
 import 'navigation_drawer_model.dart';
@@ -15,12 +14,13 @@ class VoiceItem extends StatelessWidget {
     final model = context.watch<DrawerViewModel>();
     final voices = model.appSettings!.voices;
     final onVoiceChanged = model.onVoiceChanged;
+    final stopSpeak = model.stopSpeak;
     if (voices == null) {
-      Row(
+      return Row(
         children: const [Text("Нет")],
       );
     }
-    // List<String> _voices = ["aaa", "bbb", "ccc"];
+
     return GestureDetector(
       onTap: () async {
         showDialog(
@@ -38,8 +38,9 @@ class VoiceItem extends StatelessWidget {
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const VoiceBtn(
-                      color: Color(0xFF5ec8ad),
+                    VoiceBtn(
+                      color: const Color(0xFF5ec8ad),
+                      stopSpeak: stopSpeak,
                     ),
                     DropdownButton(
                       items: items,

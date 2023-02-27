@@ -5,24 +5,23 @@ import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.d
 import 'voice_btn.dart';
 
 class SoundVolumeSlider extends StatelessWidget {
-  const SoundVolumeSlider({
-    Key? key,
-  }) : super(key: key);
+  const SoundVolumeSlider({super.key});
 
   @override
   Widget build(BuildContext context) {
     final model = context.watch<DrawerViewModel>();
     final volumValue = model.appSettings!.volume;
     final volumValueStr = (volumValue * 100).toStringAsFixed(0);
-
+    final stopSpeak = model.stopSpeak;
     final onVolumeChangeEnd = model.onVolumeChangeEnd;
     final onVolumeChanged = model.onVolumeChanged;
     return SizedBox(
       height: MediaQuery.of(context).size.width * 0.2,
       child: Row(
         children: [
-          const VoiceBtn(
-            color: Color(0xFF552cf6),
+          VoiceBtn(
+            color: const Color(0xFF552cf6),
+            stopSpeak: stopSpeak,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

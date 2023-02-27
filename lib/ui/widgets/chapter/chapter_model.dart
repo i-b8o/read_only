@@ -3,6 +3,7 @@ import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/link.dart';
 import 'package:read_only/domain/entity/paragraph.dart';
+import 'package:read_only/domain/entity/speak_state.dart';
 import 'package:read_only/domain/entity/tts_position.dart';
 
 import 'package:read_only/ui/navigation/main_navigation_route_names.dart';
@@ -38,8 +39,6 @@ abstract class ChapterViewModelParagraphService {
 abstract class ChapterViewModelNoteService {
   Future<void> saveNote(int paragraphID, chapterID);
 }
-
-enum SpeakState { silence, speaking, paused }
 
 class ChapterViewModel extends ChangeNotifier {
   ChapterViewModel(
@@ -237,10 +236,6 @@ class ChapterViewModel extends ChangeNotifier {
     L.info("stop speak");
     try {
       await ttsService.stopSpeak();
-    } catch (e) {
-      L.error('An error occurred while stop speaking the chapter: $e');
-    }
-    try {
       setSpeakState(SpeakState.silence);
     } catch (e) {
       L.error('An error occurred while stop speaking the chapter: $e');

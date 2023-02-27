@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:read_only/ui/widgets/navigation_drawer/sound_rate_slider.dart';
 import 'package:read_only/ui/widgets/navigation_drawer/sound_volume_slider.dart';
-
 import 'navigation_drawer_model.dart';
 import 'menu_item.dart';
 import 'menu_sub_item.dart';
 import 'sound_pitch_slider.dart';
-import 'sound_slider.dart';
 import 'voice_item.dart';
 
 class SoundMenuItem extends StatelessWidget {
@@ -16,8 +14,8 @@ class SoundMenuItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<DrawerViewModel>();
-    final volumValue = model.appSettings!.volume;
-    final volumValueStr = (volumValue * 100).toStringAsFixed(0);
+    final volumeValue = model.appSettings!.volume;
+    final volumeValueStr = (volumeValue * 100).toStringAsFixed(0);
     final rateValue = model.appSettings!.speechRate;
     final rateValueStr = (rateValue * 100).toStringAsFixed(0);
     final pitchValue = model.appSettings!.pitch;
@@ -35,12 +33,12 @@ class SoundMenuItem extends StatelessWidget {
             child: Column(
               children: [
                 MenuSubItem(
-                  value: volumValueStr,
+                  value: volumeValueStr,
                   leading: 'Громкость',
                   alertDialog: AlertDialog(
                     backgroundColor:
                         Theme.of(context).navigationRailTheme.backgroundColor,
-                    content: const SoundVolumeSlider(),
+                    content: SoundVolumeSlider(),
                   ),
                 ),
                 MenuSubItem(
@@ -49,7 +47,7 @@ class SoundMenuItem extends StatelessWidget {
                   alertDialog: AlertDialog(
                     backgroundColor:
                         Theme.of(context).navigationRailTheme.backgroundColor,
-                    content: const SoundRateSlider(),
+                    content: SoundRateSlider(),
                   ),
                 ),
                 MenuSubItem(

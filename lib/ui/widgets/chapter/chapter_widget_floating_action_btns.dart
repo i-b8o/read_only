@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:read_only/domain/entity/speak_state.dart';
 
 import 'chapter_model.dart';
 
