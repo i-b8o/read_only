@@ -23,12 +23,14 @@ class VoiceService(context:Context, sink:EventChannel.EventSink?): TextToSpeech.
     private var tts = TextToSpeech(context, this, googleTtsEngine)
 
     fun onDestroy(){
+        Log.d(TAG_NAME, "tts destroyed")
         tts.shutdown()
     }
 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             tts!!.setOnUtteranceProgressListener(utteranceProgressListener)
+            Log.d(TAG_NAME, "tts inited")
             val result = tts!!.setLanguage(Locale.US)
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 println("The Language not supported!")

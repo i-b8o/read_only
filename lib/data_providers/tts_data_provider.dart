@@ -68,7 +68,6 @@ class TtsDataProviderDefault implements TtsDataProvider {
   }
 
   Future<bool> _speak() async {
-    L.info("_+speak");
     for (;;) {
       if (_state == null) {
         return false;
@@ -81,7 +80,6 @@ class TtsDataProviderDefault implements TtsDataProvider {
 
       await _methodChannel.invokeMethod("speak", text);
       _state?.setOffset(text.length);
-      L.info("text: $text");
     }
   }
 
@@ -127,7 +125,6 @@ class TtsDataProviderDefault implements TtsDataProvider {
         return TtsPosition(0, 0);
       }
       final offset = _state!.offset;
-      L.info("offset: $offset");
       List<int> values = event.cast<int>();
       final int start = values[0];
       _state!.setStart(start);

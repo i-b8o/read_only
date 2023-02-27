@@ -33,8 +33,7 @@ class DrawerViewModel extends ChangeNotifier {
     if (ttsSettingService.positionEvent() != null) {
       ttsSettingService.positionEvent()!.listen((event) {});
     }
-    final voices = ttsSettingService.getVoices();
-    L.info("Voices $voices");
+    // final voices = ttsSettingService.getVoices();
   }
   final AppSettingService appSettingsService;
   final DrawerViewModelTtsSettingService ttsSettingService;
@@ -62,7 +61,6 @@ class DrawerViewModel extends ChangeNotifier {
   }
 
   double getFontSizeInAbs() {
-    L.info("getFontSizeInAbs: ${_appSettings!.fontSize}");
     if (_appSettings == null) {
       // 14px
       return 0.21;
@@ -104,7 +102,6 @@ class DrawerViewModel extends ChangeNotifier {
   }
 
   Future<void> onFontWeightChangeEnd(int value) async {
-    L.info("onFontWeightChangeEnd: $value");
     if (_appSettings == null) return;
     _appSettings = _appSettings!.copyWith(fontWeight: value);
 
@@ -122,54 +119,44 @@ class DrawerViewModel extends ChangeNotifier {
     _appSettings = _appSettings!.copyWith(
         fontWeight: Constants.fontWeightDefaultValue,
         fontSize: Constants.fontSizeDefaultValue);
-    L.info("asd:${_appSettings!.fontWeight}");
+
     notifyListeners();
   }
 
   Future<void> onVolumeChangeEnd(double value) async {
-    L.info("Valume change end with: $value");
     await ttsSettingService.setVolume(value);
     _appSettings = _appSettings!.copyWith(volume: value);
     notifyListeners();
   }
 
   Future<void> onVolumeChanged(double value) async {
-    L.info("Valume changed with: $value");
-
     _appSettings = _appSettings!.copyWith(volume: value);
     notifyListeners();
   }
 
   Future<void> onRateChangeEnd(double value) async {
-    L.info("Rate change end with: $value");
     await ttsSettingService.setRate(value);
     _appSettings = _appSettings!.copyWith(speechRate: value);
     notifyListeners();
   }
 
   Future<void> onRateChanged(double value) async {
-    L.info("Rate changed with: $value");
-
     _appSettings = _appSettings!.copyWith(speechRate: value);
     notifyListeners();
   }
 
   Future<void> onPitchChangeEnd(double value) async {
-    L.info("Pitch change end with: $value");
     await ttsSettingService.setPitch(value);
     _appSettings = _appSettings!.copyWith(pitch: value);
     notifyListeners();
   }
 
   Future<void> onPitchChanged(double value) async {
-    L.info("Pitch changed with: $value");
-
     _appSettings = _appSettings!.copyWith(pitch: value);
     notifyListeners();
   }
 
   Future<void> onVoiceChanged(Object voice) async {
-    L.info("voice changed with: $voice");
     final voiceStr = voice.toString();
     await ttsSettingService.setVoice(voiceStr);
     _appSettings = _appSettings!.copyWith(voice: voiceStr);
@@ -179,7 +166,7 @@ class DrawerViewModel extends ChangeNotifier {
   Future<void> getVoices() async {
     final voices = await ttsSettingService.getVoices();
     _appSettings = _appSettings!.copyWith(voices: voices);
-    L.info(voices);
+
     notifyListeners();
   }
 
@@ -189,7 +176,6 @@ class DrawerViewModel extends ChangeNotifier {
   }
 
   Future<void> startSpeak() async {
-    L.info("start speak ");
     try {
       setSpeakState(SpeakState.speaking);
       await ttsSettingService.speakList(Constants.anyText);
@@ -200,7 +186,6 @@ class DrawerViewModel extends ChangeNotifier {
   }
 
   Future<void> stopSpeak() async {
-    L.info("stop speak");
     try {
       await ttsSettingService.stopSpeak();
       setSpeakState(SpeakState.silence);

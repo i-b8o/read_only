@@ -22,9 +22,7 @@ class FontMenuItem extends StatelessWidget {
       leadingIconData: Icons.font_download_outlined,
       title: 'Шрифт',
       // index: index,
-      onExpansionChanged: (bool val) {
-        L.info("onExpansionChanged $val");
-      },
+      onExpansionChanged: (bool val) {},
       children: [
         Padding(
           padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),

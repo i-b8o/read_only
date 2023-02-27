@@ -58,7 +58,7 @@ class ChapterViewModel extends ChangeNotifier {
     asyncInit();
     if (ttsService.positionEvent() != null) {
       ttsService.positionEvent()!.listen((event) {
-        L.info("start1: ${event.start}, end: ${event.end}");
+        // L.info("start1: ${event.start}, end: ${event.end}");
       });
     }
   }
@@ -109,12 +109,9 @@ class ChapterViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> asyncInit() async {
-    L.info("asyncInit");
     try {
-      L.info(
-          " link: ${link.chapterID} ${link.paragraphID} ${pageController.initialPage}");
       chaptersTotal = docService.totalChapters();
-      L.info("chaptersTotal: $chaptersTotal");
+
       await getOne(link.chapterID);
 
       if (link.paragraphID == 0) {
@@ -136,11 +133,11 @@ class ChapterViewModel extends ChangeNotifier {
   Future<void> getOne(int id) async {
     try {
       final chapter = await chapterService.getOne(id);
-      L.error("getOne: ${chapter!.id}");
+
       setChapter(chapter);
       if (_chapter != null && _chapter!.paragraphs != null) {
-        _paragraphs = chapter.paragraphs!;
-        L.info("Length: ${_paragraphs.length}");
+        _paragraphs = chapter!.paragraphs!;
+
         notifyListeners();
       }
     } catch (e) {
@@ -202,21 +199,17 @@ class ChapterViewModel extends ChangeNotifier {
           _activeParagraphIndex == null) {
         return;
       }
-      L.info("start speak1");
 
       setSpeakState(SpeakState.speaking);
       await ttsService
           .speakOne(chapter!.paragraphs![_activeParagraphIndex!].content);
       setSpeakState(SpeakState.silence);
-      L.info(
-          "start speak ${chapter!.paragraphs![_activeParagraphIndex!].content} $_speakState");
     } catch (e) {
       L.error('Error occurred while speaking: $e');
     }
   }
 
   Future<void> startSpeakChapter() async {
-    L.info("start speak chapter");
     try {
       if (chapter == null || _paragraphs.isEmpty) {
         return;
@@ -233,7 +226,6 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<void> stopSpeak() async {
-    L.info("stop speak");
     try {
       await ttsService.stopSpeak();
       setSpeakState(SpeakState.silence);
@@ -243,13 +235,11 @@ class ChapterViewModel extends ChangeNotifier {
   }
 
   Future<void> pauseSpeak() async {
-    L.info("pause speak");
     await ttsService.pauseSpeak();
     setSpeakState(SpeakState.paused);
   }
 
   Future<void> resumeSpeak() async {
-    L.info("resume speak");
     setSpeakState(SpeakState.speaking);
     await ttsService.resumeSpeak();
     setSpeakState(SpeakState.silence);
@@ -288,7 +278,6 @@ class ChapterViewModel extends ChangeNotifier {
 
   void onPrevPressed(BuildContext context) async {
     int? pageNum = int.tryParse(textEditingController.text);
-    L.info("pressed");
     if (pageNum == 1) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Это первая страница!'),
@@ -316,7 +305,7 @@ class ChapterViewModel extends ChangeNotifier {
     if (pageController.page == null) {
       return;
     }
-    L.info("page Num: $pageNum");
+
     pageController.nextPage(
         duration: const Duration(seconds: 1), curve: Curves.ease);
   }
