@@ -4,7 +4,6 @@ import 'package:read_only/constants/constants.dart';
 
 import 'package:read_only/domain/entity/app_settings.dart';
 import 'package:read_only/domain/entity/speak_state.dart';
-import 'package:read_only/domain/entity/tts_position.dart';
 
 abstract class AppSettingService {
   Future<void> setDarkMode(bool darkModeOn);
@@ -17,7 +16,7 @@ abstract class DrawerViewModelTtsSettingService {
   Future<bool> setVolume(double volume);
   Future<bool> setRate(double volume);
   Future<bool> setPitch(double value);
-  Stream<TtsPosition>? positionEvent();
+  // Stream<TtsPosition>? positionEvent();
   Future<List<String>?> getVoices();
   Future<bool> setVoice(String voice);
   Future<bool> speakList(List<String> texts);
@@ -30,9 +29,9 @@ class DrawerViewModel extends ChangeNotifier {
     required this.ttsSettingService,
   }) {
     _appSettings = appSettingsService.getAppSettings();
-    if (ttsSettingService.positionEvent() != null) {
-      ttsSettingService.positionEvent()!.listen((event) {});
-    }
+    // if (ttsSettingService.positionEvent() != null) {
+    //   ttsSettingService.positionEvent()!.listen((event) {});
+    // }
     final voices = ttsSettingService.getVoices();
     L.info("Voices $voices");
   }

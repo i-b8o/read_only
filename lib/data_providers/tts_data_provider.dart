@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/tts_position.dart';
@@ -59,7 +61,13 @@ class TtsDataProviderDefault implements TtsDataProvider {
   late Stream<TtsPosition>? positionEvent;
   TtsDataProviderState? _state;
 
-  TtsDataProviderDefault(this._methodChannel, this._eventChannel);
+  TtsDataProviderDefault(this._methodChannel, this._eventChannel) {
+    _startListening();
+  }
+  StreamSubscription<TtsPosition>? _subscription;
+  void _startListening() {
+    _subscription = _eventStream()!.listen((event) {});
+  }
 
   @override
   Future<bool> highlighting() async {
@@ -68,7 +76,6 @@ class TtsDataProviderDefault implements TtsDataProvider {
   }
 
   Future<bool> _speak() async {
-    L.info("_+speak");
     for (;;) {
       if (_state == null) {
         return false;
@@ -81,7 +88,6 @@ class TtsDataProviderDefault implements TtsDataProvider {
 
       await _methodChannel.invokeMethod("speak", text);
       _state?.setOffset(text.length);
-      L.info("text: $text");
     }
   }
 
@@ -120,8 +126,7 @@ class TtsDataProviderDefault implements TtsDataProvider {
     return await _speak();
   }
 
-  @override
-  Stream<TtsPosition>? positionStream() {
+  Stream<TtsPosition>? _eventStream() {
     positionEvent = _eventChannel.receiveBroadcastStream().map((event) {
       if (_state == null) {
         return TtsPosition(0, 0);
@@ -134,6 +139,10 @@ class TtsDataProviderDefault implements TtsDataProvider {
       final int end = values[1];
       return TtsPosition(start + offset, end + offset);
     });
+
     return positionEvent;
   }
+
+  @override
+  Stream<TtsPosition>? positionStream() {}
 }

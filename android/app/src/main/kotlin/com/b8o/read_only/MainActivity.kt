@@ -35,6 +35,7 @@ class MainActivity: FlutterActivity(), EventChannel.StreamHandler {
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
         eventSink = events
         voiceService = VoiceService(this, eventSink)
+        Log.d(TAG_NAME, "Listen")
     }
 
     override fun onCancel(arguments: Any?) {

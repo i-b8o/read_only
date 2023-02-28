@@ -1,4 +1,3 @@
-import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/tts_position.dart';
 import 'package:read_only/library/text/text.dart';
 import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
@@ -10,7 +9,7 @@ abstract class TtsDataProvider {
   Future<bool> pause();
   Future<bool> resume();
   Future<bool> highlighting();
-  Stream<TtsPosition>? positionStream();
+  // Stream<TtsPosition>? positionStream();
 }
 
 abstract class TtsSettingsDataProvider {
@@ -61,11 +60,9 @@ class TtsService
 
   @override
   Future<bool> speakOne(String text) async {
-    L.info("message");
     if (text.isEmpty) {
       return false;
     }
-    L.info("message1 $text");
     return await _speak([text], multiple: false);
   }
 
@@ -108,10 +105,10 @@ class TtsService
     return await ttsDataProvider.highlighting();
   }
 
-  @override
-  Stream<TtsPosition>? positionEvent() {
-    return ttsDataProvider.positionStream();
-  }
+  // @override
+  // Stream<TtsPosition>? positionEvent() {
+  //   return ttsDataProvider.positionStream();
+  // }
 
   // @override
   // Future<List<String>?> getVoices() async {

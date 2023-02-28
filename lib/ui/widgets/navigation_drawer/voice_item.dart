@@ -77,7 +77,7 @@ class VoiceItem extends StatelessWidget {
                     .color,
               ),
             ),
-            Text(voices![0]),
+            Text(voices[0]),
           ],
         ),
       ),
