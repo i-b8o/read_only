@@ -29,18 +29,6 @@ class DrawerViewModel extends ChangeNotifier {
     required this.ttsSettingService,
   }) {
     _appSettings = appSettingsService.getAppSettings();
-<<<<<<< HEAD
-    // if (ttsSettingService.positionEvent() != null) {
-    //   ttsSettingService.positionEvent()!.listen((event) {});
-    // }
-    final voices = ttsSettingService.getVoices();
-    L.info("Voices $voices");
-=======
-    if (ttsSettingService.positionEvent() != null) {
-      ttsSettingService.positionEvent()!.listen((event) {});
-    }
-    // final voices = ttsSettingService.getVoices();
->>>>>>> 11dab809c0efdc2f20183fa11845d80c4ade6410
   }
   final AppSettingService appSettingsService;
   final DrawerViewModelTtsSettingService ttsSettingService;

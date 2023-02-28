@@ -56,19 +56,6 @@ class ChapterViewModel extends ChangeNotifier {
       _currentPage = pageController.page!.toInt();
     });
     asyncInit();
-<<<<<<< HEAD
-    // if (ttsService.positionEvent() != null) {
-    //   ttsService.positionEvent()!.listen((event) {
-    //     L.info("start1: ${event.start}, end: ${event.end}");
-    //   });
-    // }
-=======
-    if (ttsService.positionEvent() != null) {
-      ttsService.positionEvent()!.listen((event) {
-        // L.info("start1: ${event.start}, end: ${event.end}");
-      });
-    }
->>>>>>> 11dab809c0efdc2f20183fa11845d80c4ade6410
   }
   final Link link;
 
