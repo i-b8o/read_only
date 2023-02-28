@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-=======
 import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/app_settings.dart';
->>>>>>> 11dab809c0efdc2f20183fa11845d80c4ade6410
-import 'package:read_only/domain/entity/tts_position.dart';
 import 'package:read_only/library/text/text.dart';
 import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
