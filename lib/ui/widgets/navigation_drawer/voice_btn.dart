@@ -20,14 +20,12 @@ class VoiceBtn extends StatefulWidget {
 class _VoiceBtnState extends State<VoiceBtn> {
   @override
   Future<void> dispose() async {
-    L.info("_VoiceBtnState message disposed");
     widget.stopSpeak();
     super.dispose();
   }
 
   @override
   void initState() {
-    L.info("_VoiceBtnState message inited");
     super.initState();
   }
 

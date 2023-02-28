@@ -22,13 +22,11 @@ class LocalNotesDataProviderDefault
             where: 'paragraphID = ?',
             whereArgs: [paragraphID]);
         if (paragraph != null && paragraph.isNotEmpty) {
-          L.info("1");
           final text = paragraph.first['content'] as String;
           final chapterID = paragraph.first['chapterID'];
           final chapter = await SqfliteClient.select(
               table: 'chapter', where: 'id = ?', whereArgs: [chapterID]);
           if (chapter != null && chapter.isNotEmpty) {
-            L.info("2");
             final docID = chapter.first['docID'];
             final doc = await SqfliteClient.select(
                 table: 'doc', where: 'id = ?', whereArgs: [docID]);
@@ -36,7 +34,7 @@ class LocalNotesDataProviderDefault
               final name = doc.first['name'] as String;
               final color = doc.first['color'] as int;
               final url = '$chapterID#$paragraphID';
-              L.info("$name -> $color");
+
               notes.add(Note(
                   docName: name,
                   docColor: color,
@@ -66,12 +64,10 @@ class LocalNotesDataProviderDefault
 
   @override
   Future<void> dropNote(int paragraphID, chapterID) async {
-    L.info("dropNote $paragraphID $chapterID");
     try {
       final i = await SqfliteClient.delete('note',
           where: 'paragraphID = ? AND chapterID = ?',
           whereArgs: [paragraphID, chapterID]);
-      L.info("i = $i");
     } catch (e) {
       rethrow;
     }

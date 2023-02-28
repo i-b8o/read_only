@@ -132,7 +132,6 @@ class TtsDataProviderDefault implements TtsDataProvider {
         return TtsPosition(0, 0);
       }
       final offset = _state!.offset;
-      L.info("offset: $offset");
       List<int> values = event.cast<int>();
       final int start = values[0];
       _state!.setStart(start);

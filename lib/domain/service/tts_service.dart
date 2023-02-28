@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+import 'package:my_logger/my_logger.dart';
+import 'package:read_only/domain/entity/app_settings.dart';
+>>>>>>> 11dab809c0efdc2f20183fa11845d80c4ade6410
 import 'package:read_only/domain/entity/tts_position.dart';
 import 'package:read_only/library/text/text.dart';
 import 'package:read_only/ui/widgets/navigation_drawer/navigation_drawer_model.dart';
@@ -145,6 +150,24 @@ class TtsService
   Future<List<String>?> getVoices() async =>
       await ttsSettingsDataProvider.getVoices();
 
+  @override
   Future<bool> setVoice(String voice) async =>
       await ttsSettingsDataProvider.setVoice(voice);
+
+  @override
+  Future<bool> setSettings(AppSettings appSettings) async {
+    bool ok = await setVolume(appSettings.volume);
+    if (!ok) {
+      return false;
+    }
+    ok = await setRate(appSettings.speechRate);
+    if (!ok) {
+      return false;
+    }
+    ok = await setPitch(appSettings.pitch);
+    if (!ok) {
+      return false;
+    }
+    return await setVoice(appSettings.voice);
+  }
 }
