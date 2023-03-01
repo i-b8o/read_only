@@ -1,5 +1,3 @@
-import 'package:flutter/services.dart';
-
 import 'package:read_only/domain/entity/type.dart' as domain_type;
 import 'package:read_only/domain/service/type_service.dart';
 import 'package:grpc_client/grpc_client.dart';
@@ -7,7 +5,7 @@ import 'package:read_only/pb/reader/service.pbgrpc.dart';
 
 class TypeDataProviderDefault implements TypeDataProvider {
   TypeDataProviderDefault()
-      : _typeGRPCClient = TypeGRPCClient(GrpcClient().channel());
+      : _typeGRPCClient = TypeGRPCClient(GrpcClient().channel(0));
 
   final TypeGRPCClient _typeGRPCClient;
 

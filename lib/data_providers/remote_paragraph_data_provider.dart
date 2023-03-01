@@ -8,7 +8,7 @@ import '../domain/service/chapter_service.dart';
 
 class ParagraphDataProviderDefault implements ParagraphDataProvider {
   ParagraphDataProviderDefault()
-      : _grpcClient = ParagraphGRPCClient(GrpcClient().channel());
+      : _grpcClient = ParagraphGRPCClient(GrpcClient().channel(0));
 
   final ParagraphGRPCClient _grpcClient;
 

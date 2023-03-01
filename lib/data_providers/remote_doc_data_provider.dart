@@ -9,7 +9,7 @@ import 'package:read_only/domain/entity/chapter.dart' as domain_chapter;
 
 class DocDataProviderDefault implements DocDataProvider {
   DocDataProviderDefault()
-      : _docGRPCClient = DocGRPCClient(GrpcClient().channel());
+      : _docGRPCClient = DocGRPCClient(GrpcClient().channel(0));
 
   final DocGRPCClient _docGRPCClient;
 
@@ -23,7 +23,11 @@ class DocDataProviderDefault implements DocDataProvider {
       // Mapping
       List<domain_chapter.Chapter> chapters = resp.chapters
           .map((e) => domain_chapter.Chapter(
-              id: e.iD.toInt(), name: e.name, orderNum: e.orderNum, num: e.num, docID: id))
+              id: e.iD.toInt(),
+              name: e.name,
+              orderNum: e.orderNum,
+              num: e.num,
+              docID: id))
           .toList();
       return domain_doc.Doc(id: id, name: resp.name, chapters: chapters);
     } catch (e) {

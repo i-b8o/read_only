@@ -1,8 +1,8 @@
 import 'package:grpc/grpc.dart';
 
 class GrpcClient {
-  static late ClientChannel _channel;
-  ClientChannel channel() => _channel;
+  static late List<ClientChannel> _channels;
+  ClientChannel channel(int n) => _channels[n];
 
   GrpcClient();
 
@@ -11,10 +11,24 @@ class GrpcClient {
       required int port,
       options =
           const ChannelOptions(credentials: ChannelCredentials.insecure())}) {
-    _channel = ClientChannel(
+    _channels = [
+      ClientChannel(
+        host,
+        port: port,
+        options: options,
+      )
+    ];
+  }
+
+  static void addChannel(
+      {required String host,
+      required int port,
+      options =
+          const ChannelOptions(credentials: ChannelCredentials.insecure())}) {
+    _channels.add(ClientChannel(
       host,
       port: port,
       options: options,
-    );
+    ));
   }
 }

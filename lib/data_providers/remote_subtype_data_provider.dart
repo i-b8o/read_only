@@ -1,5 +1,3 @@
-import 'package:flutter/services.dart';
-
 import 'package:read_only/domain/entity/doc.dart' as domain_doc;
 import 'package:read_only/domain/entity/sub_type.dart' as domain_subtype;
 import 'package:read_only/domain/service/subtype_service.dart';
@@ -10,7 +8,7 @@ import 'package:read_only/pb/reader/service.pbgrpc.dart';
 
 class SubtypeDataProviderDefault implements SubtypeDataProvider {
   SubtypeDataProviderDefault()
-      : _subtypeGRPCClient = SubGRPCClient(GrpcClient().channel());
+      : _subtypeGRPCClient = SubGRPCClient(GrpcClient().channel(0));
 
   final SubGRPCClient _subtypeGRPCClient;
   @override
