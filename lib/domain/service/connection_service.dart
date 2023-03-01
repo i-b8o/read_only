@@ -23,7 +23,7 @@ class ConnectionStatusService {
   final ClientChannel _grpcChannel;
   late AppConnectionStatus _status = AppConnectionStatus.internetDisconnected;
 
-  ConnectionStatusService() : _grpcChannel = GrpcClient().channel(0) {
+  ConnectionStatusService() : _grpcChannel = GrpcClient().channel("read") {
     _connectivity.onConnectivityChanged.listen(_updateInternetConnectionStatus);
     _grpcChannel.onConnectionStateChanged.listen(_updateGrpcServerStatus);
   }

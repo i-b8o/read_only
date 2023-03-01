@@ -6,7 +6,8 @@ class L {
   static void initialize() {
     Logger.root.level = Level.ALL;
     Logger.root.onRecord.listen((record) {
-      print('${record.level.name}: ${record.time}: ${record.message}');
+      print(
+          '${record.level.name}: ${record.time}: ${record.message} ${record.zone}');
     });
   }
 
@@ -18,8 +19,8 @@ class L {
     _logger.warning(message);
   }
 
-  static void error(dynamic message) {
-    _logger.severe(message);
+  static void error(dynamic message, [Object? error]) {
+    _logger.severe(message, error, StackTrace.current);
   }
 
   static void debug(dynamic message) {

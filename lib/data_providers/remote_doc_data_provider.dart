@@ -9,7 +9,7 @@ import 'package:read_only/domain/entity/chapter.dart' as domain_chapter;
 
 class DocDataProviderDefault implements DocDataProvider {
   DocDataProviderDefault()
-      : _docGRPCClient = DocGRPCClient(GrpcClient().channel(0));
+      : _docGRPCClient = DocGRPCClient(GrpcClient().channel("read"));
 
   final DocGRPCClient _docGRPCClient;
 

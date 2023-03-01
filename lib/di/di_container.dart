@@ -107,7 +107,15 @@ class _DIContainer {
       const SettingsDataProviderDefault();
 
   _DIContainer() {
-    GrpcClient().init(host: Configuration.host, port: Configuration.port);
+    GrpcClient().init(
+        name: "read",
+        host: Configuration.hosts['reader']!,
+        port: Configuration.ports['reader']!);
+    GrpcClient().init(
+        name: "search",
+        host: Configuration.hosts['searcher']!,
+        port: Configuration.ports['searcher']!);
+
     asyncInit();
     L.initialize();
 

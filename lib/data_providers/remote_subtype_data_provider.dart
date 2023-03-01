@@ -8,7 +8,7 @@ import 'package:read_only/pb/reader/service.pbgrpc.dart';
 
 class SubtypeDataProviderDefault implements SubtypeDataProvider {
   SubtypeDataProviderDefault()
-      : _subtypeGRPCClient = SubGRPCClient(GrpcClient().channel(0));
+      : _subtypeGRPCClient = SubGRPCClient(GrpcClient().channel("read"));
 
   final SubGRPCClient _subtypeGRPCClient;
   @override
