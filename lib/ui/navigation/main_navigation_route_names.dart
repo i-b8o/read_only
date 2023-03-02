@@ -5,4 +5,5 @@ abstract class MainNavigationRouteNames {
   static const chapterListScreen = '/chapters_screen';
   static const chapterScreen = '/chapter_screen';
   static const notesScreen = '/notes_screen';
+  static const searchScreen = '/search_screen';
 }

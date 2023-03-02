@@ -1,20 +1,21 @@
 import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/search_item.dart';
+import 'package:read_only/ui/widgets/search/search_model.dart';
 
-abstract class SearchServiceLocalDocDataProvider {
-  const SearchServiceLocalDocDataProvider();
+abstract class SearchServiceDataProvider {
+  const SearchServiceDataProvider();
   Future<List<SearchItem>> search(String searchQuery, int limit, int offset);
 }
 
-class SearchService {
-  final SearchServiceLocalDocDataProvider _dataProvider;
+class SearchService implements SearchViewModelSearchService {
+  final SearchServiceDataProvider dataProvider;
 
-  SearchService(this._dataProvider);
+  SearchService({required this.dataProvider});
 
   Future<List<SearchItem>?> search(String searchQuery) async {
     const limit = 10, offset = 10;
     try {
-      return await _dataProvider.search(searchQuery, limit, offset);
+      return await dataProvider.search(searchQuery, limit, offset);
     } catch (e) {
       L.error('Error occurred while searching: $e');
     }

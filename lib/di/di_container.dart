@@ -8,6 +8,7 @@ import 'package:read_only/data_providers/local_doc_data_provider.dart';
 import 'package:read_only/data_providers/local_note_data_provider.dart';
 import 'package:read_only/data_providers/local_paragraph_data_provider.dart';
 import 'package:read_only/data_providers/remote_paragraph_data_provider.dart';
+import 'package:read_only/data_providers/search_data_provider.dart';
 import 'package:read_only/data_providers/settings_data_provider.dart';
 import 'package:read_only/data_providers/tts_data_provider.dart';
 import 'package:read_only/data_providers/tts_settings_data_provider.dart';
@@ -20,6 +21,7 @@ import 'package:read_only/domain/service/connection_service.dart';
 import 'package:read_only/domain/service/doc_service.dart';
 import 'package:read_only/domain/service/notes_service.dart';
 import 'package:read_only/domain/service/paragraph_service.dart';
+import 'package:read_only/domain/service/search_service.dart';
 import 'package:read_only/domain/service/subtype_service.dart';
 import 'package:read_only/domain/service/tts_service.dart';
 import 'package:read_only/domain/service/type_service.dart';
@@ -35,6 +37,8 @@ import 'package:read_only/ui/widgets/doc_list/doc_list_model.dart';
 import 'package:read_only/ui/widgets/doc_list/doc_list_widget.dart';
 import 'package:read_only/ui/widgets/notes/notes_model.dart';
 import 'package:read_only/ui/widgets/notes/notes_widget.dart';
+import 'package:read_only/ui/widgets/search/search_model.dart';
+import 'package:read_only/ui/widgets/search/search_widget.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_model.dart';
 import 'package:read_only/ui/widgets/subtype_list/subtype_list_widget.dart';
 import 'package:read_only/ui/widgets/type_list/type_list_widget.dart';
@@ -80,6 +84,9 @@ class _DIContainer {
 
   TypeDataProvider _makeTypeDataProvider() => TypeDataProviderDefault();
 
+  SearchServiceDataProvider _makeSearchDataProvider() =>
+      SearchDataProviderDefault();
+
   SubtypeDataProvider _makeSubtypeDataProvider() =>
       SubtypeDataProviderDefault();
 
@@ -109,12 +116,12 @@ class _DIContainer {
   _DIContainer() {
     GrpcClient().init(
         name: "read",
-        host: Configuration.hosts['reader']!,
-        port: Configuration.ports['reader']!);
+        host: Configuration.hosts['read']!,
+        port: Configuration.ports['read']!);
     GrpcClient().init(
         name: "search",
-        host: Configuration.hosts['searcher']!,
-        port: Configuration.ports['searcher']!);
+        host: Configuration.hosts['search']!,
+        port: Configuration.ports['search']!);
 
     asyncInit();
     L.initialize();
@@ -148,6 +155,9 @@ class _DIContainer {
   ReadOnlyTypeService _makeTypeService() =>
       ReadOnlyTypeService(typeDataProvider: _makeTypeDataProvider());
 
+  SearchService _makeSearchService() =>
+      SearchService(dataProvider: _makeSearchDataProvider());
+
   SubtypeService _makeSubtypeService() =>
       SubtypeService(subtypeDataProvider: _makeSubtypeDataProvider());
 
@@ -171,6 +181,9 @@ class _DIContainer {
 
   TypeListViewModel _makeTypeListViewModel() => TypeListViewModel(
       typesProvider: _makeTypeService(), connectionService: _connectionService);
+
+  SearchViewModel _makeSearchViewModel() =>
+      SearchViewModel(searchService: _makeSearchService());
 
   SubtypeListViewModel _makeSubtypeListViewModel(int id) =>
       SubtypeListViewModel(
@@ -273,6 +286,15 @@ class ScreenFactoryDefault implements ScreenFactory {
       create: (_) => _diContainer._makeNotesViewModel(),
       lazy: false,
       child: const NotesWidget(),
+    );
+  }
+
+  @override
+  Widget makeSearchScreen() {
+    return ChangeNotifierProvider(
+      create: (_) => _diContainer._makeSearchViewModel(),
+      lazy: false,
+      child: const SearchWidget(),
     );
   }
 }

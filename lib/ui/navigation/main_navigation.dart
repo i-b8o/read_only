@@ -7,6 +7,7 @@ import 'main_navigation_route_names.dart';
 abstract class ScreenFactory {
   Widget makeTypeListScreen();
   Widget makeNotesScreen();
+  Widget makeSearchScreen();
   Widget makeSubtypeListScreen(int id);
   Widget makeDocListScreen(int id);
   Widget makeChapterListScreen(int id);
@@ -57,6 +58,11 @@ class MainNavigation implements AppNavigation {
       case MainNavigationRouteNames.notesScreen:
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeNotesScreen(),
+        );
+
+      case MainNavigationRouteNames.searchScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeSearchScreen(),
         );
 
       default:

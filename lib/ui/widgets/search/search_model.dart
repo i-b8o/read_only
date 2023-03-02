@@ -7,15 +7,15 @@ abstract class SearchViewModelSearchService {
 }
 
 class SearchViewModel extends ChangeNotifier {
-  final SearchViewModelSearchService _searchService;
+  final SearchViewModelSearchService searchService;
   List<SearchItem>? _searchResults;
   List<SearchItem>? get searchResults => _searchResults;
 
-  SearchViewModel(this._searchService);
+  SearchViewModel({required this.searchService});
 
   Future<void> search(String searchQuery) async {
     try {
-      final results = await _searchService.search(searchQuery);
+      final results = await searchService.search(searchQuery);
       _searchResults = results;
       notifyListeners();
     } catch (e) {

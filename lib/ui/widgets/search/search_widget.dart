@@ -5,17 +5,15 @@ import 'package:read_only/domain/entity/search_item.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
 import 'package:read_only/ui/widgets/search/search_model.dart';
 
-class SearchScreen extends StatelessWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+class SearchWidget extends StatelessWidget {
+  const SearchWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     final model = context.watch<SearchViewModel>();
-    final searchItems = model.searchResults;
-    if (searchItems == null) {
-      return const Center(child: Text("Нет ничего"));
-    }
+    final searchItems = model.searchResults ?? [];
+
     final searchItemsLength = searchItems.length;
 
     // final state =
