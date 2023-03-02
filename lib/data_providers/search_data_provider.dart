@@ -1,5 +1,4 @@
 import 'package:grpc_client/grpc_client.dart';
-import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/search_item.dart';
 import 'package:read_only/pb/searcher/service.pbgrpc.dart';
 
@@ -21,8 +20,7 @@ class SearchDataProviderDefault {
           .map((message) => SearchItem.fromProto(message))
           .toList();
     } catch (e) {
-      L.info('Error occurred while searching: $e');
-      return <SearchItem>[];
+      rethrow;
     }
   }
 }

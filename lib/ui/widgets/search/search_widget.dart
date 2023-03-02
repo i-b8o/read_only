@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:provider/provider.dart';
 import 'package:read_only/domain/entity/search_item.dart';
 import 'package:read_only/ui/widgets/app_bar/app_bar.dart';
+import 'package:read_only/ui/widgets/search/search_model.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -9,8 +11,12 @@ class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    final searchItems = [];
-    final searchItemsLength = 0;
+    final model = context.watch<SearchViewModel>();
+    final searchItems = model.searchResults;
+    if (searchItems == null) {
+      return const Center(child: Text("Нет ничего"));
+    }
+    final searchItemsLength = searchItems.length;
 
     // final state =
     //     context.select((SearchCubit searchCubit) => searchCubit.state);
