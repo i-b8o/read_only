@@ -12,6 +12,7 @@ class LocalChapterDataProviderDefault
 
   @override
   Future<Chapter?> getChapter(int id) async {
+    L.info("Get chapter local id: $id");
     try {
       final List<Map<String, dynamic>>? chapters = await SqfliteClient.select(
           table: 'chapter', where: 'id = ?', whereArgs: [id]);

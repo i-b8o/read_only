@@ -44,8 +44,6 @@ class SearchViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> tryOne(int docID) async {}
-
   Future<void> onTap(BuildContext context, int docID, int cID, int? pID) async {
     await docService.tryOne(docID);
     Navigator.of(context).pushNamed(
