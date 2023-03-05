@@ -12,6 +12,7 @@ class SearchService implements SearchViewModelSearchService {
 
   SearchService({required this.dataProvider});
 
+  @override
   Future<List<SearchItem>?> search(String searchQuery) async {
     const limit = 10, offset = 10;
     try {

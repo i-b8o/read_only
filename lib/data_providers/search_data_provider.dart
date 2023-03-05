@@ -1,4 +1,5 @@
 import 'package:grpc_client/grpc_client.dart';
+import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/search_item.dart';
 import 'package:read_only/domain/service/search_service.dart';
 import 'package:read_only/pb/searcher/service.pbgrpc.dart';
@@ -8,6 +9,7 @@ class SearchDataProviderDefault implements SearchServiceDataProvider {
       : _searchGRPCClient = SearcherGRPCClient(GrpcClient().channel("search"));
   final SearcherGRPCClient _searchGRPCClient;
 
+  @override
   Future<List<SearchItem>> search(
       String searchQuery, int limit, int offset) async {
     final request = SearchRequest()
@@ -16,7 +18,9 @@ class SearchDataProviderDefault implements SearchServiceDataProvider {
       ..offset = offset;
 
     try {
+      L.info("query: $searchQuery");
       final response = await _searchGRPCClient.search(request);
+      L.info(response);
       return response.response
           .map((message) => SearchItem.fromProto(message))
           .toList();

@@ -85,7 +85,7 @@ class InitAppBAr extends StatelessWidget {
           onPressed: () async {
             Navigator.pushNamed(
               context,
-              '/searchScreen',
+              '/search_screen',
             );
           },
           icon: Icon(

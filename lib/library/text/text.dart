@@ -1,4 +1,6 @@
 import 'package:html/parser.dart';
+import 'package:my_logger/my_logger.dart';
+import 'package:read_only/constants/constants.dart';
 
 String removeAllTagsExceptLinks(String htmlString) {
   Map<int, String> tagsMap = getTags(htmlString);
@@ -135,30 +137,47 @@ String parseHtmlString(String htmlString) {
   return parsedString;
 }
 
-// List<EditedParagraphLink> getEditedParagraphLinks(String content) {
-//   List<EditedParagraphLink> result = [];
-//   List<String> _colors = [];
-//   List<String> _text = [];
-//   var re = RegExp(r'(?<=-color:#).*?(?=;">)');
-//   var matches = re.allMatches(content);
-//   for (final RegExpMatch m in matches) {
-//     _colors.add(content.substring(m.start, m.end));
-//   }
-//   re = RegExp(r'(?<=;">).*?(?=</)');
-//   matches = re.allMatches(content);
-//   for (final RegExpMatch m in matches) {
-//     _text.add(parseHtmlString(content.substring(m.start, m.end)));
-//   }
+List<List<int>> findSubtextIndexes(String text, String subtext) {
+  final List<List<int>> indexes = [];
+  final RegExp pattern = RegExp(subtext, caseSensitive: false);
+  int start = 0;
+  while (start < text.length) {
+    final Match? match = pattern.firstMatch(text.substring(start));
+    if (match == null) {
+      break;
+    }
+    final int matchStart = match.start + start;
+    final int matchEnd = match.end + start;
+    indexes.add([matchStart, matchEnd]);
+    start = matchEnd;
+  }
+  return indexes;
+}
 
-//   for (var i = 0; i < _colors.length; i++) {
-//     if (_text.length > i) {
-//       result.add(EditedParagraphLink(
-//           color: HexColor.fromHex(_colors[i]), text: _text[i]));
-//     }
-//   }
+String highlightSubtext(String text, String subtext) {
+  List<List<int>> indexes = findSubtextIndexes(text, subtext);
 
-//   return result;
-// }
+  while (indexes.isEmpty && subtext.isNotEmpty) {
+    if (subtext.length < 3) {
+      break;
+    }
+    subtext = subtext.substring(0, subtext.length - 1);
+    indexes = findSubtextIndexes(text, subtext);
+  }
+
+  String highlightedText = text;
+  for (final index in indexes) {
+    final startIndex = index.first;
+    final endIndex = index.last + 1;
+    final before = highlightedText.substring(0, startIndex);
+    final after = highlightedText.substring(endIndex);
+    final highlightedSubtext =
+        '<span style="background-color:${Constants.searchWidgetSelectColor};">${highlightedText.substring(startIndex, endIndex)}</span>';
+    highlightedText = '$before$highlightedSubtext$after';
+  }
+  L.info(highlightedText);
+  return highlightedText;
+}
 
 List<String> getTextList(String content) {
   List<String> result = [];

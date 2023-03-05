@@ -1,4 +1,3 @@
-import 'package:my_logger/my_logger.dart';
 import 'package:read_only/domain/entity/note.dart';
 import 'package:read_only/domain/service/notes_service.dart';
 import 'package:sqflite_client/sqflite_client.dart';

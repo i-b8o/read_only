@@ -1,4 +1,5 @@
 class Constants {
+  static const String searchWidgetSelectColor = "#ff9632";
   static const String darkModeKey = "dark_mode";
   static const bool darkModeDefaultValue = false;
   static const String speechRateKey = "speech_rate";
