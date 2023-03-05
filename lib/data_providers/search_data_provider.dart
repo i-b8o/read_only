@@ -18,9 +18,7 @@ class SearchDataProviderDefault implements SearchServiceDataProvider {
       ..offset = offset;
 
     try {
-      L.info("query: $searchQuery");
       final response = await _searchGRPCClient.search(request);
-      L.info(response);
       return response.response
           .map((message) => SearchItem.fromProto(message))
           .toList();

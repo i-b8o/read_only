@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:provider/provider.dart';
 import 'package:read_only/domain/entity/search_item.dart';
+
+import 'search_model.dart';
 
 class SearchItemWidget extends StatelessWidget {
   const SearchItemWidget({
@@ -13,10 +16,15 @@ class SearchItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    final model = context.read<SearchViewModel>();
+    final tryOne = model.tryOne;
+    final onTap = model.onTap;
     return Row(
       children: [
         GestureDetector(
-          onTap: () async {},
+          onTap: () async {
+            await onTap(context, item.docID, item.chapterID, item.paragraphID);
+          },
           child: Row(
             children: [
               SizedBox(

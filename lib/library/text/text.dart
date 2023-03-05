@@ -175,7 +175,7 @@ String highlightSubtext(String text, String subtext) {
         '<span style="background-color:${Constants.searchWidgetSelectColor};">${highlightedText.substring(startIndex, endIndex)}</span>';
     highlightedText = '$before$highlightedSubtext$after';
   }
-  L.info(highlightedText);
+
   return highlightedText;
 }
 

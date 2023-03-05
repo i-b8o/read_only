@@ -182,8 +182,8 @@ class _DIContainer {
   TypeListViewModel _makeTypeListViewModel() => TypeListViewModel(
       typesProvider: _makeTypeService(), connectionService: _connectionService);
 
-  SearchViewModel _makeSearchViewModel() =>
-      SearchViewModel(searchService: _makeSearchService());
+  SearchViewModel _makeSearchViewModel() => SearchViewModel(
+      searchService: _makeSearchService(), docService: _docService);
 
   SubtypeListViewModel _makeSubtypeListViewModel(int id) =>
       SubtypeListViewModel(

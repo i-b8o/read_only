@@ -28,7 +28,6 @@ class ConnectionStatusService {
     _grpcChannel.onConnectionStateChanged.listen(_updateGrpcServerStatus);
   }
   Future<void> _updateGrpcServerStatus(ConnectionState state) async {
-    L.info("grpc $state");
     switch (state) {
       case ConnectionState.connecting:
       case ConnectionState.transientFailure:
@@ -47,7 +46,6 @@ class ConnectionStatusService {
   }
 
   void _updateInternetConnectionStatus(ConnectivityResult state) {
-    L.info("inet $state");
     switch (state) {
       case ConnectivityResult.wifi:
       case ConnectivityResult.mobile:

@@ -3,6 +3,7 @@ import 'package:read_only/domain/entity/chapter.dart';
 import 'package:read_only/domain/entity/doc.dart';
 import 'package:read_only/ui/widgets/chapter/chapter_model.dart';
 import 'package:read_only/ui/widgets/chapter_list/chapter_list_model.dart';
+import 'package:read_only/ui/widgets/search/search_model.dart';
 
 abstract class DocDataProvider {
   const DocDataProvider();
@@ -21,7 +22,10 @@ abstract class DocServiceLocalChapterDataProvider {
 }
 
 class DocService
-    implements ChapterListViewModelService, ChapterViewModelDocService {
+    implements
+        ChapterListViewModelService,
+        ChapterViewModelDocService,
+        SearchViewModelDocService {
   final DocDataProvider docDataProvider;
   final DocServiceLocalDocDataProvider localDocDataProvider;
   final DocServiceLocalChapterDataProvider localChapterDataProvider;
@@ -74,6 +78,40 @@ class DocService
       assign(resp.chapters ?? []);
       L.info("The doc was returned from the remote server");
       return resp;
+    } on Exception catch (_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> tryOne(int id) async {
+    try {
+      // local database
+      final futures = [
+        localDocDataProvider.getDoc(id),
+        localChapterDataProvider.getChaptersByDocId(id),
+      ];
+      final results = await Future.wait(futures);
+      final doc = results[0] as Doc?;
+      final chapters = results[1] as List<Chapter>?;
+
+      if (doc != null && chapters != null) {
+        assign(doc.chapters!);
+        L.info("The doc was returned from the local storage");
+        return;
+      }
+
+      // remote server
+      final Doc resp = await docDataProvider.getOne(id);
+      final fs = [
+        localDocDataProvider.saveDoc(resp, id),
+        localChapterDataProvider.saveChapters(resp.chapters ?? [])
+      ];
+
+      await Future.wait(fs);
+      assign(resp.chapters ?? []);
+      L.info("The doc was returned from the remote server");
+      return;
     } on Exception catch (_) {
       rethrow;
     }
